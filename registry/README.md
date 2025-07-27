@@ -1,0 +1,1 @@
+Each file in here is the js required to register a certain Discord interaction.

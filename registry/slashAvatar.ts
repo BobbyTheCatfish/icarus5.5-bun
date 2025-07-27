@@ -1,0 +1,35 @@
+import u from "./regUtils";
+
+const user = new u.user()
+  .setName("user")
+  .setDescription("The user whose avatar you want to see")
+  .setRequired(false);
+
+const filter = new u.string()
+  .setName("filter")
+  .setDescription("Apply a filter to the avatar")
+  .setRequired(false)
+  .setChoices(
+    { name: "Andy Warhol", value: "andywarhol" },
+    { name: "Blur", value: "blur" },
+    { name: "Blurple", value: "blurple" },
+    { name: "Colorize", value: "colorme" },
+    { name: "Deepfry", value: "deepfry" },
+    { name: "Fisheye Lens", value: "fisheye" },
+    { name: "Flex", value: "flex" },
+    { name: "Grayscale", value: "grayscale" },
+    { name: "Invert", value: "invert" },
+    { name: "Metal", value: "metal" },
+    { name: "Personal", value: "personal" },
+    { name: "Petpet", value: "petpet" },
+    { name: "Pop Art", value: "popart" }
+  );
+
+
+export default new u.cmd()
+  .setName("avatar")
+  .setDescription("See someone's avatar or apply a filter to it.")
+  .addUserOption(user)
+  .addStringOption(filter)
+  .setContexts(u.contexts.Guild, u.contexts.PrivateChannel, u.contexts.BotDM)
+  .toJSON();
