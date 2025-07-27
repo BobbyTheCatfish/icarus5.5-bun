@@ -1,0 +1,30 @@
+{
+  "commands": {
+    "messageBookmark": "",
+    "messageEditMessage": "",
+    "messageModeration": "",
+    "slashAvatar": "",
+    "slashBank": "",
+    "slashBot": "",
+    "slashClockwork": "",
+    "slashFun": "",
+    "slashGame": "",
+    "slashGospel": "",
+    "slashHelp": "",
+    "slashIgn": "",
+    "slashLdsg": "",
+    "slashManagement": "",
+    "slashManager": "",
+    "slashMissionary": "",
+    "slashMod": "",
+    "slashRank": "",
+    "slashRole": "",
+    "slashSponsor": "",
+    "slashTag": "",
+    "slashTeam": "",
+    "slashTournaments": "",
+    "slashUser": "",
+    "slashVoice": "",
+    "userModeration": ""
+  }
+}

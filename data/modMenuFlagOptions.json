@@ -1,0 +1,65 @@
+[
+  {
+    "label": "General Concern",
+    "value": "badVibes",
+    "description": "This makes me feel uncomfortable",
+    "emoji": "😳",
+    "default": false
+  },
+  {
+    "label": "Political or Religious Debate",
+    "value": "debate",
+    "description": "This is (or might cause) a debate",
+    "emoji": "🙊",
+    "default": false
+  },
+  {
+    "label": "Harassment",
+    "value": "harassment",
+    "description": "This user is harassing me or someone else",
+    "emoji": "😰",
+    "default": false
+  },
+  {
+    "label": "Inappropriate Content",
+    "value": "inappropriate",
+    "description": "This contains inappropriate material",
+    "emoji": "🤬",
+    "default": false
+  },
+  {
+    "label": "Mod Abuse",
+    "value": "modAbuse",
+    "description": "This moderator is abusing their power",
+    "emoji": "⚖",
+    "default": false
+  },
+  {
+    "label": "Offensive Content",
+    "value": "offensive",
+    "description": "This is mean, rude, or belittling",
+    "emoji": "💩",
+    "default": false
+  },
+  {
+    "label": "Self-promotion",
+    "value": "promotion",
+    "description": "This includes unapproved self-promotion",
+    "emoji": "💰",
+    "default": false
+  },
+  {
+    "label": "Scam or Phishing",
+    "value": "scam",
+    "description": "This message contains a scam or phishing attempt",
+    "emoji": "🎣",
+    "default": false
+  },
+  {
+    "label": "Spam",
+    "value": "spam",
+    "description": "This message is spam",
+    "emoji": "🥫",
+    "default": false
+  }
+]

@@ -1,0 +1,97 @@
+{
+  "$schema": "./config-schema.json",
+  "adminId": [
+    "put any user IDs that need to control the bot here"
+  ],
+  "ownerId": "put your id here",
+  "api": {
+    "tenor": "You can get your API key for this and more info at https://console.cloud.google.com/apis/library/tenor.googleapis.com",
+    "snipcart": "we don't have a way to test the API right now",
+    "challonge": "https://api.challonge.com/v1"
+  },
+  "applicationId": "https://discord.com/developers/applications",
+  "color": "0xf89a22",
+  "db": {
+    "db": "mongodb://localhost:27017/icarus or mongodb+srv://<connection>/icarus",
+    "settings": {
+      "useNewUrlParser": true,
+      "useUnifiedTopology": true,
+      "user": "<username>",
+      "pass": "<pass>"
+    }
+  },
+  "devMode": true,
+  "silentMode": false,
+  "ownerOverride": true,
+  "siteOn": false,
+  "webhooks": {
+    "error": "Webhook url for errors",
+    "watchlist": "Webhook url for #watch-list",
+    "mcTesting": "Webhook url for testing interactions with Minecraft chat"
+  },
+  "events": [
+    "channelCreate",
+    "channelUpdate",
+    "filterUpdate",
+    "guildBanAdd",
+    "guildMemberAdd",
+    "guildMemberRemove",
+    "guildMemberUpdate",
+    "interactionCreate",
+    "messageCreate",
+    "messageReactionAdd",
+    "messageReactionRemove",
+    "messageUpdate",
+    "presenceUpdate",
+    "ready",
+    "threadCreate",
+    "userUpdate",
+    "voiceStateUpdate"
+  ],
+  "getMessageContent": true,
+  "processDMs": true,
+  "google": {
+    "mail": {
+      "enabled": false,
+      "email": "missionmail@ldsgamers.com",
+      "pass": "Use an app password. Google it if you need more info"
+    },
+    "creds": {
+      "type": "Create a project, give it access to google sheets, and create a service account credential. Download the JSON and that should fit in this object",
+      "project_id": "",
+      "private_key_id": "",
+      "private_key": "",
+      "client_email": "",
+      "client_id": "",
+      "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+      "token_uri": "https://accounts.google.com/o/oauth2/token",
+      "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+      "client_x509_cert_url": ""
+    },
+    "sheets": {
+      "config": "The testing google sheet ID (https://docs.google.com/spreadsheets/d/THIS_PART_IS_THE_ID_AND_THE_ONLY_THING_THAT_GOES_IN_THIS_PROPERTY)",
+      "games": "",
+      "applications": ""
+    }
+  },
+  "prefix": "! (change this to something unique)",
+  "spamThreshold":  {
+    "channels": [10, 8],
+    "messages": [10, 8],
+    "same": [5, 5],
+    "time": 7,
+    "cleanupLimit": 90
+  },
+  "token": "Put your bot token here (https://discord.com/developers/applications)",
+  "memberMilestone": {
+    "enabled": false,
+    "count": 5000
+  },
+  "badgePath": "./media/badges",
+  "tagFilePath": "./media/tags",
+  "xp": {
+    "base": 25,
+    "featherCooldown": 3,
+    "featherDropChance": 0.01
+  }
+}
