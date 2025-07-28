@@ -2,13 +2,13 @@ import moment from "moment-timezone";
 import Bank from "../models/Bank.model";
 
 type CurrencyRecord = {
-  discordId: String;
+  discordId: string;
   timestamp: Date;
-  description: String;
-  value: Number;
-  currency: String;
-  otherUser: String;
-  hp: Boolean;
+  description: string;
+  value: number;
+  currency: string;
+  otherUser: string;
+  hp: boolean;
 }
 
 const outdated = "Expected a Discord ID but likely recieved an object instead. That's deprecated now!";

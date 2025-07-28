@@ -2,7 +2,7 @@ import { nanoid } from "nanoid";
 import { Moment } from "moment-timezone";
 import Reminder from "../models/Reminder.model";
 
-type Timer = {
+export type Timer = {
   id: string;
   discordId: string;
   reminder: string;

@@ -183,7 +183,7 @@ const models = {
     return User.findOne({ discordId }, undefined, { upsert: true, lean: true }).exec();
   },
   /** Update a member's roles in the database */
-  updateRoles: function(member: Discord.GuildMember, roles: string[], backupId: string): Promise<UserRecord | null> {
+  updateRoles: function(member?: Discord.GuildMember, roles?: string[], backupId?: string): Promise<UserRecord | null> {
     if (member && !(member instanceof Discord.GuildMember)) throw new Error("Expected a GuildMember");
     if (backupId && typeof backupId !== 'string') throw new Error(outdated);
     return User.findOneAndUpdate(

@@ -1,14 +1,18 @@
 import Discord from "discord.js";
 
-export type Game = {
+
+export type AvailableGame = {
     title: string;
     system: string;
     rating: string;
     cost: number;
-    recipient: string | null;
     code: string;
     key: string;
     steamId: string;
+}
+
+export type BoughtGame = AvailableGame & {
+    recipient: string | null;
     date: Date | null;
 }
 
@@ -79,7 +83,8 @@ export type PlayingDefault = {
 }
 
 export default interface SheetTypes {
-    Game: Game;
+    AvailableGame: AvailableGame;
+    BoughtGame: BoughtGame;
     IGN: IGN;
     OptRole: OptRole;
     Role: Role;
