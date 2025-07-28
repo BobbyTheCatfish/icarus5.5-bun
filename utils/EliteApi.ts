@@ -7,7 +7,7 @@ function request(path: string, params?: Record<any, any>) {
     .then((a: { data: any }) => a.data);
 }
 
-type Station = {
+export type EliteStation = {
   name: string;
   id: number;
   type: string;
@@ -15,7 +15,7 @@ type Station = {
   controllingFaction?: { name: string; };
 }
 
-type Faction = {
+export type EliteFaction = {
   influence: number;
   name: string;
   state: string;
@@ -24,21 +24,21 @@ type Faction = {
   id: number;
 }
 
-type EliteSystem = {
+export type EliteSystem = {
   name: string;
   id: number;
   requirePermit: boolean;
   information: { faction: string; allegiance: string; government: string; population: string; } | null;
   primaryStar: { isScoopable: boolean; type: string; name: string; };
-  bodies: Body[];
-  stations: Station[];
-  factions: Faction[];
+  bodies: EliteBody[];
+  stations: EliteStation[];
+  factions: EliteFaction[];
   bodiesURL: string;
   stationsURL: string;
   factionsURL: string;
 }
 
-type Body = {
+export type EliteBody = {
   id: number;
   type: string;
   isScoopable: boolean;

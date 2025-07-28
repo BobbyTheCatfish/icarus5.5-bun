@@ -365,7 +365,7 @@ const utils = {
   },
 
   /**  Shortcut to moment with the correct UTC offset (Mountain Time) */
-  moment: (input: moment.MomentInput, format: string) => {
+  moment: (input?: moment.MomentInput, format?: string) => {
     if (input && format) return moment.tz(input?.toString(), format, "America/Denver");
     return moment.tz(input, "America/Denver");
   },

@@ -265,7 +265,7 @@ const modCommon = {
     return card;
   },
   /** Get a summary embed */
-  getSummaryEmbed: async function(member: Discord.GuildMember | Discord.User, time: number, guild: Discord.Guild | null, getInfractions = true) {
+  getSummaryEmbed: async function(member: Discord.GuildMember | Discord.User, time: number = 28, guild?: Discord.Guild | null, getInfractions = true) {
     const isMember = member instanceof Discord.GuildMember;
     const data = await u.db.infraction.getSummary(member.id, time);
 
@@ -563,7 +563,7 @@ const modCommon = {
   },
 
   /** Briefly prevent someone from talking */
-  timeout: async function(interaction: Augur.GuildInteraction<"CommandSlash" | "SelectMenuString">, target: Discord.GuildMember, time: number = 10, reason: string) {
+  timeout: async function(interaction: Augur.GuildInteraction<"CommandSlash" | "SelectMenuString">, target: Discord.GuildMember, time: number = 10, reason?: string) {
     const apply = time > 0;
     const t = apply ? "time out" : "release";
     const td = apply ? "timed out" : "released";
@@ -725,7 +725,7 @@ const modCommon = {
   },
 
   /** Issue a warning to a user */
-  warn: async function(interaction: Discord.Interaction<"cached">, reason: string, value: number, target: Discord.GuildMember, message: Discord.Message) {
+  warn: async function(interaction: Discord.Interaction<"cached">, reason: string, value: number, target: Discord.GuildMember, message?: Discord.Message) {
     let success = false;
     try {
       const embed = logEmbed(interaction, target)
