@@ -184,6 +184,6 @@ Module.addEvent("ready", () => {
   })
   .setShared({ cakedays, birthdays, celebrate });
 
-export type Shared = { cakedays: typeof cakedays; birthdays: typeof birthdays; celebrate: typeof celebrate; } | undefined;
+type Shared = { cakedays: typeof cakedays; birthdays: typeof birthdays; celebrate: typeof celebrate; } | undefined;
 
-export default Module;
+export = Module;

@@ -272,4 +272,4 @@ const Module = new Augur.Module()
 
 /** @typedef {{ tags: tags, encodeTag: encodeTag } | undefined} Shared */
 
-module.exports = Module;
+export = Module;

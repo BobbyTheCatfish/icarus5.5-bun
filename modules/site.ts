@@ -166,7 +166,7 @@ if (config.siteOn) {
   httpServer.listen(siteConfig.port, () => console.log(`Site running on port ${siteConfig.port}`));
 }
 
-module.exports = new Augur.Module()
+export = new Augur.Module()
 .setUnload(() => {
   if (!config.siteOn) return;
 

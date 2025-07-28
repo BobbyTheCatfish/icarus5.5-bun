@@ -129,4 +129,4 @@ function cmd(op, baseName = "", group) {
 }
 
 
-module.exports = Module;
+export = Module;

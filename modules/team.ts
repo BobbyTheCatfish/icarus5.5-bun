@@ -245,4 +245,4 @@ const Module = new Augur.Module()
   }
 });
 
-module.exports = Module;
+export = Module;

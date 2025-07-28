@@ -316,5 +316,4 @@ const Module = new Augur.Module()
 })
 .setUnload(() => true);
 
-export default Module;
-
+export = Module;

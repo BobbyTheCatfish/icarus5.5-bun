@@ -204,4 +204,4 @@ const Module = new Augur.Module()
   }
 });
 
-export default Module;
+export = Module;

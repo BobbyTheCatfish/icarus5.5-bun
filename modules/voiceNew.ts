@@ -448,4 +448,4 @@ async function updateChannels(oldState, newState, bypass = false) {
   processing = false;
 }
 
-module.exports = Module;
+export = Module;

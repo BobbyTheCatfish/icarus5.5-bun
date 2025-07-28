@@ -219,4 +219,4 @@ Module.addInteraction({
   }
 });
 
-module.exports = Module;
+export = Module;

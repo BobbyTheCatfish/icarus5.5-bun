@@ -52,4 +52,4 @@ Module.addInteraction({ name: "tournaments",
   }
 });
 
-module.exports = Module;
+export = Module;

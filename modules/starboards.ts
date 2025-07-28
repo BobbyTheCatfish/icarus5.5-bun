@@ -119,4 +119,4 @@ const Module = new Augur.Module()
     }, 24 * 60 * 60_000);
   });
 
-module.exports = Module;
+export = Module;

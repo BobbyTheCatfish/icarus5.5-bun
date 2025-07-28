@@ -367,4 +367,4 @@ Module.setUnload(() => active)
   })
   .setUnload(() => active);
 
-module.exports = Module;
+export = Module;

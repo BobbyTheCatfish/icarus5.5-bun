@@ -91,4 +91,4 @@ const Module = new Augur.Module()
     process: handleButton
   });
 
-module.exports = Module;
+export = Module;

@@ -240,4 +240,4 @@ Module
   }
 });
 
-module.exports = Module;
+export = Module;

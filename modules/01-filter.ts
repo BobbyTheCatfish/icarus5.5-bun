@@ -506,4 +506,4 @@ const Module = new Augur.Module()
 .setInit((grown) => grown ? c.grownups = grown : null);
 
 
-export default Module
+export = Module;

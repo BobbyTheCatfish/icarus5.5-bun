@@ -482,4 +482,4 @@ const Module = new Augur.Module()
     process: sendModMenu
   });
 
-module.exports = Module;
+export = Module;

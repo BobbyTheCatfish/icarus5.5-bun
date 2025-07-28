@@ -235,4 +235,4 @@ Module.addInteraction({
   }, 6 * 60 * 60_000);
 });
 
-export default Module;
+export = Module;

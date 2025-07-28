@@ -296,6 +296,6 @@ Module.addInteraction({
 })
 .setShared({ buyGame, limit, gb, ember });
 
-export type BankShared = { buyGame: typeof buyGame, limit: typeof limit, gb: typeof gb, ember: typeof ember }
+type BankShared = { buyGame: typeof buyGame, limit: typeof limit, gb: typeof gb, ember: typeof ember }
 
-export default Module;
+export = Module;

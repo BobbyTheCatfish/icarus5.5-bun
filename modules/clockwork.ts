@@ -187,4 +187,4 @@ Module.addInteraction({
   timerCheck(Module.client);
 });
 
-export default Module;
+export = Module;

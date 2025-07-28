@@ -420,4 +420,4 @@ Module.addEvent("guildMemberAdd", async (member) => {
   }
 });
 
-export default Module
+export = Module;
