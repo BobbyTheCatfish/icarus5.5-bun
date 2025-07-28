@@ -6,8 +6,8 @@ import u from "../utils/utils.js";
 const Module = new Augur.Module()
 .addInteraction({
   name: "Bookmark",
-  id: u.sf.commands.messageBookmark,
   type: "ContextMessage",
+  id: u.sf.commands.messageBookmark,
   process: async (interaction) => {
     try {
       await interaction.deferReply({ flags: ["Ephemeral"] });

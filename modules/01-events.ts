@@ -1,11 +1,10 @@
-// @ts-check
-const Augur = require("augurbot-ts"),
-  Discord = require('discord.js'),
-  u = require("../utils/utils"),
-  c = require("../utils/modCommon"),
-  config = require('../config/config.json'),
-  /** @type {string[]} */
-  banned = require("../data/banned.json").features.welcome;
+
+import Augur from "augurbot-ts";
+import Discord from 'discord.js';
+import u from "../utils/utils";
+import c from "../utils/modCommon";
+import config from '../config/config.json';
+import { features } from "../data/banned.json"
 
 const mutedPerms = {
   // text
@@ -22,24 +21,20 @@ const mutedPerms = {
 let lowBoosts = false;
 const tier3 = 14;
 
-/**
- * @typedef Sponsor
- * @prop {string} Sponsor The sponsor's ID
- * @prop {string} Channel The sponsor's channel ID
- * @prop {string} Emoji The sponsor's reaction emoji ID
- */
+type Sponsor = {
+  Sponsor: string;
+  Channel: string;
+  Emoji: string;
+}
+
 // roles that SHOULD NOT be given when a user rejoins
 const dangerRoles = [
   ...Object.values(u.sf.roles.team).filter(sf => ![u.sf.roles.team.botTeam, u.sf.roles.team.emeritus].includes(sf)),
   u.sf.roles.live, u.sf.roles.houses.head, u.sf.roles.houses.emberGuardian,
 ];
 
-/**
- * Log user updates
- * @param {Discord.GuildMember | Discord.PartialGuildMember | Discord.User | Discord.PartialUser} oldUser
- * @param {Discord.GuildMember | Discord.User} newUser
- */
-async function update(oldUser, newUser) {
+/** Log user updates */
+async function update(oldUser: Discord.GuildMember | Discord.PartialGuildMember | Discord.User | Discord.PartialUser, newUser: Discord.GuildMember | Discord.User) {
   try {
     const ldsg = newUser.client.guilds.cache.get(u.sf.ldsg);
     const newMember = ldsg?.members.cache.get(newUser.id);
@@ -58,7 +53,7 @@ async function update(oldUser, newUser) {
       ];
       if (oldUser.displayName !== newUser.displayName || usernames[0] !== usernames[1]) {
         /** @param {string} a @param {string} b */
-        const same = (a, b) => u.escapeText(a === b ? a : `${a} (${b})`);
+        const same = (a: string, b: string) => u.escapeText(a === b ? a : `${a} (${b})`);
 
         embed.addFields(
           { name: "Old Username", value: same(usernames[0], oldUser.displayName) },
@@ -73,7 +68,7 @@ async function update(oldUser, newUser) {
       if ((embed.data.fields?.length || 0) > 0) {
         embed.addFields({ name: "Activity", value: `${user?.posts ?? 0} active minutes in ${u.moment(newMember?.joinedTimestamp).fromNow(true)}` });
         ldsg?.client.getTextChannel(u.sf.channels.mods.userUpdates)?.send({ content: `${newUser} (${newUser.displayName})`, embeds: [embed], components: [
-          u.MessageActionRow().addComponents(new u.Button().setCustomId("timeModInfo").setEmoji("👤").setLabel("User Info").setStyle(Discord.ButtonStyle.Secondary))
+          new u.MessageActionRow().addComponents(new u.Button().setCustomId("timeModInfo").setEmoji("👤").setLabel("User Info").setStyle(Discord.ButtonStyle.Secondary))
         ] });
       }
     }
@@ -87,10 +82,10 @@ const Module = new Augur.Module()
       if (channel.permissionsFor(channel.client.user)?.has(["ViewChannel", "ManageChannels"])) {
         // muted role
         channel.permissionOverwrites.create(u.sf.roles.moderation.muted, mutedPerms, { reason: "New channel permissions update" })
-        .catch(/** @param {Error} e */e => u.errorHandler(e, `Update New Channel Permissions: ${channel.name}`));
+        .catch(/** @param {Error} e */(e: Error) => u.errorHandler(e, `Update New Channel Permissions: ${channel.name}`));
         // duct tape role
         channel.permissionOverwrites.create(u.sf.roles.moderation.ductTape, mutedPerms, { reason: "New channel permissions update" })
-          .catch(/** @param {Error} e */e => u.errorHandler(e, `Update New Channel Permissions: ${channel.name}`));
+          .catch(/** @param {Error} e */(e: Error) => u.errorHandler(e, `Update New Channel Permissions: ${channel.name}`));
       } else {
         channel.client.getTextChannel(u.sf.channels.team.logistics)?.send({ embeds: [
           u.embed({
@@ -120,7 +115,7 @@ const Module = new Augur.Module()
         })
       ],
       components: [
-        u.MessageActionRow().addComponents(new u.Button().setCustomId("timeModInfo").setEmoji("👤").setLabel("User Info").setStyle(Discord.ButtonStyle.Secondary))
+        new u.MessageActionRow().addComponents(new u.Button().setCustomId("timeModInfo").setEmoji("👤").setLabel("User Info").setStyle(Discord.ButtonStyle.Secondary))
       ]
     });
   }
@@ -144,13 +139,11 @@ const Module = new Augur.Module()
         .setThumbnail(member.user.displayAvatarURL({ extension: "png" }))
         .setFooter({ text: member.id });
 
-      /** @type {string} */
-      let welcomeString;
+      let welcomeString: string;
 
       // Member is returning
       if (user) {
-        /** @type {Discord.Role[][]} */
-        const [toAdd, danger, failed] = [[], [], []];
+        const [toAdd, danger, failed]: Discord.Role[][] = [[], [], []];
 
         for (const roleId of user.roles) {
           // ensure role still exists
@@ -222,7 +215,7 @@ const Module = new Augur.Module()
         u.db.user.newUser(member.id);
       }
       modLogs?.send({ embeds: [embed], components: [
-        u.MessageActionRow().addComponents(new u.Button().setCustomId("timeModInfo").setEmoji("👤").setLabel("User Info").setStyle(Discord.ButtonStyle.Secondary))
+        new u.MessageActionRow().addComponents(new u.Button().setCustomId("timeModInfo").setEmoji("👤").setLabel("User Info").setStyle(Discord.ButtonStyle.Secondary))
       ] });
 
       const { enabled, count } = config.memberMilestone;
@@ -255,7 +248,7 @@ const Module = new Augur.Module()
         { name: "Activity", value: (user?.posts || 0) + " Active Minutes", inline: true }
       );
       member.guild.client.getTextChannel(u.sf.channels.mods.logs)?.send({ embeds: [embed], components: [
-        u.MessageActionRow().addComponents(new u.Button().setCustomId("timeModInfo").setEmoji("👤").setLabel("User Info").setStyle(Discord.ButtonStyle.Secondary))
+        new u.MessageActionRow().addComponents(new u.Button().setCustomId("timeModInfo").setEmoji("👤").setLabel("User Info").setStyle(Discord.ButtonStyle.Secondary))
       ] });
     }
   } catch (error) { u.errorHandler(error, `Member Leave: ${u.escapeText(member.displayName)} (${member.id})`); }
@@ -276,4 +269,4 @@ const Module = new Augur.Module()
 });
 
 
-module.exports = Module;
+export default Module

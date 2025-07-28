@@ -1,10 +1,14 @@
 // @ts-check
 
-const Augur = require("augurbot-ts"),
-  u = require("../utils/utils"),
-  config = require("../config/config.json"),
-  { customAlphabet } = require("nanoid");
-const Discord = require("discord.js");
+import Augur from "augurbot-ts"
+import u from "../utils/utils"
+import config from "../config/config.json"
+import { customAlphabet } from "nanoid"
+import Discord from "discord.js"
+import SheetTypes from "../database/sheetTypes"
+import SnipCart from "../utils/snipcart"
+
+const SnipCartApi = new SnipCart(config.api.snipcart);
 
 const Module = new Augur.Module(),
   gb = `<:gb:${u.sf.emoji.gb}>`,
@@ -14,14 +18,9 @@ const Module = new Augur.Module(),
 const chars = "123456789ABCDEFGHJKLMNPQRSTUVWXYZ";
 const nanoid = customAlphabet(chars, 8);
 
-/**
- * @param {ReturnType<import("../database/sheets")["data"]["games"]["available"]["ensure"]>} game
- * @param {Discord.GuildMember} user
- */
-async function buyGame(game, user) {
+async function buyGame(game: SheetTypes["AvailableGame"], user: Discord.GuildMember) {
   // get store assets
-  /** @type {Record<string, { redeem: string, img: string}>} */
-  const systems = {
+  const systems: Record<string, { redeem: string; img: string }> = {
     steam: {
       redeem: "https://store.steampowered.com/account/registerkey?key=",
       img: `https://cdn.discordapp.com/emojis/${u.sf.emoji.steam}.png`
@@ -74,14 +73,12 @@ async function buyGame(game, user) {
   return embed1;
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} interaction*/
-async function slashBankGive(interaction) {
+async function slashBankGive(interaction: Augur.GuildInteraction<"CommandSlash">) {
   try {
     const giver = interaction.member;
     const recipient = interaction.options.getMember("user");
-    /** @type {"em"|"gb"} */
-    // @ts-ignore
-    const currency = interaction.options.getString("currency", true);
+
+    const currency = interaction.options.getString("currency", true) as "em" | "gb";
     const { coin, MAX } = (currency === "gb" ? { coin: gb, MAX: limit.gb } : { coin: ember, MAX: limit.ember });
 
     const value = Math.min(MAX, interaction.options.getInteger("amount", true));
@@ -165,8 +162,7 @@ async function slashBankGive(interaction) {
   } catch (e) { u.errorHandler(e, interaction); }
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} interaction*/
-async function slashBankBalance(interaction) {
+async function slashBankBalance(interaction: Augur.GuildInteraction<"CommandSlash">) {
   try {
     const member = interaction.member;
     const balance = await u.db.bank.getBalance(member.id);
@@ -176,8 +172,7 @@ async function slashBankBalance(interaction) {
   } catch (e) { u.errorHandler(e, interaction); }
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} interaction*/
-async function slashBankGameList(interaction) {
+async function slashBankGameList(interaction: Augur.GuildInteraction<"CommandSlash">) {
   await interaction.deferReply({ flags: ["Ephemeral"] });
 
   try {
@@ -206,8 +201,7 @@ async function slashBankGameList(interaction) {
   } catch (e) { u.errorHandler(e, interaction); }
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} interaction */
-async function slashBankGameRedeem(interaction) {
+async function slashBankGameRedeem(interaction: Augur.GuildInteraction<"CommandSlash">) {
   try {
     await interaction.deferReply({ flags: ["Ephemeral"] });
 
@@ -230,8 +224,7 @@ async function slashBankGameRedeem(interaction) {
   } catch (e) { u.errorHandler(e, interaction); }
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} interaction */
-async function slashBankDiscount(interaction) {
+async function slashBankDiscount(interaction: Augur.GuildInteraction<"CommandSlash">) {
   try {
     await interaction.deferReply({ flags: ["Ephemeral"] });
     const amount = interaction.options.getInteger("amount", true);
@@ -241,7 +234,6 @@ async function slashBankDiscount(interaction) {
     }
 
     if (!config.api.snipcart) return interaction.editReply("Store discounts are currently unavailable. Sorry for the inconvenience. We're working on it!");
-    const snipcart = require("../utils/snipcart")(config.api.snipcart);
     const discountInfo = {
       name: `${interaction.user.username} ${Date().toLocaleString()}`,
       combinable: false,
@@ -252,7 +244,7 @@ async function slashBankDiscount(interaction) {
       amount: (amount / 100)
     };
 
-    const discount = await snipcart.newDiscount(discountInfo);
+    const discount = await SnipCartApi.newDiscount(discountInfo);
 
     if (discount.amount && discount.code) {
       const withdrawal = {
@@ -304,8 +296,6 @@ Module.addInteraction({
 })
 .setShared({ buyGame, limit, gb, ember });
 
-/**
- * @typedef {{ buyGame: buyGame, limit: limit, gb: gb, ember: ember }} BankShared
- */
+export type BankShared = { buyGame: typeof buyGame, limit: typeof limit, gb: typeof gb, ember: typeof ember }
 
-module.exports = Module;
+export default Module;

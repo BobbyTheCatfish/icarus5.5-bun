@@ -1,10 +1,13 @@
 // @ts-check
 // ! Functions here are called in management.js. Make sure to test those calls as well
-const Augur = require("augurbot-ts"),
-  Discord = require('discord.js'),
-  config = require('../config/config.json'),
-  u = require("../utils/utils"),
-  Module = new Augur.Module();
+import Augur from "augurbot-ts";
+import Discord from 'discord.js';
+import config from '../config/config.json';
+import u from "../utils/utils";
+import {Moment} from "moment-timezone"
+import bdayLangs from "../data/birthday.json"
+
+const Module = new Augur.Module();
 
 function celebrate(test = false) {
   if (u.moment().hours() === 15 || test) {
@@ -14,22 +17,15 @@ function celebrate(test = false) {
 }
 
 
-/**
- * @param {import("moment").Moment} date
- * @param {import("moment").Moment} today
- * @param {boolean} checkYear
-*/
-function checkDate(date, today, checkYear) {
+function checkDate(date: Moment, today: Moment, checkYear: boolean) {
   if (date.month() === 1 && date.date() === 29) date.subtract(1, "day");
   return date.month() === today.month() && date.date() === today.date() && (checkYear ? date.year() < today.year() : true);
 }
 
 /**
  * Provide testing parameters for testing which days work
- * @param {Date|string} [testDate] fake date
- * @param {{discordId: string, ign: string|Date}[]} [testMember] fake IGN db entry
  */
-async function birthdays(testDate, testMember) {
+async function birthdays(testDate?: Date | string, testMember?: { discordId: string; ign: string | Date; }[]) {
   // Send Birthday Messages, if saved by member
   try {
     const ldsg = Module.client.guilds.cache.get(u.sf.ldsg);
@@ -38,13 +34,12 @@ async function birthdays(testDate, testMember) {
     const now = u.moment(testDate ?? new Date());
 
     // Birthday Blast
-    const birthdayLangs = require("../data/birthday.json");
     const flair = ["🎉", "🎊", "🎂", "🎁", "🍰"];
 
     const bdays = testMember ?? await u.db.ign.findMany(ldsg.members.cache.map(m => m.id), "birthday");
 
     /** @type {(Discord.GuildMember | undefined)[]} */
-    const celebrating = [];
+    const celebrating: (Discord.GuildMember | undefined)[] = [];
     const year = new Date().getFullYear();
     for (const birthday of bdays) {
       try {
@@ -52,7 +47,7 @@ async function birthdays(testDate, testMember) {
         if (checkDate(date, now, false)) {
           const member = ldsg.members.cache.get(birthday.discordId);
           celebrating.push(member);
-          const msgs = birthdayLangs.map(lang => member?.send(`${u.rand(flair)} ${lang}`));
+          const msgs = bdayLangs.map(lang => member?.send(`${u.rand(flair)} ${lang}`));
           Promise.all(msgs).then(() => {
             member?.send("🎂 🎊 🎉 A very happy birthday to you, from LDS Gamers! 🎉 🎊 🎂").catch(u.noop);
           }).catch(u.noop);
@@ -72,13 +67,8 @@ async function birthdays(testDate, testMember) {
   } catch (e) { u.errorHandler(e, "Birthday Error"); }
 }
 
-/**
- * Add tenure roles on member cake days
- * @param {Date} [testJoinDate]
- * @param {Date} [testDate]
- * @param {Discord.Collection<string, Discord.GuildMember>} [testMember]
- */
-async function cakedays(testDate, testJoinDate, testMember) {
+/** Add tenure roles on member cake days */
+async function cakedays(testDate?: Date, testJoinDate?: Date, testMember?: Discord.Collection<string, Discord.GuildMember>) {
   try {
     const now = u.moment(testDate) ?? u.moment();
 
@@ -91,13 +81,10 @@ async function cakedays(testDate, testJoinDate, testMember) {
         return new u.Collection(rawresults.map((value) => [value.discordId, value.priorTenure]));
       });
 
-    /** @type {Discord.Collection<number, Discord.GuildMember[]>} */
-    const missingRoleErrors = new u.Collection();
-    /** @type {Discord.Collection<number, Discord.GuildMember[]>} */
-    const cantRoleSetErrors = new u.Collection();
+    const missingRoleErrors = new u.Collection<number, Discord.GuildMember[]>();
+    const cantRoleSetErrors = new u.Collection<number, Discord.GuildMember[]>();
 
-    /** @type {Discord.Collection<number, Discord.GuildMember[]>} */
-    const celebrating = new u.Collection();
+    const celebrating = new u.Collection<number, Discord.GuildMember[]>();
 
     for (const [memberId, member] of membersToCheck) {
       const joinDate = u.moment(testJoinDate ?? member.joinedAt);
@@ -179,10 +166,11 @@ Module.addEvent("ready", () => {
     name: "cakeday",
     enabled: config.devMode,
     hidden: true,
+    onlyGuild: true,
     process: (msg, suffix) => {
       const date = u.moment();
       if (suffix) date.subtract(parseInt(suffix), "year");
-      cakedays(date.toDate(), new Date(), new u.Collection().set(msg.author.id, msg.member));
+      cakedays(date.toDate(), new Date(), new u.Collection<string, Discord.GuildMember>().set(msg.author.id, msg.member!));
     }
   })
   .setClockwork(() => {
@@ -196,6 +184,6 @@ Module.addEvent("ready", () => {
   })
   .setShared({ cakedays, birthdays, celebrate });
 
-/** @typedef {{ cakedays: cakedays, birthdays: birthdays, celebrate: celebrate } | undefined} Shared */
+export type Shared = { cakedays: typeof cakedays; birthdays: typeof birthdays; celebrate: typeof celebrate; } | undefined;
 
-module.exports = Module;
+export default Module;

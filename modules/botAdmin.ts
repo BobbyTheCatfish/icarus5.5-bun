@@ -1,27 +1,16 @@
-// @ts-check
-// This file is a place for all the publicly visible bot diagnostic commands usable primarily only by the head bot dev.
+import Augur from "augurbot-ts";
+import Discord from "discord.js";
+import config from "../config/config.json";
+import fs from "fs";
+import path from "path";
+import u from "../utils/utils";
 
-const Augur = require("augurbot-ts"),
-  Discord = require("discord.js"),
-  config = require("../config/config.json"),
-  fs = require("fs"),
-  path = require("path"),
-  u = require("../utils/utils");
-
-/**
- * function fieldMismatches
- * @param {Record<string, any>} obj1 First object for comparison
- * @param {Record<string, any>} obj2 Second object for comparison
- * @returns {[string[], string[]]} Two-element array. The first contains keys found in first object but not the second. The second contains keys found in the second object but not the first.
- */
-function fieldMismatches(obj1, obj2) {
+function fieldMismatches(obj1: Record<string, any>, obj2: Record<string, any>): [string[], string[]] {
   const keys1 = new Set(Object.keys(obj1));
   const keys2 = new Set(Object.keys(obj2));
 
-  /** @type {string[]} */
-  const m1 = [];
-  /** @type {string[]} */
-  const m2 = [];
+  const m1: string[] = [];
+  const m2: string[] = [];
   for (const key of keys1) {
     if (keys2.has(key)) {
       if (obj1[key] !== null && !Array.isArray(obj1[key]) && typeof obj1[key] === "object") {
@@ -59,8 +48,7 @@ function fieldMismatches(obj1, obj2) {
 
 let warned = false;
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int*/
-async function slashBotGtb(int) {
+async function slashBotGtb(int: Augur.GuildInteraction<"CommandSlash">) {
   try {
     // prevent double cakedays if possible
     if (!warned && u.moment().hours() === 15) {
@@ -79,32 +67,26 @@ async function slashBotGtb(int) {
   }
 }
 
-/**
- * @param {Augur.GuildInteraction<"CommandSlash">} int
- * @param {Discord.InteractionResponse} msg
- */
-async function slashBotPing(int, msg) {
+async function slashBotPing(int: Augur.GuildInteraction<"CommandSlash">, msg: Discord.InteractionResponse) {
   const sent = await int.editReply("Pinging...");
   return int.editReply(`Pong! Took ${sent.createdTimestamp - msg.createdTimestamp}ms`);
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int*/
-async function slashBotPull(int) {
+async function slashBotPull(int: Augur.GuildInteraction<"CommandSlash">) {
   const spawn = require("child_process").spawn;
   const cmd = spawn("git", ["pull"], { cwd: process.cwd() });
-  /** @type {string[]} */
-  const stdout = [];
-  /** @type {string[]} */
-  const stderr = [];
-  cmd.stdout.on("data", data => {
+
+  const stdout: string[] = [];
+  const stderr: string[] = [];
+  cmd.stdout.on("data", (data: string) => {
     stdout.push(data);
   });
 
-  cmd.stderr.on("data", data => {
+  cmd.stderr.on("data", (data: string) => {
     stderr.push(data);
   });
 
-  cmd.on("close", code => {
+  cmd.on("close", (code: number) => {
     if (code === 0) {
       int.editReply(stdout.join("\n") + "\n\nCompleted with code: " + code);
     } else {
@@ -113,8 +95,7 @@ async function slashBotPull(int) {
   });
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int*/
-async function slashBotPulse(int) {
+async function slashBotPulse(int: Augur.GuildInteraction<"CommandSlash">) {
   const client = int.client;
   const uptime = process.uptime();
 
@@ -130,8 +111,7 @@ async function slashBotPulse(int) {
   return int.editReply({ embeds: [embed] });
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int*/
-async function slashBotReload(int) {
+async function slashBotReload(int: Augur.GuildInteraction<"CommandSlash">) {
   let files = int.options.getString("module")?.split(" ") ?? [];
 
   if (!files) files = fs.readdirSync(path.resolve(__dirname)).filter(file => file.endsWith(".js"));
@@ -144,23 +124,20 @@ async function slashBotReload(int) {
   return int.editReply("Reloaded!");
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int*/
-async function slashBotSheets(int) {
-  const sheet = int.options.getString("sheet-name") || undefined;
+async function slashBotSheets(int: Augur.GuildInteraction<"CommandSlash">) {
+  const sheet = int.options.getString("sheet-name") as keyof Omit<typeof u["db"]["sheets"], "docs"|"loadData"|"schemas"> || undefined;
   if (sheet && !Object.keys(u.db.sheets).includes(sheet)) return int.editReply("That's not one of the sheets I can refresh.");
-  // @ts-expect-error
+
   await u.db.sheets.loadData(int.client, true, true, sheet);
   return int.editReply(`The ${sheet ? `${sheet} sheet has` : "sheets have"} been reloaded!`);
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int*/
-async function slashBotGetId(int) {
+async function slashBotGetId(int: Augur.GuildInteraction<"CommandSlash">) {
   const mentionable = int.options.getMentionable("mentionable");
   const channel = int.options.getChannel("channel");
   const emoji = int.options.getString("emoji");
 
-  /** @type {{ str: string, id: string }[]} */
-  const results = [];
+  const results: { str: string; id: string; }[] = [];
   if (mentionable) results.push({ str: mentionable.toString(), id: mentionable.id });
   if (channel) results.push({ str: channel.toString(), id: channel.id });
   if (emoji) {
@@ -170,16 +147,15 @@ async function slashBotGetId(int) {
   return int.editReply(`I got the following results:\n${results.map(r => `${r.str}: ${r.id}`).join("\n")}`);
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int*/
-async function slashBotRegister(int) {
+async function slashBotRegister(int: Augur.GuildInteraction<"CommandSlash">) {
   const spawn = require("child_process").spawn;
   const cmd = spawn("node", ["register-commands"], { cwd: process.cwd() });
-  /** @type {string[]} */
-  const stderr = [];
-  cmd.stderr.on("data", data => {
+
+  const stderr: string[] = [];
+  cmd.stderr.on("data", (data: string) => {
     stderr.push(data);
   });
-  cmd.on("close", code => {
+  cmd.on("close", (code: number) => {
     if (code === 0) {
       int.editReply("Commands registered! Restart the bot to finish.");
     } else {
@@ -188,8 +164,7 @@ async function slashBotRegister(int) {
   });
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int*/
-async function slashBotStatus(int) {
+async function slashBotStatus(int: Augur.GuildInteraction<"CommandSlash">) {
   const stat = int.options.getString("status");
   if (stat) {
     // yes, i want to use an array. no, tscheck wont let me
@@ -223,8 +198,10 @@ const Module = new Augur.Module()
     if (!u.perms.calc(int.member, ["botTeam", "botAdmin"])) return; // redundant check, but just in case lol
     const subcommand = int.options.getSubcommand(true);
     const forThePing = await int.deferReply({ flags: u.ephemeralChannel(int, u.sf.channels.botTesting) });
+
     if (["gotobed", "reload", "register", "status", "sheets"].includes(subcommand) && !u.perms.calc(int.member, ["botAdmin"])) return int.editReply("That command is only for Bot Admins.");
     if (subcommand === "pull" && !u.perms.isOwner(int.member)) return int.editReply("That command is only for the Bot Owner.");
+
     switch (subcommand) {
       case "gotobed": return slashBotGtb(int);
       case "ping": return slashBotPing(int, forThePing);
@@ -257,7 +234,7 @@ const Module = new Augur.Module()
 
     const modal = new u.Modal()
       .addComponents(
-        u.ModalActionRow()
+        new u.ModalActionRow()
           .setComponents(
             new u.TextInput()
               .setCustomId("content")
@@ -339,5 +316,5 @@ const Module = new Augur.Module()
 })
 .setUnload(() => true);
 
-module.exports = Module;
+export default Module;
 

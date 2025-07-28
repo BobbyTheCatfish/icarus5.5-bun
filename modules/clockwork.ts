@@ -1,18 +1,18 @@
 // @ts-check
-const Augur = require("augurbot-ts");
-const Discord = require("discord.js");
-const u = require("../utils/utils");
+import Augur from "augurbot-ts";
+import Discord from "discord.js";
+import u from "../utils/utils";
+import { Moment } from "moment-timezone"
 
 const MONTH_THRESHOLD = 6;
 
-const testDmRow = u.MessageActionRow()
+const testDmRow = new u.MessageActionRow()
   .addComponents(new u.Button().setCustomId("testDMs").setLabel("Test DM").setStyle(Discord.ButtonStyle.Primary));
 
-/** @type {import("../database/controllers/reminder").Timer[]} */
-let reminders = [];
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int*/
-async function slashClockworkTimer(int) {
+let reminders: import("../database/controllers/reminder").Timer[] = [];
+
+async function slashClockworkTimer(int: Augur.GuildInteraction<"CommandSlash">) {
   await int.deferReply({ flags: ["Ephemeral"] });
 
   const days = int.options.getInteger("days");
@@ -51,8 +51,7 @@ async function slashClockworkTimer(int) {
   await int.editReply({ content, components: [testDmRow] });
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
-async function slashClockworkReminder(int) {
+async function slashClockworkReminder(int: Augur.GuildInteraction<"CommandSlash">) {
   await int.deferReply({ flags: ["Ephemeral"] });
 
   const reminderText = int.options.getString("reminder-text", true);
@@ -100,14 +99,14 @@ async function slashClockworkReminder(int) {
  * @param {number|import("moment").Moment|Date} num
  * @param {Discord.TimestampStylesString} [dec]
 */
-function toTime(num, dec = "f") {
+function toTime(num: number | Moment | Date, dec: Discord.TimestampStylesString = "f") {
   if (typeof num === "number") return u.time(new Date(num), dec);
   if (num instanceof Date) return u.time(num, dec);
   return u.time(num.toDate(), dec);
 }
 
 /** @param {Augur.GuildInteraction<"CommandSlash">} int */
-async function slashClockworkCancel(int) {
+async function slashClockworkCancel(int: Augur.GuildInteraction<"CommandSlash">) {
   const inputId = int.options.getString("id");
   await int.deferReply({ flags: ["Ephemeral"] });
 
@@ -132,8 +131,7 @@ async function slashClockworkCancel(int) {
   return u.manyReplies(int, embeds.map(e => ({ embeds: [e] })), true);
 }
 
-/** @param {Discord.Client} client */
-async function timerCheck(client) {
+async function timerCheck(client: Discord.Client) {
   for (let i = 0; i < reminders.length; i++) {
     const reminder = reminders[i];
     if (reminder.timestamp > Date.now()) continue;
@@ -152,6 +150,7 @@ async function timerCheck(client) {
     reminders.splice(i, 1);
   }
 }
+
 const Module = new Augur.Module();
 Module.addInteraction({
   id: u.sf.commands.slashClockwork,
@@ -188,4 +187,4 @@ Module.addInteraction({
   timerCheck(Module.client);
 });
 
-module.exports = Module;
+export default Module;

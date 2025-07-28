@@ -1,24 +1,23 @@
 // @ts-check
-const Augur = require("augurbot-ts"),
-  Discord = require("discord.js"),
-  config = require("../config/config.json"),
-  u = require("../utils/utils"),
-  axios = require('axios'),
-  Jimp = require('jimp'),
+import Augur from "augurbot-ts"
+import Discord from "discord.js"
+import config from "../config/config.json"
+import u from "../utils/utils"
+import axios, { AxiosError } from 'axios'
+import Jimp from 'jimp'
+import buttermelonFacts from '../data/buttermelonFacts.json'
+/** @type {Record<string, string>} */
+import emojiKitchenSpecialCodes from "../data/emojiKitchenSpecialCodes.json"
+import emojiSanitizeHelp from 'node-emoji'
 
-  buttermelonFacts = require('../data/buttermelonFacts.json'),
-  /** @type {Record<string, string>} */
-  emojiKitchenSpecialCodes = require("../data/emojiKitchenSpecialCodes.json"),
-  emojiSanitizeHelp = require('node-emoji'),
-  mineSweeperEmojis = ['0⃣', '1⃣', '2⃣', '3⃣', '4⃣', '5⃣', '6⃣', '7⃣', '8⃣', '💣'];
+const mineSweeperEmojis = ['0⃣', '1⃣', '2⃣', '3⃣', '4⃣', '5⃣', '6⃣', '7⃣', '8⃣', '💣'];
 
-/** @param {Discord.ChatInputCommandInteraction} int */
-async function slashFunColor(int) {
+async function slashFunColor(int: Discord.ChatInputCommandInteraction) {
   // get input or random color
   const colorCode = int.options.getString("color") || "#" + Math.floor(Math.random() * 16777216).toString(16).padStart(6, '0');
   // In the case that we have a string in 0xABCDEF format
-  /** @type {string | number} */
-  let colorCSS = colorCode.replace('0x', "#");
+
+  let colorCSS: string | number = colorCode.replace('0x', "#");
   try {
     // make sure it is a valid color, and not just defaulting to black
     if (!["#000000", "black", "#000000FF"].includes(colorCSS)) colorCSS = Jimp.cssColorToHex(colorCSS);
@@ -37,8 +36,7 @@ async function slashFunColor(int) {
 }
 
 // global hbs stuff
-/** @type {Record<string, { emoji: string, beats: string, looses: string }>} */
-const hbsValues = {
+const hbsValues: Record<string, { emoji: string; beats: string; looses: string }> = {
   'Buttermelon': { emoji: `<:buttermelon:${u.sf.emoji.buttermelon}>`, beats: "Handicorn", looses: "Sloth" },
   'Handicorn': { emoji: `<:handicorn:${u.sf.emoji.handicorn}>`, beats: "Sloth", looses: "Buttermelon" },
   'Sloth': { emoji: `<:slothmare:${u.sf.emoji.slothmare}>`, beats: "Buttermelon", looses: "Handicorn" }
@@ -46,14 +44,13 @@ const hbsValues = {
 let storedChooser = '';
 let storedChoice = '';
 
-/** @param {Discord.ChatInputCommandInteraction} int */
-async function slashFunHBS(int) {
+async function slashFunHBS(int: Discord.ChatInputCommandInteraction) {
   const mode = int.options.getString("mode") || "user";
   const choice = int.options.getString("choice", true);
   const chooser = int.user.toString();
   const botLobby = int.client.getTextChannel(u.sf.channels.botSpam);
-  /** @type {{ user: string, choice: string }} */
-  let challenged;
+
+  let challenged: { user: string; choice: string };
   if (mode === "user") {
     if (!storedChoice) {
       storedChooser = chooser;
@@ -82,15 +79,7 @@ async function slashFunHBS(int) {
   allowedMentions: { parse: ["users"] } });
 }
 
-/**
- * function hbsResult
- * @param {string} chooser1 a string to represent who made choice 1
- * @param {string} choice1 chooser1's "Handicorn", "Buttermelon", or "Sloth" choice
- * @param {string} chooser2 ...
- * @param {string} choice2 ...
- * @return {string} a summary including who picked what and who won.
- */
-function hbsResult(chooser1, choice1, chooser2, choice2) {
+function hbsResult(chooser1: string, choice1: string, chooser2: string, choice2: string): string {
   let response = `🤼 ${chooser1} picked ${hbsValues[choice1].emoji}, ${chooser2} picked ${hbsValues[choice2].emoji}.\n### `;
   if (choice1 === choice2) {
     response += "🤝 It's a tie!";
@@ -102,18 +91,15 @@ function hbsResult(chooser1, choice1, chooser2, choice2) {
   return response;
 }
 
-/** @param {Discord.ChatInputCommandInteraction} int */
-async function slashFunAcronym(int) {
+async function slashFunAcronym(int: Discord.ChatInputCommandInteraction) {
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
   // input or number between 3 and 5
   const len = int.options.getInteger("length") || Math.floor(Math.random() * 3) + 3;
 
-  /** @type {import("profanity-matcher") | undefined} */
-  const pf = int.client.moduleManager.shared.get("01-filter.js")?.();
+  const pf: import("profanity-matcher") | undefined = int.client.moduleManager.shared.get("01-filter.js")?.();
   if (!pf) throw new Error("Couldn't access profanity filter");
 
-  /** @type {string[]} */
-  let wordgen = [];
+  let wordgen: string[] = [];
 
   // try a bunch of times
   for (let ignored = 0; ignored < len * len; ignored++) {
@@ -132,8 +118,7 @@ async function slashFunAcronym(int) {
   return int.reply("I've always wondered what __**IDUTR**__ stood for...");// cannonically it hearby stands for "IDiUT eRror"
 }
 
-/** @param {Discord.ChatInputCommandInteraction} int */
-async function slashFunMinesweeper(int) {
+async function slashFunMinesweeper(int: Discord.ChatInputCommandInteraction) {
   let edgesize, mineCount, preclickCount;
   switch (int.options.getString("difficulty", true)) {
     case "Hard":
@@ -152,17 +137,21 @@ async function slashFunMinesweeper(int) {
       preclickCount = 4;
       break;
   }
+
   // override with manual numbers if given
   edgesize[0] = int.options.getInteger("width") || edgesize[0];
   edgesize[1] = int.options.getInteger("height") || edgesize[1];
   mineCount = int.options.getInteger("minecount") || mineCount;
   preclickCount = int.options.getInteger("preclickcount") || preclickCount;
+
   // x and y lengths (for custom dimensions)
   const [width, height] = edgesize;
   preclickCount = Math.min(width * height, preclickCount);
   mineCount = Math.min(width * height - preclickCount, mineCount);
+
   // Create a 2d array for the board
   const board = new Array(height).fill([]).map(() => {return new Array(width).fill(0);});
+
   // Convert the 2d array to a 2d index array
   const spaces = board.map((r, y) => {
     const row = new Array(width + 1);
@@ -170,6 +159,7 @@ async function slashFunMinesweeper(int) {
     r.forEach((_, x) => {row[x + 1] = x;});
     return row;
   });
+
   // place mines
   for (let i = 0; i < mineCount; i++) {
     // Get a random position
@@ -178,13 +168,16 @@ async function slashFunMinesweeper(int) {
     const y = row[0];
     const slotnum = Math.floor(Math.random() * (row.length - 1)) + 1;
     const x = row[slotnum];
+
     // Set the value to a mine
     board[y][x] = 9;
+
     // Remove from possible mine spaces
     row.splice(slotnum, 1);
     if (row.length === 1) {
       spaces.splice(rownum, 1);
     }
+
     // Increment all spots around it
     for (let incrementx = Math.max(0, x - 1); incrementx < Math.min(width, x + 2); incrementx++) {
       for (let incrementy = Math.max(0, y - 1); incrementy < Math.min(height, y + 2); incrementy++) {
@@ -200,8 +193,10 @@ async function slashFunMinesweeper(int) {
     const y = row[0];
     const slotnum = Math.floor(Math.random() * (row.length - 1)) + 1;
     const x = row[slotnum];
+
     // expose it
     board[y][x] = -1 - board[y][x];
+
     // Remove from non-special-spaces
     row.splice(slotnum, 1);
     if (row.length === 1) {
@@ -214,10 +209,12 @@ async function slashFunMinesweeper(int) {
   if (!int.channel?.isSendable()) {
     return int.reply({ content: `I can't figure out where to put the board in here, try again in another channel like <#${u.sf.channels.botSpam}>`, flags: ["Ephemeral"] });
   }
+
   await int.reply(`**Mines: ${mineCount}**`);
   const messages = [""];
   let messageCount = 0;
   let tagpairs = 0;
+
   // max of 200 spoiler tags per message, split into as many as needed
   rowStrings.forEach((row) => {
     if (tagpairs + (width * 2) > 199) {
@@ -228,6 +225,7 @@ async function slashFunMinesweeper(int) {
     tagpairs += width * 2;
     messages[messageCount] += row + "\n";
   });
+
   // send the messages in order
   let i = 0;
   while (i < messages.length) {
@@ -237,25 +235,27 @@ async function slashFunMinesweeper(int) {
   }
 }
 
-/** @param {Discord.ChatInputCommandInteraction} int */
-async function slashFunRoll(int) {
+async function slashFunRoll(int: Discord.ChatInputCommandInteraction) {
   // get inputs
   const dice = int.options.getInteger('dice') || 1;
   const sides = int.options.getInteger('sides') || 6;
   const modifier = int.options.getInteger('modifier') || 0;
+
   if (dice > 10000) {
     return int.reply({ content: "I'm not going to roll *that* many dice... 🙄", flags: ["Ephemeral"] });
   }
+
   // calculate rolls
-  /** @type {number[]} */
-  const rolls = [];
+  const rolls: number[] = [];
   for (let i = 0; i < dice; i++) {
     rolls.push(Math.ceil(Math.random() * sides));
   }
+
   // make it visually pleasing
   const total = rolls.reduce((p, c) => p + c, 0) + modifier;
   let rollStr = "";
   const maxShown = 20;
+  
   if (rolls.length > maxShown + 3) {
     const extra = rolls.length - maxShown;
     const reduced = rolls.filter((r, i) => i < maxShown);
@@ -263,18 +263,19 @@ async function slashFunRoll(int) {
   } else {
     rollStr = rolls.join(" + ");
   }
+  
   const modStr = modifier > 0 ? ` + ${modifier}` : modifier ? ` - ${Math.abs(modifier)}` : "";
   const summary = `${rollStr ? ` (**1d${sides}**: ${rollStr})` : ""}${modStr ? `**${modStr}**` : ""}`;
   // send visually pleasing result
   return int.reply(`You rolled ${dice}d${sides}${modStr} and got \`${total}\`!\n ${summary}`);
 }
 
-/** @param {Discord.ChatInputCommandInteraction} int */
-async function slashFun8ball(int) {
+async function slashFun8ball(int: Discord.ChatInputCommandInteraction) {
   const question = int.options.getString("question", true);
   if (!question.endsWith("?")) {
     return int.reply({ content: "You need to ask me a question, silly.", flags: ["Ephemeral"] });
   }
+
   const outcomes = [
     "It is certain.",
     "It is decidedly so.",
@@ -303,8 +304,7 @@ async function slashFun8ball(int) {
   );
 }
 
-/** @param {Discord.ChatInputCommandInteraction} int */
-async function slashFunRepost(int) {
+async function slashFunRepost(int: Discord.ChatInputCommandInteraction) {
   if (!int.channel) {
     return int.reply({ content: "I don't know where here is, so I can't find anything to repost... try in a more normal channel.", flags: ["Ephemeral"] });
   }
@@ -320,17 +320,14 @@ async function slashFunRepost(int) {
   });
 }
 
-/** @param {Discord.ChatInputCommandInteraction} int */
-async function slashFunButtermelon(int) {
+async function slashFunButtermelon(int: Discord.ChatInputCommandInteraction) {
   return int.reply(`🍌 ${u.rand(buttermelonFacts)}`);
 }
 
-/** @param {Discord.ChatInputCommandInteraction} int */
-async function slashFunQuote(int) {
+async function slashFunQuote(int: Discord.ChatInputCommandInteraction) {
   const url = "https://zenquotes.io/api/random";
   await int.deferReply();
-  // @ts-ignore
-  const response = await axios({ url, method: "get" }).catch((/** @type {axios.AxiosError} */ e) => {
+  const response = await axios({ url, method: "get" }).catch((e: AxiosError) => {
     throw new Error(`axios error: ${e.status}\n${e.message}`);
   });
   const data = (typeof response.data === "string" ? JSON.parse(response.data) : response.data)[0] || false;
@@ -346,14 +343,14 @@ async function slashFunQuote(int) {
   return int.editReply({ embeds: [embed] });
 }
 
-/** @param {Discord.ChatInputCommandInteraction} int */
-async function slashFunNamegame(int) {
+async function slashFunNamegame(int: Discord.ChatInputCommandInteraction) {
   // fun shenanigans (basically check if member is partial (which it probably isnt 99% of the time))
   const user = int.member && "displayName" in int.member ? int.member.displayName : int.user.displayName;
   let name = (int.options.getString("name") || user)
     .replace(/[^a-zA-Z]/g, '_')// just ABCabc etc, numbers were causing problems.
     .split("_")[0];// and just one segment
   name = name.charAt(0).toUpperCase() + name.slice(1);
+
   try {
     const url = `https://thenamegame-generator.com/lyrics/${name}.html`;
     await int.deferReply();
@@ -367,8 +364,7 @@ async function slashFunNamegame(int) {
     const song = /<blockquote>\n(.*)<\/blockquote>/g.exec(response?.data)?.[1]?.replace(/<br ?\/>/g, "\n");
 
     // make sure its safe
-    /** @type {import("profanity-matcher") | undefined} */
-    const pf = int.client.moduleManager.shared.get("01-filter.js")?.();
+    const pf: import("profanity-matcher") | undefined = int.client.moduleManager.shared.get("01-filter.js")?.();
     if (!pf) throw new Error("Couldn't access profanity filter");
 
     const profane = pf.scan(song?.toLowerCase().replace(/\n/g, " ") ?? "").length;
@@ -382,8 +378,7 @@ async function slashFunNamegame(int) {
   } catch (error) { u.errorHandler(error, int); }
 }
 
-/** @param {Discord.ChatInputCommandInteraction} int */
-async function slashFunChoose(int) {
+async function slashFunChoose(int: Discord.ChatInputCommandInteraction) {
   const optionsArg = int.options.getString("options", true);
   if (optionsArg && optionsArg.includes("|")) {
     const options = optionsArg.split("|");
@@ -393,31 +388,30 @@ async function slashFunChoose(int) {
   return int.reply({ content: 'you need to give me two or more choices! `a | b`', flags: ["Ephemeral"] });
 
 }
-/**
- * @param {string} emoji unsanitized/irregular emoji input
- */
-function emojiSanitize(emoji) {
+
+function emojiSanitize(emoji: string) {
   let ucode = emojiSanitizeHelp.find(emoji)?.emoji ?? emoji;
-  ucode = emojiKitchenSpecialCodes[ucode] ?? ucode;
+  ucode = (emojiKitchenSpecialCodes as Record<string, string>)[ucode] ?? ucode;
   return ucode;
 }
-/** @param {string} emoji */
-function emojiCodePointify(emoji) {
+
+function emojiCodePointify(emoji: string) {
   return (emojiSanitizeHelp.find(emoji)?.emoji ?? emoji)
     .split(/\u200D/)
     .map(char => char.codePointAt(0)?.toString(16)).join("-");
 }
 
-/** @param {Discord.ChatInputCommandInteraction} int */
-async function slashFunGrow(int) {
+async function slashFunGrow(int: Discord.ChatInputCommandInteraction) {
   try {
     // get the inputs
     await int.deferReply();
     const emojiInput = int.options.getString("emoji", true);
     const emoji1 = emojiSanitize(emojiInput);
+
     // custom emoji embiggening
     const idExtractRegx = /^<(a?):(.*):(\d+)>/i;
     const match = idExtractRegx.exec(emojiInput);
+    
     if (match) {
       // eslint-disable-next-line no-unused-vars
       const [_, gif, name, id] = match;
@@ -426,7 +420,6 @@ async function slashFunGrow(int) {
 
     // default emoji embiggening
     const e1CP = emojiCodePointify(emoji1);
-    // @ts-ignore
     const image = await axios(`https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/svg/${e1CP}.svg`).catch(u.noop);
     if (image?.status !== 200) return int.editReply(`For some reason I couldn't enlarge ${emojiInput}.`).then(u.clean);
     return int.editReply(`https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/72x72/${e1CP}.png`);
@@ -435,17 +428,16 @@ async function slashFunGrow(int) {
   }
 }
 
-/** @param {Discord.ChatInputCommandInteraction} int */
-async function slashFunMerge(int) {
+async function slashFunMerge(int: Discord.ChatInputCommandInteraction) {
   try {
     // get the inputs
     await int.deferReply();
     const emoji1input = int.options.getString("emoji1", true).trim();
     const emoji2input = int.options.getString("emoji2", true).trim();
     const emoji1 = emojiSanitize(emoji1input);
+
     // attempt to merge
     const emoji2 = emojiSanitize(emoji2input);
-    // @ts-ignore
     const results = await axios(`https://tenor.googleapis.com/v2/featured?key=${config.api.tenor}&client_key=emoji_kitchen_funbox&q=${emoji1}_${emoji2}&collection=emoji_kitchen_v6&contentfilter=high`).catch(u.noop);
     const url = results?.data?.results[0]?.url;
     if (url) {
@@ -458,8 +450,7 @@ async function slashFunMerge(int) {
   }
 }
 
-/** @param {Discord.Message|Discord.PartialMessage} msg */
-function buttermelonEdit(msg) {
+function buttermelonEdit(msg: Discord.Message | Discord.PartialMessage) {
   if (msg.channel.isDMBased() && (msg.cleanContent?.toLowerCase() === "test")) {
     msg.reply((Math.random() < 0.8 ? "pass" : "fail"));
   }
@@ -535,4 +526,4 @@ const Module = new Augur.Module()
 //     }
 });
 
-module.exports = Module;
+export default Module;

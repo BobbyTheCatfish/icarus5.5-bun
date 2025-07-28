@@ -1,11 +1,10 @@
-// @ts-check
-const Augur = require("augurbot-ts"),
-  banned = require("../data/banned.json"),
-  Discord = require("discord.js"),
-  config = require('../config/config.json'),
-  profanityFilter = require("profanity-matcher"),
-  u = require("../utils/utils"),
-  c = require("../utils/modCommon");
+import Augur from"augurbot-ts";
+import banned from"../data/banned.json";
+import Discord from"discord.js";
+import config from'../config/config.json';
+import profanityFilter from"profanity-matcher";
+import u from"../utils/utils";
+import c from"../utils/modCommon";
 
 
 const bannedWords = new RegExp(banned.words.join("|"), "i"),
@@ -13,24 +12,21 @@ const bannedWords = new RegExp(banned.words.join("|"), "i"),
 
 let pf = new profanityFilter();
 
-/** @type {Set<string>} */
-const processing = new Set();
+const processing = new Set<string>();
 
 // first value is for trusted, second is for non-trusted
 const thresh = config.spamThreshold;
 
-/**
- * @typedef activeMember
- * @prop {string} id
- * @prop {Discord.Message<true>[]} messages
- * @prop {number} [verdict]
- * @prop {number} [count]
- */
-/** @type {Discord.Collection<string, activeMember> } */
-const active = new u.Collection();
+type activeMember = {
+  id: string;
+  messages: Discord.Message<true>[];
+  verdict?: number;
+  count?: number;
+}
 
-/** @param {Discord.Client} client*/
-async function spamming(client) {
+const active = new u.Collection<string, activeMember>();
+
+async function spamming(client: Discord.Client) {
   // no point in doing it if nobodys posting
   if (active.size === 0) return;
 
@@ -41,16 +37,15 @@ async function spamming(client) {
   const trusted = ldsg.roles.cache.get(u.sf.roles.moderation.trusted)?.members;
 
   // Get the limit for the type of verdict
-  /** @param {string} type @param {string} id */
-  const limit = (/** @type {"channels"|"messages"|"same"} */ type, id) => thresh[type][trusted?.has(id) ? 0 : 1];
+  const limit = (type: "channels" | "messages" | "same", id: string) => thresh[type][trusted?.has(id) ? 0 : 1];
 
   // Get verdicts for all active users and filter out unactioned ones
   const offending = active.map(activeMember => {
     let verdict = 0;
 
     // Count how many of the same messages they've sent
-    /** @type {Discord.Collection<string, {content: string, count: number}>} */
-    const sameMessages = new u.Collection();
+    const sameMessages = new u.Collection<string, { content: string; count: number; }>();
+
     for (const message of activeMember.messages) {
       const content = message.content.toLowerCase() || message.stickers.first()?.url;
       if (!content) continue;
@@ -74,8 +69,8 @@ async function spamming(client) {
 
   for (const member of offending) {
     const message = member.messages[0];
-    /** @type {Discord.Collection<string, {channel: string, count: number}>} */
-    const channels = new u.Collection();
+    const channels = new u.Collection<string, { channel: string; count: number; }>();
+
     for (const msg of member.messages) {
       const prev = channels.get(msg.channelId);
       channels.set(msg.channelId, { channel: msg.channel.toString(), count: (prev?.count ?? 0) + 1 });
@@ -93,11 +88,8 @@ async function spamming(client) {
   }
 }
 
-/**
- * Filter some text, warn if appropriate.
- * @param {String} text The text to scan.
- */
-function filter(text) {
+/** Filter some text, warn if appropriate. */
+function filter(text: string) {
   // PROFANITY FILTER
   const noWhiteSpace = text.toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~"'()?|]/g, "").replace(/\s\s+/g, " ");
   const filtered = pf.scan(noWhiteSpace);
@@ -105,16 +97,12 @@ function filter(text) {
   return [];
 }
 
-/**
- * Process discord message language
- * @param {Discord.Message} msg Message
- */
-async function processMessageLanguage(msg) {
+/** Process discord message language */
+async function processMessageLanguage(msg: Discord.Message) {
   if (!msg.member) return;
-  /** @type {string[]} */
-  let matchedContent = [];
-  /** @type {string[]} */
-  const reasons = [];
+  let matchedContent: string[] = [];
+  const reasons: string[] = [];
+
   let warned = false;
   let pingMods = false;
   if (!msg.inGuild() || msg.guild.id !== u.sf.ldsg || msg.channel.id === u.sf.channels.mods.watchList) return;
@@ -135,20 +123,18 @@ async function processMessageLanguage(msg) {
     return;
   }
 
-  /** @param {{tld: string | undefined, url: string}} l */
-  const linkMap = (l) => (l.tld ?? "") + l.url;
+  const linkMap = (l: { tld?: string; url: string; }) => (l.tld ?? "") + l.url;
 
-  /** @param {string} prop @param {{tld: string | undefined, url: string}} l */
   // @ts-ignore
-  const linkFilter = (prop, l) => new RegExp(banned[prop].join('|'), 'gi').test(linkMap(l));
+  const linkFilter = (prop: string, l: { tld: string | undefined; url: string; }) => new RegExp(banned[prop].join('|'), 'gi').test(linkMap(l));
 
 
   // LINK FILTER
   let link = null;
-  /** @type {Discord.Collection<string, {tld: string | undefined, url: string}>} */
-  const matchedLinks = new u.Collection();
+  const matchedLinks = new u.Collection<string, { tld: string | undefined; url: string; }>();
   let matchedWords = null;
   let gif = false;
+
   while ((link = hasLink.exec(msg.cleanContent)) !== null) {
     matchedLinks.set((link[3] ?? "") + link[4], { tld: link[3], url: link[4] });
   }
@@ -156,6 +142,7 @@ async function processMessageLanguage(msg) {
   if (matchedLinks.size > 0) {
     const bannedLinks = matchedLinks.filter(l => linkFilter("links", l)).map(linkMap);
     const scamLinks = matchedLinks.filter(l => linkFilter("scam", l)).filter(l => !linkFilter("exception", l)).map(linkMap);
+
     // Naughty Links
     if (bannedLinks.length > 0) {
       matchedContent = matchedContent.concat(bannedLinks);
@@ -164,16 +151,20 @@ async function processMessageLanguage(msg) {
       // Scam Links
       u.clean(msg, 0);
       if (!warned) msg.reply({ content: "That link is generally believed to be a scam/phishing site. Please be careful!", failIfNotExists: false }).catch(u.noop);
+
       warned = true;
       matchedContent = matchedContent.concat(scamLinks);
+
       reasons.push("Suspected Scam Links (Auto-Removed)");
     } else if (bannedExeced && matchedLinks.find(l => l.url.includes("tenor") || l.url.includes("giphy"))) {
       // Bad gif link
       u.clean(msg, 0);
       if (!warned) msg.reply({ content: "Looks like that link might have some harsh language. Please be careful!", failIfNotExists: false }).catch(u.noop);
+
       warned = true;
       gif = true;
       matchedContent = matchedContent.concat(matchedLinks.map(linkMap), bannedExeced);
+
       reasons.push("Gif Link Language (Auto-Removed)");
     } else if (!msg.webhookId && !msg.author.bot && !msg.member?.roles.cache.has(u.sf.roles.moderation.trusted)) {
       // General untrusted link flag
@@ -224,21 +215,17 @@ async function processMessageLanguage(msg) {
   }
 }
 
-/**
- * Filters invites for the server, deletes the message and notifies the user, and returns an embed with content about the invite
- * @param {(Discord.Invite|Discord.Widget)[]} [invites]
- * @param {string[]} rawInvites
- * @param {Discord.Message<true>} msg
- */
-function reportInvites(msg, rawInvites, invites) {
-  /** @type {string[]} */
-  let external = [];
+/** Filters invites for the server, deletes the message and notifies the user, and returns an embed with content about the invite */
+function reportInvites(msg: Discord.Message<true>, rawInvites: string[], invites?: (Discord.Invite | Discord.Widget)[]) {
+  let external: string[] = [];
+
   if (invites && (invites.length > 0)) {
     external = invites.filter(i => (i instanceof Discord.Widget ? i.id : i.guild?.id) !== u.sf.ldsg)
       .map(i => i instanceof Discord.Widget ? `Guild: ${i.name}` : `Guild: ${i.guild?.name ?? "Unknown"}, Channel: ${i.channel?.name ?? "Unkonwn"}`);
   } else {
     external = rawInvites.filter(i => !i.endsWith("ldsg")).map(() => "Guild: Unknown, Channel: Unknown");
   }
+
   if (external.length === 0) return null;
   if (msg.webhookId || msg.author.bot) {
     for (const invite of rawInvites) msg.content = msg.content.replace(invite, "[Discord Invite]");
@@ -247,11 +234,13 @@ function reportInvites(msg, rawInvites, invites) {
     msg.channel.send({ embeds: [embed, ...msg.embeds], files: Array.from(msg.attachments.values()) });
     return null;
   }
+
   if (!msg.member) return null;
   const embed = u.embed({ author: msg.author })
     .setTitle("⏫ Invite Info")
     .setDescription(external.join("\n"))
     .setColor(c.colors.info);
+
   u.clean(msg, 0);
   msg.channel.send({ embeds: [
     u.embed({
@@ -262,20 +251,22 @@ function reportInvites(msg, rawInvites, invites) {
   return { embed, invites: rawInvites };
 }
 
-/**
- * Process Discord invites
- * @param {Discord.Message} msg Original message
- */
-async function processDiscordInvites(msg) {
+/** Process Discord invites */
+async function processDiscordInvites(msg: Discord.Message) {
   if (!msg.inGuild()) return null;
+  
   const bot = msg.client;
+
   const inviteRegex = /(https?:\/\/)?discord(app)?\.(gg(\/invite)?\/|com\/(invite|events)\/)(\w+)/ig;
   const matched = msg.cleanContent.match(inviteRegex);
   if (!matched) return null;
+  
   const code = matched.map(m => ({ event: /discord(app)?\.com\/events/i.test(m), code: m.replace(/(https?:\/\/)?discord(app)?\.(gg(\/invite)?\/|com\/(invite|events)\/)/, "") }));
   const filtered = code.filter(co => co.code !== msg.guild.id);
   if (filtered.length === 0) return null;
+  
   const foundInvites = filtered.map(inv => inv.event ? bot.fetchGuildWidget(inv.code) : bot.fetchInvite(inv.code.trim()));
+  
   try {
     const resolved = await Promise.all(foundInvites);
     return reportInvites(msg, matched, resolved);
@@ -286,11 +277,8 @@ async function processDiscordInvites(msg) {
   }
 }
 
-/**
- * Process the warning card
- * @param {Discord.ButtonInteraction<"cached">} interaction The interaction of a mod selecting the button.
- */
-async function processCardAction(interaction) {
+/** Process the warning card */
+async function processCardAction(interaction: Discord.ButtonInteraction<"cached">) {
   try {
     const flag = interaction.message;
     // Prevent double-processing
@@ -308,7 +296,7 @@ async function processCardAction(interaction) {
     if (interaction.customId === "modCardCensor") {
       // Censor the flag with a description of the content
       const modal = new u.Modal().addComponents(
-        u.ModalActionRow().addComponents([
+        new u.ModalActionRow().addComponents([
           new u.TextInput()
             .setCustomId("text")
             .setLabel("Replacement Text")
@@ -518,4 +506,4 @@ const Module = new Augur.Module()
 .setInit((grown) => grown ? c.grownups = grown : null);
 
 
-module.exports = Module;
+export default Module

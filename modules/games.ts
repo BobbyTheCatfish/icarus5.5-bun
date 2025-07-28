@@ -1,9 +1,9 @@
 // @ts-check
-const Augur = require("augurbot-ts"),
-  eliteAPI = require('../utils/EliteApi'),
-  axios = require('axios'),
-  Discord = require('discord.js'),
-  u = require("../utils/utils");
+import Augur from "augurbot-ts";
+import eliteAPI, { EliteStation, EliteSystem } from '../utils/EliteApi';
+import axios from 'axios';
+import Discord from 'discord.js';
+import u from "../utils/utils";
 
 const Module = new Augur.Module();
 
@@ -23,13 +23,11 @@ async function updateFactionStatus() {
   } catch (e) { u.errorHandler(e, "Elite Channel Update Error"); }
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
-async function slashGameMinecraftSkin(int) {
+async function slashGameMinecraftSkin(int: Augur.GuildInteraction<"CommandSlash">) {
   await int.deferReply();
   const name = int.options.getString("user") ?? int.user.toString();
 
-  /** @type {string | undefined | Discord.GuildMember} */
-  let user = name;
+  let user: string | undefined | Discord.GuildMember = name;
   let findIgn = false;
   if (name) {
     const pingMatch = /<@!?([0-9]+)>/.exec(name);
@@ -46,7 +44,6 @@ async function slashGameMinecraftSkin(int) {
   if (!user) return int.editReply(`That person hasn't saved an IGN for Minecraft. Try using a username instead.`);
 
   try {
-    // @ts-ignore
     const result = await axios(`https://starlightskins.lunareclipse.studio/render/walking/${user}/full`, { responseType: "arraybuffer" });
     if (result.status === 200) {
       const image = new u.Attachment(Buffer.from(result.data, 'binary'), { name: "image.png" });
@@ -59,11 +56,7 @@ async function slashGameMinecraftSkin(int) {
   }
 }
 
-/**
- * @param {Augur.GuildInteraction<"CommandSlash">} int
- * @param {string} game
- */
-function currentPlayers(int, game) {
+function currentPlayers(int: Augur.GuildInteraction<"CommandSlash">, game: string) {
   const players = int.guild.members.cache.map(m => {
     if (m.user.bot) return "";
     const presence = m.presence?.activities?.find(a => a.type === Discord.ActivityType.Playing && a.name.toLowerCase().startsWith(game.toLowerCase()));
@@ -72,14 +65,12 @@ function currentPlayers(int, game) {
   return u.embed().setTitle(`${int.guild.name} members currently playing ${game}`).setDescription(players.length > 0 ? players.join('\n') : `I couldn't find any members playing ${game}`);
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} inter */
-async function slashGameGetPlaying(inter) {
+async function slashGameGetPlaying(inter: Augur.GuildInteraction<"CommandSlash">) {
   const game = inter.options.getString("game") ?? u.db.sheets.wipChannels.get(inter.channelId)?.name;
   if (game) return inter.reply({ embeds: [currentPlayers(inter, game)], flags: ["Ephemeral"] });
 
   // List *all* games played
-  /** @type {Discord.Collection<string, { game: string, players: number }>} */
-  const games = new u.Collection();
+  const games = new u.Collection<string, { game: string; players: number; }>();
   for (const [, member] of inter.guild.members.cache) {
     if (member.user.bot) continue;
     const playing = member.presence?.activities?.find(a => a.type === Discord.ActivityType.Playing);
@@ -102,8 +93,7 @@ async function slashGameGetPlaying(inter) {
   inter.reply({ embeds: [embed], flags: ["Ephemeral"] });
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
-async function slashGameElite(int) {
+async function slashGameElite(int: Augur.GuildInteraction<"CommandSlash">) {
   const system = int.options.getString("system-name") || "LDS 2314";
   const info = int.options.getString('info', true);
 
@@ -115,8 +105,7 @@ async function slashGameElite(int) {
   const starSystem = await eliteAPI.getSystemInfo(system);
   if (!starSystem) return int.editReply({ content: "I couldn't find a system with that name." }).then(u.clean);
 
-  /** @type {string | Discord.InteractionEditReplyOptions } */
-  let reply;
+  let reply: string | Discord.InteractionEditReplyOptions;
   const embed = u.embed().setThumbnail("https://i.imgur.com/Ud8MOzY.png").setAuthor({ name: "EDSM", iconURL: "https://i.imgur.com/4NsBfKl.png" });
   switch (info) {
     case "bodies": reply = await eliteGetBodies(starSystem, embed); break;
@@ -134,20 +123,14 @@ async function eliteGetStatus() {
   const status = await eliteAPI.getEliteStatus();
   return `The Elite: Dangerous servers are ${status.type === 'success' ? "online" : "offline"}`;
 }
-/**
- * @returns {Discord.InteractionReplyOptions}
- */
-function eliteGetTime() {
+
+function eliteGetTime(): Discord.InteractionReplyOptions {
   const d = new Date();
   const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   return { content: `The current date/time in Elite is ${monthNames[d.getUTCMonth()]} ${d.getUTCDate()}, ${(d.getUTCFullYear() + 1286)}, ${d.getUTCHours()}:${d.getUTCMinutes()}. (UTC + 1286 years)`, flags: ["Ephemeral"] };
 }
 
-/**
- * @param {eliteAPI.EliteSystem} system
- * @param {Discord.EmbedBuilder} embed
- */
-async function eliteGetSystem(system, embed) {
+async function eliteGetSystem(system: EliteSystem, embed: Discord.EmbedBuilder) {
   embed.setTitle(system.name)
     .setURL(`https://www.edsm.net/en/system/id/${system.id}/name`)
     .addFields({
@@ -168,16 +151,11 @@ async function eliteGetSystem(system, embed) {
   return { embeds: [embed] };
 }
 
-/**
- * @param {eliteAPI.EliteSystem} system
- * @param {Discord.EmbedBuilder} embed
- */
-async function eliteGetStations(system, embed) {
+async function eliteGetStations(system: EliteSystem, embed: Discord.EmbedBuilder) {
   if (system.stations.length <= 0) return "I couldn't find any stations in that system.";
   embed.setTitle(system.name).setURL(system.stationsURL);
 
-  /** @type {Discord.Collection<string, eliteAPI.Station[]>} */
-  const stationList = new u.Collection();
+  const stationList: Discord.Collection<string, EliteStation[]> = new u.Collection();
   for (let i = 0; i < Math.min(system.stations.length, 25); i++) {
     const station = system.stations[i];
     // Filtering out fleet carriers. There can be over 100 of them (spam) and their names are user-determined (not always clean).
@@ -204,11 +182,7 @@ async function eliteGetStations(system, embed) {
   return { embeds: [embed] };
 }
 
-/**
- * @param {eliteAPI.EliteSystem} system
- * @param {Discord.EmbedBuilder} embed
- */
-async function eliteGetFactions(system, embed) {
+async function eliteGetFactions(system: EliteSystem, embed: Discord.EmbedBuilder) {
   if (system.factions.length < 1) return "I couldn't find any factions in that system.";
   embed.setTitle(system.name).setURL(system.factionsURL);
 
@@ -224,11 +198,7 @@ async function eliteGetFactions(system, embed) {
   return { embeds: [embed] };
 }
 
-/**
- * @param {eliteAPI.EliteSystem} system
- * @param {Discord.EmbedBuilder} embed
- */
-async function eliteGetBodies(system, embed) {
+async function eliteGetBodies(system: EliteSystem, embed: Discord.EmbedBuilder) {
   if (system.bodies.length < 1) return "I couldn't find any bodies in that system.";
   embed.setTitle(system.name).setURL(system.bodiesURL);
 
@@ -265,4 +235,4 @@ Module.addInteraction({
   }, 6 * 60 * 60_000);
 });
 
-module.exports = Module;
+export default Module;
