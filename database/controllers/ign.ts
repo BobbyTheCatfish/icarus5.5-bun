@@ -1,6 +1,6 @@
 import Ign from "../models/Ign.model";
 
-type IGN = {
+export type IGN = {
   discordId: string;
   system: string;
   ign: string;
@@ -11,31 +11,37 @@ export default {
   delete: function(discordId: string, system: string): Promise<IGN | null> {
     return Ign.findOneAndDelete({ discordId, system }, { lean: true, new: false }).exec();
   },
+  
   /** Find a specific IGN */
   findOne: function(discordId: string, system: string): Promise<IGN | null> {
     return Ign.findOne({ discordId, system }, undefined, { lean: true }).exec();
   },
+
   /** Find someone by their IGN */
   findOneByIgn: function(ign: string | string[], system: string): Promise<IGN | null> {
     if (Array.isArray(ign)) return Ign.findOne({ ign: { $in: ign }, system }, undefined, { lean: true }).exec();
     return Ign.findOne({ ign, system }, undefined, { lean: true }).exec();
   },
+
   /** Find a list of all IGNs for a given system */
-  findMany: function(discordId: string | string[], system: string | null): Promise<IGN[]> {
-    /** @type {string[] | string | { $in: string[] }} */
+  findMany: function(discordId: string | string[], system?: string | null): Promise<IGN[]> {
     let ids: string[] | string | { $in: string[]; };
-    /** @type {any} */
     let query: any;
+
     if (Array.isArray(discordId)) ids = { $in: discordId };
     else ids = discordId;
+
     if (system) query = { discordId: ids, system };
     else query = { discordId: ids };
+
     return Ign.find(query, undefined, { lean: true }).exec();
   },
+
   /** Save a user's IGN */
   save: function(discordId: string, system: string, ign: string): Promise<IGN | null> {
     return Ign.findOneAndUpdate({ discordId, system }, { ign }, { upsert: true, new: true, lean: true }).exec();
   },
+
   /** Update a lot of IGNs at the same time */
   saveMany: function(discordId: string, igns: { system: string; ign?: string; }[]): Promise<number> {
     const actions = igns.map(i => {
@@ -47,6 +53,7 @@ export default {
     });
     return Ign.bulkWrite(actions).then((i) => i.modifiedCount + i.insertedCount + i.deletedCount);
   },
+
   /** Transfer an old account's IGNs to their new account */
   transfer: async function(oldUserId: string, newUserId: string) {
     const existing = await Ign.find({ discordId: newUserId });
