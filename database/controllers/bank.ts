@@ -1,7 +1,7 @@
 import moment from "moment-timezone";
 import Bank from "../models/Bank.model";
 
-type CurrencyRecord = {
+export type CurrencyRecord = {
   discordId: string;
   timestamp: Date;
   description: string;

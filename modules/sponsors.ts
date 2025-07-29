@@ -1,6 +1,6 @@
 // @ts-check
-const Augur = require("augurbot-ts");
-const u = require("../utils/utils");
+import Augur from "augurbot-ts";
+import u from "../utils/utils";
 
 /**
  * TODO:
@@ -13,11 +13,7 @@ const emojis = [
   ["carp", "🐟"]
 ];
 
-/**
- * @param {Augur.GuildInteraction<"CommandSlash">} int
- * @param {boolean} invite
- */
-async function slashSponsorInvite(int, invite) {
+async function slashSponsorInvite(int: Augur.GuildInteraction<"CommandSlash">, invite: boolean) {
   const sponsorChannel = u.db.sheets.sponsors.get(int.member.id)?.channel;
   if (!sponsorChannel) return int.reply({ content: "Looks like your sponsor info hasn't been set up! Contact a Discord Manager or Management to get the process started.", flags: ["Ephemeral"] });
 

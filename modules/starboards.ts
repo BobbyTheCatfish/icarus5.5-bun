@@ -1,13 +1,9 @@
-const Augur = require("augurbot-ts");
-const Discord = require("discord.js");
-const u = require("../utils/utils");
+import Augur from "augurbot-ts";
+import Discord from "discord.js";
+import u from "../utils/utils";
 
 
-/**
- * @param {Augur.NonPartialMessageReaction} reaction
- * @param {Discord.User} user
- */
-async function checkStarBoard(reaction, user) {
+async function checkStarBoard(reaction: Augur.NonPartialMessageReaction, user: Discord.User) {
   try {
     if (reaction.partial) await reaction.fetch().catch(u.noop);
     if (reaction.message.partial) await reaction.message.fetch().catch(u.noop);
@@ -56,10 +52,10 @@ async function checkStarBoard(reaction, user) {
 
     // add to the approval queue
     const components = [
-      u.MessageActionRow().addComponents(
+      new u.MessageActionRow().addComponents(
         new u.Button().setCustomId("starboardReject").setLabel("Reject").setStyle(Discord.ButtonStyle.Danger),
       ),
-      u.MessageActionRow().addComponents(
+      new u.MessageActionRow().addComponents(
         new u.SelectMenu.String().setCustomId("starboardApprove").setMaxValues(1).setMinValues(1).setPlaceholder("Select Destination")
           .addOptions(u.db.sheets.starboards.boards.map(b => ({ label: `#${b.channel.name}`, value: b.channel.id, emoji: [...b.priorityEmoji.values()][0] || undefined })))
       )
@@ -105,7 +101,7 @@ const Module = new Augur.Module()
 
         const richEmbed = u.embed(modifyingEmbed).setColor(0xff0000);
         /** @type {(Discord.Embed | Discord.EmbedBuilder)[]} */
-        const embeds = [richEmbed];
+        const embeds: (Discord.Embed | Discord.EmbedBuilder)[] = [richEmbed];
         if (embed2 && embed1) embeds.unshift(embed1);
 
         return int.update({ components: [], content: "Denied", embeds });

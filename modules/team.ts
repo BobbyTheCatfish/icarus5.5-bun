@@ -1,11 +1,9 @@
-// @ts-check
-const fs = require("fs");
-const Augur = require("augurbot-ts");
-const u = require("../utils/utils");
-const c = require("../utils/modCommon");
+import fs from "fs";
+import Augur from "augurbot-ts";
+import u from "../utils/utils";
+import c from "../utils/modCommon";
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
-async function slashTeamRoleGive(int, give = true) {
+async function slashTeamRoleGive(int: Augur.GuildInteraction<"CommandSlash">, give = true) {
   try {
     await int.deferReply({ flags: ["Ephemeral"] });
     const recipient = int.options.getMember("user");
@@ -23,9 +21,8 @@ async function slashTeamRoleGive(int, give = true) {
 }
 
 /** @param {Augur.GuildInteraction<"CommandSlash">} int */
-async function slashTeamBankAward(int) {
+async function slashTeamBankAward(int: Augur.GuildInteraction<"CommandSlash">) {
   try {
-    /** @type {import("./bank").BankShared} */
     const bankUtils = int.client.moduleManager.shared.get("bank.js");
     if (!bankUtils) throw new Error("Could not access bank utilities from shared.");
     const { ember, gb, limit } = bankUtils;
@@ -65,7 +62,7 @@ async function slashTeamBankAward(int) {
     const receipt = await u.db.bank.addCurrency(award);
     const balance = await u.db.bank.getBalance(recipient.id);
 
-    const str = (/** @type {string} */ m) => value > 0 ? `awarded ${m} ${ember}${receipt.value}` : `docked ${ember}${-receipt.value} from ${m}`;
+    const str = (m: string) => value > 0 ? `awarded ${m} ${ember}${receipt.value}` : `docked ${ember}${-receipt.value} from ${m}`;
     let embed = u.embed({ author: int.client.user })
       .addFields(
         { name: "Reason", value: reason },
@@ -90,13 +87,11 @@ async function slashTeamBankAward(int) {
   } catch (e) { u.errorHandler(e, int); }
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
-async function slashTeamTournamentChampions(int) {
+async function slashTeamTournamentChampions(int: Augur.GuildInteraction<"CommandSlash">) {
   await int.deferReply({ flags: ["Ephemeral"] });
   const tName = int.options.getString('tournament');
 
-  /** @param {string} str */
-  const user = (str) => int.options.getMember(str);
+  const user = (str: string) => int.options.getMember(str);
   const users = u.unique([user('1'), user('2'), user('3'), user('4'), user('5'), user('6')].filter(usr => usr));
   const date = u.moment().add(3, "weeks").toDate();
 
@@ -118,8 +113,7 @@ async function slashTeamTournamentChampions(int) {
   int.editReply("Champions recorded and announced!");
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
-async function slashTeamTournamentReset(int) {
+async function slashTeamTournamentReset(int: Augur.GuildInteraction<"CommandSlash">) {
   await int.deferReply({ flags: ["Ephemeral"] });
 
   const role = int.guild.roles.cache.get(u.sf.roles.tournament.participant);
@@ -135,8 +129,7 @@ async function slashTeamTournamentReset(int) {
   return int.editReply(`Removed ${succeeded}/${members.size} people from the ${role} role`);
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
-async function slashTeamRankReset(int) {
+async function slashTeamRankReset(int: Augur.GuildInteraction<"CommandSlash">) {
   try {
     await int.deferReply({ flags: ["Ephemeral"] });
     if (!u.perms.calc(int.member, ["mgr"])) return int.editReply("This command is reserved for MGR+");
@@ -173,8 +166,7 @@ async function slashTeamRankReset(int) {
     // in an ideal world this is if (true)
     if (dist > 0) {
       const rewardRows = ["id,season,life,award"];
-      /** @type {import("../database/controllers/bank").CurrencyRecord[]} */
-      const records = [];
+      const records: import("../database/controllers/bank").CurrencyRecord[] = [];
       // award ember to each user and log it in a csv
       for (const user of users) {
         const award = Math.round(rate * user.currentXP);

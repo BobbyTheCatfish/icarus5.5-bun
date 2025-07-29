@@ -1,19 +1,13 @@
-// @ts-check
+import Augur from "augurbot-ts";
+import Discord from 'discord.js';
+import fs from 'fs';
+import axios from 'axios';
+import config from '../config/config.json';
+import u from "../utils/utils";
 
-const Augur = require("augurbot-ts"),
-  Discord = require('discord.js'),
-  fs = require('fs'),
-  axios = require('axios'),
-  config = require('../config/config.json'),
-  u = require("../utils/utils");
+type tag = import("../database/controllers/tag").tag;
 
-/** @typedef {import("../database/controllers/tag").tag} tag */
-
-/**
- * @param {Discord.Attachment} attachment
- * @param {{ _id: import("mongoose").Types.ObjectId }} cmd
-*/
-async function saveAttachment(attachment, cmd) {
+async function saveAttachment(attachment: Discord.Attachment, cmd: { _id: import("mongoose").Types.ObjectId; }) {
   // @ts-ignore axios hates correct types
   const response = await axios({
     method: "get",
@@ -23,11 +17,9 @@ async function saveAttachment(attachment, cmd) {
   response.data.pipe(fs.createWriteStream(config.tagFilePath + "/" + cmd._id.toString()));
 }
 
-/** @type {Discord.Collection<string, tag>} */
-const tags = new Discord.Collection();
+const tags = new Discord.Collection<string, tag>();
 
-/** @param {Discord.Message} msg */
-function runTag(msg) {
+function runTag(msg: Discord.Message) {
   const cmd = u.parse(msg);
   if (!msg.channel.isSendable() || !cmd) return;
 
@@ -43,12 +35,7 @@ function runTag(msg) {
 }
 
 
-/**
- * @param {import("../database/controllers/tag").tag} tag
- * @param {Discord.Message | null} msg
- * @param {Discord.ChatInputCommandInteraction} [int]
- */
-function encodeTag(tag, msg, int) {
+function encodeTag(tag: import("../database/controllers/tag").tag, msg: Discord.Message | null, int?: Discord.ChatInputCommandInteraction) {
   const user = msg?.inGuild() ? msg.member : int?.inCachedGuild() ? int.member : int?.user ?? msg?.author ?? null;
   const origin = msg ?? int;
   if (!user || !origin) return "I couldn't process that command!";
@@ -88,23 +75,19 @@ function encodeTag(tag, msg, int) {
   };
 }
 
-/***
- * @param {Discord.EmbedBuilder} embed
- * @param {tag} command
- */
-function deleteAttachment(embed, command) {
+function deleteAttachment(embed: Discord.EmbedBuilder, command: tag) {
   embed.addFields({ name: "Attachment", value: "[Deleted]" });
   const path = `${config.tagFilePath}/${command._id.toString()}`;
   if (fs.existsSync(path)) fs.unlinkSync(path);
 }
 
 /** @param {Augur.GuildInteraction<"CommandSlash">} int */
-async function slashTagSet(int) {
+async function slashTagSet(int: Augur.GuildInteraction<"CommandSlash">) {
   // Get and validate input
   const name = int.options.getString('name', true).toLowerCase().replace(/[ \n]/g, "");
   const oldTag = tags.get(name);
 
-  const row = u.ModalActionRow();
+  const row = new u.ModalActionRow();
   row.addComponents(
     new u.TextInput()
       .setCustomId("content")
@@ -171,8 +154,7 @@ async function slashTagSet(int) {
   content.editReply({ content: "Tag Saved!", embeds: [embed.setDescription(`Try it out with \`${config.prefix}${name}\``)], files: attachment ? [attachment] : [] });
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
-async function slashTagDelete(int) {
+async function slashTagDelete(int: Augur.GuildInteraction<"CommandSlash">) {
   await int.deferReply({ flags: ["Ephemeral"] });
 
   const name = int.options.getString('name', true).toLowerCase().replace(/[ \n]/g, "");
@@ -200,8 +182,7 @@ async function slashTagDelete(int) {
   int.editReply({ embeds: [embed.setDescription(null)] });
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
-function slashTagVariables(int) {
+function slashTagVariables(int: Augur.GuildInteraction<"CommandSlash">) {
   const placeholderDescriptions = [
     "`<@author>`: Pings the user",
     "`<@authorname>`: The user's nickname",
@@ -220,8 +201,7 @@ function slashTagVariables(int) {
   return int.reply({ embeds: [embed], flags: ["Ephemeral"] });
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
-async function slashTagValue(int) {
+async function slashTagValue(int: Augur.GuildInteraction<"CommandSlash">) {
   await int.deferReply({ flags: ["Ephemeral"] });
 
   const name = int.options.getString('name', true).toLowerCase().replace(/[ \n]/g, "");
@@ -270,6 +250,6 @@ const Module = new Augur.Module()
 })
 .setShared({ tags, encodeTag });
 
-/** @typedef {{ tags: tags, encodeTag: encodeTag } | undefined} Shared */
+type Shared = { tags: typeof tags; encodeTag: typeof encodeTag; } | undefined;
 
 export = Module;

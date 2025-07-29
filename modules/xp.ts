@@ -1,37 +1,31 @@
-// @ts-check
-const Discord = require("discord.js");
-const banned = (require("../data/banned.json")).features.xp;
-const Augur = require("augurbot-ts");
-const u = require("../utils/utils");
-const mc = require("../utils/modCommon");
-const Rank = require("../utils/rankInfo");
-const config = require("../config/config.json");
+import Discord from "discord.js";
+import banned from "../data/banned.json";
+import Augur from "augurbot-ts";
+import u from "../utils/utils";
+import mc from "../utils/modCommon";
+import Rank from "../utils/rankInfo";
+import config from "../config/config.json";
 
-/**
- * @typedef ActiveUser
- * @prop {number} multiplier
- * @prop {string} channelId
- * @prop {string} discordId
- * @prop {boolean} isVoice
- * @prop {boolean} isMessage
- */
+interface ActiveUser {
+  multiplier: number;
+  channelId: string;
+  discordId: string;
+  isVoice: boolean;
+  isMessage: boolean;
+}
 
-/** @type {Set<string>} */
 // There can be "channel of the week" style events, where that channel is worth more xp
-const highlights = new Set();
+const highlights = new Set<string>();
 
-/** @type {Discord.Collection<string, number>} */
 // people can buy and place xp lures that work similar to the ones in pokemon go
-const lures = new u.Collection();
+const lures = new u.Collection<string, number>();
 
-/** @type {Discord.Collection<string, ActiveUser[]>} */
 // people getting xp
-const active = new u.Collection();
+const active= new u.Collection<string, ActiveUser[]>();
 
 // Feather drop settings
 let cooltime = new Date();
-/** @type {NodeJS.Timeout} */
-let cooldown;
+let cooldown: NodeJS.Timeout;
 let dropCode = false;
 
 function resetFeatherDrops() {
@@ -43,23 +37,20 @@ function resetFeatherDrops() {
   }, time);
 }
 
-/** @param {Discord.Message} msg */
-function DEBUGFeatherPrime(msg) {
+function DEBUGFeatherPrime(msg: Discord.Message) {
   dropCode = true;
   clearTimeout(cooldown);
   msg.react("👌").catch(u.noop);
 }
 
-/** @param {Discord.Message} msg */
-function DEBUGFeatherState(msg) {
+function DEBUGFeatherState(msg: Discord.Message) {
   msg.reply(
     `Current State: ${dropCode ? "Ready" : "On Cooldown"}\n` +
     `Cooldown End: ${u.time(cooltime, "F")}`
   );
 }
 
-/** @param {Discord.Message<true>} msg */
-async function featherCheck(msg) {
+async function featherCheck(msg: Discord.Message<true>) {
   const lureCount = lures.get(msg.channelId) ?? 0;
   const dropMode = lureCount === 0;
   if (
@@ -126,31 +117,20 @@ async function featherCheck(msg) {
 
 /**
  * Standardizes the XP adding
- * @param {string} discordId
- * @param {number} multiplier
- * @param {string} channelId
- * @param {boolean} isVoice
- * @param {boolean} isMessage
  */
-function addXp(discordId, multiplier, channelId, isVoice = false, isMessage = false) {
-  /** @type {ActiveUser} */
-  const obj = { multiplier, channelId, discordId, isVoice, isMessage };
+function addXp(discordId: string, multiplier: number, channelId: string, isVoice: boolean = false, isMessage: boolean = false) {
+  const obj: ActiveUser = { multiplier, channelId, discordId, isVoice, isMessage };
   active.ensure(discordId, () => []).push(obj);
   return obj;
 }
 
-/**
- * @param {Augur.NonPartialMessageReaction | Discord.PartialMessageReaction | Discord.MessageReaction} reaction
- * @param {Discord.User | Discord.PartialUser} user
- * @param {Boolean} add
- */
-async function reactionXp(reaction, user, add = true) {
+async function reactionXp(reaction: Augur.NonPartialMessageReaction | Discord.PartialMessageReaction | Discord.MessageReaction, user: Discord.User | Discord.PartialUser, add: boolean = true) {
   // sometimes it doesn't actually fetch within augur. annoying.
   await reaction.message.fetch();
   await reaction.message.member?.fetch();
 
-  if (banned.reactionsGiving.includes(user.id)) return;
-  if (banned.reactionsReceiving.includes(reaction.message.author?.id ?? "")) return;
+  if ((banned.features.xp.reactionsGiving as string[]).includes(user.id)) return;
+  if ((banned.features.xp.reactionsReceiving as string[]).includes(reaction.message.author?.id ?? "")) return;
 
   // check if custom id, then check if unicode emoji
   const identifier = reaction.emoji.id ?? reaction.emoji.name ?? "";
@@ -190,15 +170,14 @@ async function reactionXp(reaction, user, add = true) {
 
 }
 
-/** @param {Augur.AugurClient} client */
-async function rankClockwork(client) {
+async function rankClockwork(client: Augur.AugurClient) {
   const ldsg = client.guilds.cache.get(u.sf.ldsg);
   if (!ldsg) throw new Error("Couldn't get LDSG - Rank Clockwork");
 
   // give xp to people active in voice chats
   ldsg.members.cache.filter(m => m.voice.channel && !m.voice.mute && !m.voice.deaf && m.voice.channel.members.size > 1)
     .forEach(m => {
-      if (banned.voice.includes(m.id)) return;
+      if ((banned.features.xp.voice as string[]).includes(m.id)) return;
 
       // vcs get deleted, stage channels don't
       const channelId = m.voice.channel?.type === Discord.ChannelType.GuildVoice ? "Voice" : m.voice.channelId ?? "No VC";
@@ -241,7 +220,7 @@ async function rankClockwork(client) {
             content: `${member} has had ${content} without being trusted!`,
             embeds: [embed.setFooter({ text: member.id })],
             components: [
-              u.MessageActionRow().addComponents(
+              new u.MessageActionRow().addComponents(
                 new u.Button().setCustomId("timeModTrust").setEmoji("👍").setLabel("Give Trusted").setStyle(Discord.ButtonStyle.Success)
               )
             ]
@@ -294,7 +273,7 @@ Module.setUnload(() => active)
       !msg.inGuild() || msg.guild.id !== u.sf.ldsg || // only in LDSG
       msg.member?.roles.cache.has(u.sf.roles.moderation.muted) || // no muted allowed
       msg.author.bot || msg.author.system || msg.webhookId || // no bots
-      banned.posts.includes(msg.author.id) || // not banned from the feature
+      (banned.features.xp.posts as string[]).includes(msg.author.id) || // not banned from the feature
       u.parse(msg) // not a command
     ) return;
 
@@ -323,14 +302,14 @@ Module.setUnload(() => active)
   .addEvent("messageUpdate", async (msg, newMsg) => {
     // see if it's a finished poll outside of a VC
     if (!msg.inGuild() || !msg.poll || !(!msg.poll.resultsFinalized && newMsg.poll?.resultsFinalized) || msg.channel.type === Discord.ChannelType.GuildVoice) return;
-    if (banned.polls.includes(msg.author.id)) return;
+    if ((banned.features.xp.polls as string[]).includes(msg.author.id)) return;
 
     // people can only get xp once per poll. no multiple answers shenanigans
     const voters = new Set();
     const hours = Math.min(48, Math.max(1, u.moment(msg.poll.expiresTimestamp).diff(msg.createdTimestamp, "hours", false))) / 8;
 
     /** @type {Discord.Collection<string, Discord.User>[]} */
-    const answers = await Promise.all(newMsg.poll.answers.map(/** @param {Discord.PollAnswer} s */s => s.fetchVoters()));
+    const answers: Discord.Collection<string, Discord.User>[] = await Promise.all(newMsg.poll.answers.map(/** @param {Discord.PollAnswer} s */(s: Discord.PollAnswer) => s.fetchVoters()));
     const voterCount = answers.reduce((p, c) => p + c.size, 0);
 
     // assign xp to people who voted, favoring those with the right answer
@@ -358,7 +337,7 @@ Module.setUnload(() => active)
       u.errorHandler(error, "Rank outer clockwork");
     }
   })
-  .setInit(/** @param {Discord.Collection<string, ActiveUser[]>} [talking] */ async (talking) => {
+  .setInit(async (talking?: Discord.Collection<string, ActiveUser[]>) => {
     if (talking) {
       for (const [id, user] of talking) active.set(id, user);
     }

@@ -443,7 +443,7 @@ const utils = {
     return Array.from(col.values());
   },
   
-  getHouseInfo: function(member: Discord.GuildMember | null) {
+  getHouseInfo: function(member?: Discord.GuildMember | null) {
     const houseInfo = [
       { id: sf.roles.houses.housebb, name: "Brightbeam", color: 0x00a1da },
       { id: sf.roles.houses.housefb, name: "Freshbeast", color: 0xfdd023 },

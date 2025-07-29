@@ -203,9 +203,8 @@ export const data = {
 
   roles: {
     all: new Schemas.SchemaFunction("Base Role ID", functionSchemas.rolesBase),
-    /** @type {Schemas.SchemaFunction<string, Omit<types.LevelStrRole, "level"> & { level: import("../utils/perms").Perms }>} */
     // @ts-ignore
-    team: new Schemas.SchemaFunction("Base Role ID", functionSchemas.levelRole),
+    team: new Schemas.SchemaFunction("Base Role ID", functionSchemas.levelRole) as Schemas.SchemaFunction<string, Omit<types.LevelStrRole, "level"> & { level: import("../utils/perms").Perms }>,
     equip: new Schemas.SchemaFunction("Base Role ID", functionSchemas.colorRole),
     rank: new Schemas.SchemaFunction("Level", functionSchemas.numRole, "number"),
     year: new Schemas.SchemaFunction("Level", functionSchemas.numRole, "number"),

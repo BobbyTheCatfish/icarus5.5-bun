@@ -39,7 +39,7 @@ config/config.json
 config/snowflakes-commands.json
 config/siteConfig.json
 test.js
-*-.js
+*-.ts
 *-.json
 *.csv
 data/banned.json
