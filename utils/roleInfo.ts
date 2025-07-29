@@ -23,7 +23,7 @@ export function getInventory(member: GuildMember, override = true) {
  * @param {string | null} baseName
  * @param {string} [baseId]
  */
-export async function equip(member: GuildMember, baseName: string | null, baseId: string) {
+export async function equip(member: GuildMember, baseName: string | null, baseId?: string) {
   const allColors = u.db.sheets.roles.equip.map(r => r.color.id).filter(r => member.roles.cache.has(r));
   const inventory = getInventory(member);
 
@@ -55,3 +55,5 @@ export async function equip(member: GuildMember, baseName: string | null, baseId
   await member.roles.add(role.color.id);
   return true;
 }
+
+export default { equip, getInventory }

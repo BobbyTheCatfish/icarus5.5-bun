@@ -367,7 +367,7 @@ const modCommon = {
   },
 
   /** Prevent someone from talking */
-  mute: async function(interaction: Augur.GuildInteraction<"CommandSlash" | "SelectMenuString">, target: Discord.GuildMember, reason: string, apply = true) {
+  mute: async function(interaction: Augur.GuildInteraction<"CommandSlash" | "SelectMenuString">, target: Discord.GuildMember, reason?: string, apply = true) {
     const m = apply ? "mute" : "unmute";
     const M = apply ? "Mute" : "Unmute";
     let success = 0;

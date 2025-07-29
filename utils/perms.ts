@@ -31,7 +31,7 @@ const permFuncs = {
 
 const perms = {
   /** Perform a check to see if a user has specific roles. Bot Owner and MGMT always bypass. */
-  calc: (member: GuildMember, permArr: (keyof typeof permFuncs)[]) => {
+  calc: (member: GuildMember | undefined | null, permArr: (keyof typeof permFuncs)[]) => {
     if (!member) return false;
     permArr.push("mgmt");
     for (const perm of new Set(permArr)) {
