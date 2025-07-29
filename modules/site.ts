@@ -1,17 +1,25 @@
 // @ts-check
 const Augur = require("augurbot-ts");
 const config = require("../config/config.json");
-const { createServer } = require("http");
 const u = require("../utils/utils");
+const passport = require("passport");
+const express = require("express");
+const session = require("express-session");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const Store = require("connect-mongo");
+const fs = require("fs");
+const path = require("path");
+const rateLimit = require("express-rate-limit");
+const expressWs = require("express-ws");
+const { createServer } = require("http");
+const { Server } = require("socket.io");
 
-/** @type {ReturnType<import("express")>} */
-let app;
+let app: typeof express.Express;
 
-/** @type {ReturnType<createServer>} */
-let httpServer;
+let httpServer: ReturnType<typeof createServer>;
 
-/** @type {import("socket.io").Server} */
-let io;
+let io: typeof Server
 
 if (config.siteOn) {
   // require modules!
@@ -19,13 +27,7 @@ if (config.siteOn) {
   require("../site/backend/utils/strategy");
   // @ts-ignore
   const siteConfig = require("../config/siteConfig.json");
-  const passport = require("passport");
-  const express = require("express");
-  const session = require("express-session");
-  const mongoose = require("mongoose");
-  const cors = require("cors");
-  const Store = require("connect-mongo");
-  const { Server } = require("socket.io");
+
 
   // @ts-ignore
   const routes = require("../site/backend/routes");
@@ -36,11 +38,11 @@ if (config.siteOn) {
   const streamingWS = require("../site/backend/routes/streaming/ws");
 
   app = express();
-  const socket = require("express-ws")(app);
+  const socket = expressWs(app);
 
   // encoders
 
-  const globalLimit = require("express-rate-limit").rateLimit({
+  const globalLimit = rateLimit({
     limit: 5,
     windowMs: 3_000,
     message: { msg: "You're going too fast! Slow down!" },
@@ -85,7 +87,7 @@ if (config.siteOn) {
     resave: false,
     saveUninitialized: false,
     store: Store.create({
-      // @ts-expect-error
+      // @ts-ignore
       client: mongoose.connection.getClient(),
     })
   });
@@ -112,7 +114,6 @@ if (config.siteOn) {
 
   // Handle all other routes by serving the React index.html file
   if (siteConfig.deployBuild) {
-    const path = require("path");
     const frontFiles = path.resolve(__dirname, '../site/frontend/build');
 
     // Serve static files from the React build folder
@@ -132,11 +133,8 @@ if (config.siteOn) {
   httpServer = createServer(app);
   io = new Server(httpServer, { path: "/ws/streams" });
 
-  /**
-   * @param {import("express").Handler} middleware
-   * @returns {import("express").Handler}
-   */
-  const onlyForHandshake = (middleware) => {
+
+  const onlyForHandshake = (middleware: typeof express.Handler): typeof express.Handler => {
     return (req, res, next) => {
       // @ts-ignore
       const isHandshake = req._query.sid === undefined;
@@ -166,18 +164,18 @@ if (config.siteOn) {
   httpServer.listen(siteConfig.port, () => console.log(`Site running on port ${siteConfig.port}`));
 }
 
-export = new Augur.Module()
+module.exports = new Augur.Module()
 .setUnload(() => {
   if (!config.siteOn) return;
 
   httpServer?.close();
   io.disconnectSockets();
 
+  
   delete require.cache[require.resolve("../config/siteConfig.json")];
   delete require.cache[require.resolve("../data/site/daedalus-q.js")];
   delete require.cache[require.resolve("../data/site/lore-found.json")];
 
-  const fs = require("fs");
   const routes = fs.readdirSync("./site/backend/routes", { recursive: true, encoding: "utf8" });
   const wu = fs.readdirSync("./site/backend/utils");
 
