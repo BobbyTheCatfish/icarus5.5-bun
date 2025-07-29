@@ -1,11 +1,10 @@
-// @ts-check
-const u = require("../utils/utils");
-const config = require("../config/config.json");
-const receive = require("imapflow");
-const interpret = require("mailparser-mit");
-const htmlparse = require("html-to-text");
-const Augur = require("augurbot-ts");
-const Discord = require("discord.js");
+import u from "../utils/utils";
+import config from "../config/config.json";
+import receive from "imapflow";
+import interpret from "mailparser-mit";
+import htmlparse from "html-to-text";
+import Augur from "augurbot-ts";
+import Discord from "discord.js";
 
 const [approveIdPrefix, rejectIdPrefix] = ["approveMissionMail", "rejectMissionMail"];
 
@@ -47,10 +46,12 @@ async function loadEmails() {
  * @param {receive.ImapFlow} receiver
  * @returns {Promise<number>}
  */
-async function sendUnsent(receiver) {
+async function sendUnsent(receiver: receive.ImapFlow): Promise<number> {
   if (!receiver.usable) throw new Error("Missionary Email Receiver not usable, cannot check for new emails.");
 
   const messageIds = await receiver.search({ or: u.db.sheets.missionaries.map((m) => ({ from: m.email })), seen: false, since: u.moment().subtract(1, "week").toDate() });
+  if (!messageIds) return 0;
+
   const messages = await receiver.fetchAll(messageIds, { source: true });
 
   const approvals = Module.client.getTextChannel(u.sf.channels.missionary.approvals);
@@ -60,10 +61,10 @@ async function sendUnsent(receiver) {
 
     // parse the email source into readable stuff
     /** @type {interpret.ParsedEmail} */
-    const parsed = await new Promise((res) => {
+    const parsed: interpret.ParsedEmail = await new Promise((res) => {
       const parser = new interpret.MailParser();
       parser.on("end", result => res(result));
-      parser.write(rawMsg.source);
+      parser.write(rawMsg.source!);
       parser.end();
     });
 
@@ -119,7 +120,7 @@ async function sendUnsent(receiver) {
     // buttons are handled at the bottom, only the embed gets forwarded. anything for mods but not normies should not go in the embed.
     const approveBtn = new u.Button().setCustomId(approveIdPrefix + embeds.length).setLabel("Approve").setStyle(Discord.ButtonStyle.Primary).setEmoji("✅");
     const rejectBtn = new u.Button().setCustomId(rejectIdPrefix).setLabel("Reject").setStyle(Discord.ButtonStyle.Danger).setEmoji("🗑️");
-    const actionRow = u.MessageActionRow().addComponents([approveBtn, rejectBtn]);
+    const actionRow = new u.MessageActionRow().addComponents([approveBtn, rejectBtn]);
 
     const files = parsed.attachments?.slice(0, 9).map(a => new u.Attachment(a.content).setName(a.fileName ?? a.generatedFileName));
 
@@ -134,8 +135,7 @@ async function sendUnsent(receiver) {
   return messages.length;
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
-async function slashMissionaryPull(int) {
+async function slashMissionaryPull(int: Augur.GuildInteraction<"CommandSlash">) {
   try {
     const pullCount = await loadEmails();
     int.editReply(`Pulled ${pullCount} Email(s)`);
@@ -145,8 +145,7 @@ async function slashMissionaryPull(int) {
   }
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
-async function slashMissionaryRegister(int) {
+async function slashMissionaryRegister(int: Augur.GuildInteraction<"CommandSlash">) {
   const user = int.options.getUser("user", true);
   const email = int.options.getString("email", true);
 
@@ -156,8 +155,7 @@ async function slashMissionaryRegister(int) {
   return int.editReply(`I set ${user}'s email to \`${email}\`.`);
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
-async function slashMissionaryRemove(int) {
+async function slashMissionaryRemove(int: Augur.GuildInteraction<"CommandSlash">) {
   const user = int.options.getUser("user", true);
 
   if (!u.db.sheets.missionaries.has(user.id)) return int.editReply(`${user} doesn't have a missionary email set up!`);
@@ -168,8 +166,7 @@ async function slashMissionaryRemove(int) {
   return int.editReply(`${user} has been removed from the mailing list!`);
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
-async function slashMissionaryList(int) {
+async function slashMissionaryList(int: Augur.GuildInteraction<"CommandSlash">) {
   const missionaries = u.db.sheets.missionaries.map((m) => {
     const member = int.guild.members.cache.get(m.userId);
     if (!member) return `<@${m.userId}> (${m.userId}, unknown user): **${m.email}**`;
@@ -213,7 +210,7 @@ Module
 
       const embedCount = parseInt(int.customId.substring(approveIdPrefix.length));
       const pagedMessages = await int.channel?.messages.fetch({ before: int.message.id, limit: embedCount + 10 })
-        .then((/** @type {Discord.Collection<String, Discord.Message<true>>} */ msgs) => msgs.filter(m => m.author.id === int.client.user.id).first(embedCount));
+        .then((/** @type {Discord.Collection<String, Discord.Message<true>>} */ msgs: Discord.Collection<String, Discord.Message<true>>) => msgs.filter(m => m.author.id === int.client.user.id).first(embedCount));
 
       if (!pagedMessages) return int.reply({ content: "I couldn't find the messages to forward!" });
 

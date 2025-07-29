@@ -1,22 +1,18 @@
-// @ts-check
-const Augur = require("augurbot-ts"),
-  Discord = require("discord.js"),
-  u = require("../utils/utils"),
-  banners = require('../data/banners.json'),
-  fs = require('fs'),
-  path = require('path'),
-  Module = new Augur.Module();
+import Augur from "augurbot-ts"
+import Discord from "discord.js"
+import u from "../utils/utils"
+import banners from "../data/banners.json"
+import fs from 'fs'
+import path from 'path'
 
-/**
- * @param {Discord.Client} client
- * @returns {import("./cake").Shared}
- */
-function cakeFunctions(client) {
+const Module = new Augur.Module();
+
+
+function cakeFunctions(client: Discord.Client) {
   return client.moduleManager.shared.get("cake.js");
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
-function runCakeday(int) {
+function runCakeday(int: Augur.GuildInteraction<"CommandSlash">) {
   const dateInput = int.options.getString("date");
   if (dateInput) {
     const date = new Date(dateInput);
@@ -29,8 +25,7 @@ function runCakeday(int) {
   return int.editReply("Cakeday run!");
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
-function runBirthday(int) {
+function runBirthday(int: Augur.GuildInteraction<"CommandSlash">) {
   const dateInput = int.options.getString("date");
   const user = int.options.getMember("user") ?? int.options.getUser("user");
   if (user) {
@@ -47,14 +42,12 @@ function runBirthday(int) {
   return int.editReply("Birthday run!");
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
-function runCelebrate(int) {
+function runCelebrate(int: Augur.GuildInteraction<"CommandSlash">) {
   cakeFunctions(int.client)?.celebrate(true);
   return int.editReply("Celebrate run!");
 }
 
-/** @param {string} [holiday] */
-async function setBanner(holiday) {
+async function setBanner(holiday?: string) {
   const date = new Date();
   const month = date.getMonth();
   const day = date.getDate();
@@ -85,8 +78,7 @@ async function setBanner(holiday) {
   return "I set the banner!";
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int*/
-async function slashChannelActivity(int) {
+async function slashChannelActivity(int: Augur.GuildInteraction<"CommandSlash">) {
   try {
     await int.deferReply({ flags: ["Ephemeral"] });
     const last = Date.now() - (14 * 24 * 60 * 60 * 60_000); // 14 days ago
@@ -124,8 +116,7 @@ async function slashChannelActivity(int) {
       return 0;
     });
 
-    /** @type {string[]} */
-    const lines = [];
+    const lines: string[] = [];
 
     for (const [categoryId, category] of categories) {
       // sorts from most to least active and removes all active channels

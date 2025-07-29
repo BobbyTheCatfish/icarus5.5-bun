@@ -1,11 +1,9 @@
-// @ts-check
-const Augur = require("augurbot-ts");
-const u = require("../utils/utils");
-const c = require("../utils/modCommon");
-const Rank = require("../utils/rankInfo");
+import Augur from "augurbot-ts";
+import u from "../utils/utils";
+import c from "../utils/modCommon";
+import Rank from "../utils/rankInfo";
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} interaction */
-async function slashRankLeaderboard(interaction) {
+async function slashRankLeaderboard(interaction: Augur.GuildInteraction<"CommandSlash">) {
   try {
     await interaction.deferReply();
     const lifetime = interaction.options.getBoolean("lifetime") ?? false;
@@ -29,14 +27,12 @@ async function slashRankLeaderboard(interaction) {
   } catch (error) { u.errorHandler(error, interaction); }
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} interaction */
-async function slashRankTrack(interaction) {
+async function slashRankTrack(interaction: Augur.GuildInteraction<"CommandSlash">) {
   // Set XP tracking
   try {
     await interaction.deferReply({ flags: ["Ephemeral"] });
-    /** @type {keyof typeof import("../database/controllers/user").TrackXPEnum | null} */
-    // @ts-ignore
-    const track = interaction.options.getString("status");
+    
+    const track = interaction.options.getString("status") as keyof typeof import("../database/controllers/user").TrackXPEnum | null;
     if (track === null) {
       const status = await u.db.user.fetchUser(interaction.user.id);
       return interaction.editReply(`You are currently ${status?.trackXP === u.db.user.TrackXPEnum.OFF ? "not " : ""}tracking XP${status?.trackXP === u.db.user.TrackXPEnum.FULL ? " with level up notifications" : ""}!`);
@@ -49,8 +45,7 @@ async function slashRankTrack(interaction) {
   } catch (error) { u.errorHandler(error, interaction); }
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} interaction */
-async function slashRankView(interaction) {
+async function slashRankView(interaction: Augur.GuildInteraction<"CommandSlash">) {
   try {
     // View member rankings
     await interaction.deferReply({ flags: u.ephemeralChannel(interaction) });

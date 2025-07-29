@@ -2,7 +2,7 @@
 import Tag from "../models/Tag.model";
 import { Types as MongoTypes } from "mongoose";
 
-type tag = {
+export type tag = {
   tag: string;
   response?: string | null;
   attachment?: string | null;

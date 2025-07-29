@@ -1,19 +1,15 @@
 // @ts-check
-const Augur = require("augurbot-ts");
-const Discord = require("discord.js");
-const u = require("../utils/utils");
-const fuzzy = require("fuzzysort");
+import Augur from "augurbot-ts";
+import Discord from "discord.js";
+import u from "../utils/utils";
+import fuzzy from "fuzzysort";
 
-/**
- * @typedef {import("../database/sheetTypes").IGN} IGN
- * @typedef {import("../database/controllers/ign").IGN} StoredIGN
- */
+type IGN = import("../database/sheetTypes").IGN;
+type StoredIGN = import("../database/controllers/ign").IGN;
 
-/**
- * @param {IGN & { ign: string }} ign
- */
-function ignFieldMap(ign) {
+function ignFieldMap(ign: IGN & { ign: string; }) {
   let value = ign.ign;
+
   if (ign.link) {
     const url = ign.link.replace(/{ign}/ig, encodeURIComponent(value));
     value = `[${value}](${url})`;
@@ -25,13 +21,7 @@ function ignFieldMap(ign) {
   return { name: ign.name, value };
 }
 
-/**
- * @param {Discord.User | Discord.GuildMember} user
- * @param {StoredIGN[]} igns
- * @param {boolean} paged
- * @returns {{ embed: Discord.EmbedBuilder, fields: Map<string, string[]>} | null}
- */
-function embedsIGN(user, igns, paged) {
+function embedsIGN(user: Discord.User | Discord.GuildMember, igns: StoredIGN[], paged: boolean) {
   if (igns.length === 0) return null;
 
   const populatedIgns = igns
@@ -59,18 +49,16 @@ function embedsIGN(user, igns, paged) {
     const ign = ignFieldMap(i);
     embed.addFields({ ...ign, inline: true });
   });
-  return { embed, fields: new Map() };
+  return { embed, fields: new Map<string, string[]>() };
 }
 
-/** @param {string | null} [system] */
-function findSystem(system) {
+function findSystem(system?: string | null) {
   if (!system) return undefined;
   system = system.toLowerCase();
   return u.db.sheets.igns.find(i => i.name.toLowerCase() === system || i.system.toLowerCase() === system || i.aliases.includes(system));
 }
 
-/** @param {Discord.ChatInputCommandInteraction} int */
-async function slashIgnSet(int) {
+async function slashIgnSet(int: Discord.ChatInputCommandInteraction) {
   const system = int.options.getString("system", true);
   const ign = int.options.getString("ign", true);
 
@@ -90,8 +78,7 @@ async function slashIgnSet(int) {
   return int.editReply({ content, embeds: embed ? [embed.embed] : undefined });
 }
 
-/** @param {Discord.ChatInputCommandInteraction} int */
-async function slashIgnBirthday(int) {
+async function slashIgnBirthday(int: Discord.ChatInputCommandInteraction) {
   const system = u.db.sheets.igns.get("birthday");
   if (!system) return int.editReply("Sorry, I had a problem accessing the birthday settings.");
 
@@ -132,8 +119,7 @@ async function slashIgnBirthday(int) {
   return int.editReply("I've updated your birthday DM setting!").then(u.clean);
 }
 
-/** @param {Discord.ChatInputCommandInteraction} int */
-async function slashIgnRemove(int) {
+async function slashIgnRemove(int: Discord.ChatInputCommandInteraction) {
   const system = int.options.getString("system", true);
   const found = findSystem(system);
   if (!found) return int.editReply("Sorry, I didn't recognize that IGN system.");
@@ -144,8 +130,7 @@ async function slashIgnRemove(int) {
   return int.editReply(`Your ${found.name} IGN has been removed.`);
 }
 
-/** @param {Discord.ChatInputCommandInteraction} int */
-async function slashIgnView(int) {
+async function slashIgnView(int: Discord.ChatInputCommandInteraction) {
   const system = int.options.getString("system");
 
   const target = int.options.getUser("target") ?? int.user;
@@ -167,8 +152,7 @@ async function slashIgnView(int) {
   return u.manyReplies(int, processedEmbeds, int.channelId !== u.sf.channels.botSpam);
 }
 
-/** @param {Discord.ChatInputCommandInteraction} int */
-async function slashIgnWhoPlays(int) {
+async function slashIgnWhoPlays(int: Discord.ChatInputCommandInteraction) {
   const system = int.options.getString("system", true);
   const found = findSystem(system);
   if (!found) return int.editReply("Sorry, I didn't recognize that IGN system.");
@@ -202,8 +186,8 @@ async function slashIgnWhoPlays(int) {
   const processedEmbeds = u.pagedEmbedsDescription(embed, lines).map(e => ({ embeds: [e] }));
   return u.manyReplies(int, processedEmbeds, int.channelId !== u.sf.channels.botSpam);
 }
-/** @param {Discord.ChatInputCommandInteraction} int */
-async function slashIgnWhoIs(int) {
+
+async function slashIgnWhoIs(int: Discord.ChatInputCommandInteraction) {
   const inputIgn = int.options.getString("ign", true);
   const inputSystem = int.options.getString("system");
 
@@ -215,8 +199,7 @@ async function slashIgnWhoIs(int) {
 
   const igns = await u.db.ign.findMany([...members.keys()], found?.system);
 
-  /** @type {Discord.Collection<string, { score: number, igns: {text: string, score: number}[] }>} */
-  const lines = new u.Collection();
+  const lines = new u.Collection<string, { score: number; igns: { text: string; score: number; }[]; }>();
 
   // do a fuzzy search
   const results = fuzzy.go(inputIgn, igns, { keys: ["ign"], threshold: 0.4 });
@@ -255,8 +238,7 @@ async function slashIgnWhoIs(int) {
   return u.manyReplies(int, processedEmbeds, int.channelId !== u.sf.channels.botSpam);
 }
 
-/** @type {Discord.Collection<string, { systems: Set<string>, expires: number }>} */
-const autocompleteCache = new u.Collection();
+const autocompleteCache = new u.Collection<string, { systems: Set<string>; expires: number; }>();
 
 const Module = new Augur.Module()
 .addInteraction({
@@ -280,15 +262,13 @@ const Module = new Augur.Module()
   autocomplete: async (int) => {
     const option = int.options.getFocused(true);
     if (option.name === "system") {
-      /** @type {{name: string, value: string}[]} */
-      const systems = [];
+      const systems: { name: string; value: string; }[] = [];
       const val = option.value.toLowerCase();
       let igns = u.db.sheets.igns.map(i => i);
 
       // filter IGN systems they can remove. Uses a cache so that it's not calling the db every 5 seconds
       if (int.options.getSubcommand() === "remove") {
-        /** @type {Set<string>} */
-        let sys;
+        let sys: Set<string>;
         const cache = autocompleteCache.get(int.user.id);
 
         if (cache && cache.expires > Date.now()) {

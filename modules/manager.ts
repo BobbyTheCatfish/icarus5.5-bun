@@ -1,12 +1,11 @@
 // @ts-check
-const Augur = require("augurbot-ts");
-const Discord = require("discord.js");
-const Rank = require("../utils/rankInfo");
-const u = require("../utils/utils");
-const c = require("../utils/modCommon");
+import Augur from "augurbot-ts";
+import Discord from "discord.js";
+import Rank from "../utils/rankInfo";
+import u from "../utils/utils";
+import c from "../utils/modCommon";
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
-async function slashManagerUserTransfer(int) {
+async function slashManagerUserTransfer(int: Augur.GuildInteraction<"CommandSlash">) {
   await int.deferReply({ flags: ["Ephemeral"] });
 
   // get users
@@ -104,7 +103,7 @@ async function slashManagerUserTransfer(int) {
   const updatedReminders = await u.db.reminder.transfer(oldId, newUser.id);
 
   // generate results embed
-  const diff = (/** @type {"priorTenure"|"posts"|"voice"|"totalXP"|"currentXP"} */ prop) => `+${(updatedUser?.[prop] ?? 0) - newUserDocBackup[prop]} ${prop}`;
+  const diff = (prop: "priorTenure" | "posts" | "voice" | "totalXP" | "currentXP") => `+${(updatedUser?.[prop] ?? 0) - newUserDocBackup[prop]} ${prop}`;
   const embed = u.embed().setTitle("User Transfer")
     .setDescription("Transfered the following information:\n" +
       `User: ${diff("priorTenure")}, ${diff("totalXP")}, ${diff("currentXP")}, ${diff("posts")}, ${diff("voice")}\n` +
@@ -118,7 +117,7 @@ async function slashManagerUserTransfer(int) {
 }
 
 /** @param {Discord.GuildMember} sponsor */
-async function createSponsorChannel(sponsor) {
+async function createSponsorChannel(sponsor: Discord.GuildMember) {
   // Create the channel
   const guild = sponsor.guild;
   const channel = await guild.channels.create({
@@ -134,8 +133,7 @@ async function createSponsorChannel(sponsor) {
   });
 
   // Add it to the sheets database
-  /** @type {import("google-spreadsheet").GoogleSpreadsheetRow} */
-  let row;
+  let row: import("google-spreadsheet").GoogleSpreadsheetRow;
   const existingRow = u.db.sheets.sponsors.rows.find(r => r.get("Sponsor") === sponsor.id);
   if (!existingRow) {
     row = await u.db.sheets.docs.config.sheetsByTitle["Sponsor Channels"].addRow({
@@ -174,8 +172,7 @@ async function createSponsorChannel(sponsor) {
   return channel;
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
-async function slashManagerSponsorChannel(int) {
+async function slashManagerSponsorChannel(int: Augur.GuildInteraction<"CommandSlash">) {
   const sponsor = int.options.getMember("sponsor");
   if (!sponsor) return int.reply({ content: "Sorry, I couldn't find that user.", flags: ["Ephemeral"] });
   if (!sponsor.roles.cache.hasAny(u.sf.roles.sponsors.pro, u.sf.roles.sponsors.legendary)) return int.reply({ content: `${sponsor} isn't a Pro Sponsor!`, flags: ["Ephemeral"] });

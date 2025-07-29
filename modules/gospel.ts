@@ -1,28 +1,28 @@
 // @ts-check
-const Augur = require("augurbot-ts"),
-  Discord = require("discord.js"),
-  Parser = require("rss-parser"),
-  u = require("../utils/utils"),
-  /** @type {Record<string, Record<string, string[][]>>} */
-  jstRef = require("../data/gospel/jst-reference.json"),
-  books = require("../data/gospel/books.json");
+import Augur from "augurbot-ts";
+import Discord from "discord.js";
+import Parser from "rss-parser";
+import u from "../utils/utils";
+/** @type {Record<string, Record<string, string[][]>>} */
+import jstRef from "../data/gospel/jst-reference.json";
+import books from "../data/gospel/books.json";
+import scriptureMasteries from "../data/gospel/scripture-mastery-reference.json";
 
-/**
- * @typedef Book
- * @prop {string} bookName
- * @prop {string} urlAbbrev
- * @prop {string} work
- * @prop {string[]} abbreviations
- *
- * @typedef Ref
- * @prop {string} book
- * @prop {string} chapter
- * @prop {string} verses
- */
+interface Book {
+  bookName: string;
+  urlAbbrev: string;
+  work: string;
+  abbreviations: string[];
+}
+
+interface Ref {
+  book: string;
+  chapter: string;
+  verses: string;
+}
 
 
-/** @type {Discord.Collection<string, Omit<Book, "abbreviations">>} */
-const abbreviationTable = new u.Collection();
+const abbreviationTable = new u.Collection<string, Omit<Book, "abbreviations">>();
 
 const jstRegex = /\[JST ([0-9]{1,2})\]$/;
 let searchExp = new RegExp("");
@@ -43,16 +43,8 @@ const manuals = new u.Collection([
   [2025, "doctrine-and-covenants-2025"]
 ]);
 
-/**
- * Builds the abbreviation lookup table for books of scripture.
- * @param {object} book The book to pass in
- * @param {String} book.bookName The canonical book name. Ex: "Song of Solomon"
- * @param {String[]} book.abbreviations An array of abbreviations, in lowercase. Ex: ["song", "sos"], ["dc", "d&c"]
- * @param {String} book.work The abbreviation for the work it's from, according to the Church URL. Ex: "ot", "bofm", "dc-testament"
- * @param {String} book.urlAbbrev The abbreviation for the chapter in the link. For 1 Nephi, this is 1-ne.
- * @return This method mutates the lookup array.
- */
-function refAbbrBuild(book) {
+/** Builds the abbreviation lookup table for books of scripture. */
+function refAbbrBuild(book: { bookName: string; abbreviations: string[]; work: string; urlAbbrev: string; }) {
   const { bookName, abbreviations, urlAbbrev, work } = book;
 
   abbreviationTable.set(bookName.toLowerCase(), { bookName, work, urlAbbrev });
@@ -63,13 +55,8 @@ function refAbbrBuild(book) {
   }
 }
 
-/**
- * if book xor chapter are provided it tries to find one that fits.
- * @param {string} [book]
- * @param {string} [chapter]
- */
-function getScriptureMastery(book, chapter) {
-  const scriptureMasteries = require("../data/gospel/scripture-mastery-reference.json");
+/** if book xor chapter are provided it tries to find one that fits. */
+function getScriptureMastery(book?: string, chapter?: string) {
   let m = scriptureMasteries;
 
   if (book) m = scriptureMasteries.filter(s => s.book === book);
@@ -84,12 +71,8 @@ function getScriptureMastery(book, chapter) {
   };
 }
 
-/**
- * Displays a verse that's requested, or a random verse if none is specified.
- * @param {Discord.ChatInputCommandInteraction | Discord.Message} interaction The interaction that caused this command.
- * @param {Ref} [parsed]
- */
-async function slashGospelVerse(interaction, parsed) {
+/** Displays a verse that's requested, or a random verse if none is specified. */
+async function slashGospelVerse(interaction: Discord.ChatInputCommandInteraction | Discord.Message, parsed?: Ref) {
   let book, chapter, verses;
 
   if (parsed) {
@@ -132,14 +115,14 @@ async function slashGospelVerse(interaction, parsed) {
   }
 
   /** @type {Discord.ActionRowBuilder<Discord.MessageActionRowComponentBuilder>[]} */
-  const components = [];
+  const components: Discord.ActionRowBuilder<Discord.MessageActionRowComponentBuilder>[] = [];
   let content;
 
   if (versesNums.length > 0) {
     /** @type {string[]} */
-    const verseContent = [];
+    const verseContent: string[] = [];
     /** @type {Set<string>} */
-    const jstLookups = new Set();
+    const jstLookups: Set<string> = new Set();
 
     for (const num of versesNums) {
       if (bookJson[bookRef.bookName][chapter][num]) {
@@ -167,7 +150,7 @@ async function slashGospelVerse(interaction, parsed) {
       content = "JST is available for this section";
       embed.setFooter({ text: `JST | ${bookRef.bookName} | ${chapter} | ${[...jstLookups].join(",")}` });
 
-      components.push(u.MessageActionRow().addComponents([
+      components.push(new u.MessageActionRow().addComponents([
         new u.Button().setCustomId("verseJST").setLabel("View JST").setStyle(Discord.ButtonStyle.Primary)
       ]));
     }
@@ -181,11 +164,9 @@ async function slashGospelVerse(interaction, parsed) {
  * @param {string} [verses] A string containing numbers, spaces, hyphens, and commas.
  * @returns An Array of numbered integers as interpreted. "3-5, 7" returns [3, 4, 5, 7]
  */
-function parseVerseRange(verses) {
-  /** @type {number[]} */
-  let versesNums = [];
-  /** @type {string[]} */
-  let textVerses = [];
+function parseVerseRange(verses?: string) {
+  let versesNums: number[] = [];
+  let textVerses: string[] = [];
 
   if (verses) {
     if (verses.charAt(0) === "-") return { versesNums: [], text: "" }; // catch people giving negative verse to be silly
@@ -218,8 +199,7 @@ function parseVerseRange(verses) {
   return { versesNums, text: textVerses.join(", ") };
 }
 
-/** @param {Date} inputDate */
-function calculateDate(inputDate, debug = false) {
+function calculateDate(inputDate: Date, debug = false) {
   inputDate.setHours(10); // weird moment stuff
   const date = u.moment(inputDate);
 
@@ -244,10 +224,7 @@ function calculateDate(inputDate, debug = false) {
 
 }
 
-/**
- * @param {Discord.ChatInputCommandInteraction} interaction
- */
-function slashGospelComeFollowMe(interaction) {
+function slashGospelComeFollowMe(interaction: Discord.ChatInputCommandInteraction) {
   const date = calculateDate(new Date());
   if (date && typeof date !== 'string') {
     interaction.reply(`## Come, Follow Me Lesson for the week of ${date.str}:\n${date.link}`);
@@ -256,8 +233,7 @@ function slashGospelComeFollowMe(interaction) {
   }
 }
 
-/** @param {Discord.ChatInputCommandInteraction} interaction */
-async function slashGospelNews(interaction) {
+async function slashGospelNews(interaction: Discord.ChatInputCommandInteraction) {
   await interaction.deferReply();
 
   const parser = new Parser();
@@ -314,11 +290,11 @@ const Module = new Augur.Module()
     const bookRef = books.find(b => b.bookName === book);
 
     /** @type {string[]} */
-    const lines = [];
+    const lines: string[] = [];
     const indexes = index.split(",");
     for (const i of indexes) {
       const numIndex = parseInt(i);
-      lines.push(jstRef[book][chapter][numIndex].join("\n\n"));
+      lines.push((jstRef as Record<string, Record<string, string[][]>>)[book][chapter][numIndex].join("\n\n"));
     }
 
     const embed = u.embed(msg.embeds[0])
@@ -347,7 +323,7 @@ const Module = new Augur.Module()
     const fakeDay = new Date("Dec 31 2023");
     let i = 0;
 
-    const dates = new u.Collection();
+    const dates = new u.Collection<any, any>();
     while (i <= 365) {
       fakeDay.setDate(fakeDay.getDate() + 1);
       const calc = calculateDate(fakeDay, true);

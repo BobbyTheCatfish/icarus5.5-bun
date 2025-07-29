@@ -34,7 +34,7 @@ const outdated = "Expected a Discord ID but likely recieved an object instead. T
 /**
  * @enum {number}
  */
-const TrackXPEnum = {
+export const TrackXPEnum = {
   OFF: 0,
   SILENT: 1,
   FULL: 2

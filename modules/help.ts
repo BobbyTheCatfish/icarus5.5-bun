@@ -1,9 +1,9 @@
 // @ts-check
-const Augur = require("augurbot-ts"),
-  Discord = require("discord.js"),
-  fs = require("fs"),
-  config = require("../config/config.json"),
-  u = require("../utils/utils");
+import Augur from "augurbot-ts"
+import Discord from "discord.js"
+import fs from "fs"
+import config from "../config/config.json"
+import u from "../utils/utils"
 
 const miscFeatures = [
   "### SGA Translation\nClick the button under a message with Standard Galactic Alphabet to translate it to English",
@@ -11,12 +11,8 @@ const miscFeatures = [
   "### Mod Menu\nRight click (or tap and hold) a message and go to Apps > Mod Menu to report the message"
 ];
 
-/**
- * @param {any} command
- * @param {Discord.ChatInputCommandInteraction} int
- * @returns {boolean}
- */
-function isAvailable(command, int) {
+
+function isAvailable(command: any, int: Discord.ChatInputCommandInteraction): boolean {
   if (!command.enabled || command.hidden) return false; // hidden
   if (command.onlyGuild && !int.inGuild()) return false; // outside server
   if (command.guildId && command.guildId !== int.guildId) return false; // outside correct server
@@ -39,7 +35,6 @@ const Module = new Augur.Module()
   id: "helpTags",
   type: "Button",
   process: async (int) => {
-    /** @type {import("./tags").Shared} */
     const tu = int.client.moduleManager.shared.get("tags.js");
     if (!tu || tu.tags.size === 0) return int.reply({ content: "I couldn't find any tags. Try again later!", flags: ["Ephemeral"] });
 
@@ -74,44 +69,38 @@ const Module = new Augur.Module()
         return str;
       });
 
-    const ints = Module.client.moduleManager.interactions
-      .filter(c => c.type === "CommandSlash" && isAvailable(c, int))
-      .map(i => {
-        const reg = i.options?.registry;
-        if (!reg || !fs.existsSync(`registry/${reg}.js`)) return [];
+    const ints = Module.client.moduleManager.interactions.filter(c => c.type === "CommandSlash" && isAvailable(c, int));
+    const parsedInts: string[] = [];
 
-        /** @type {Discord.APIApplicationCommand} */
-        const file = require(`../registry/${reg}`);
-
-        const { name } = file;
-        const cmds = [cmd(file, "")];
-
-        for (const option of file.options ?? []) {
-          if (option.type === 2) { // subcommand group
-            option.options?.forEach(o => cmds.push(cmd(o, name, option)));
-          } else if (option.type === 1) { // subcommand
-            cmds.push(cmd(option, name));
-          }
+    for (const [_, i] of ints) {
+      const reg = i.options?.registry as string;
+      if (!reg || !fs.existsSync(`registry/${reg}.js`)) continue;
+  
+      const file: Discord.APIApplicationCommand = await import(`../registry/${reg}`);
+  
+      const { name } = file;
+      const cmds = [cmd(file, "")];
+  
+      for (const option of file.options ?? []) {
+        if (option.type === 2) { // subcommand group
+          option.options?.forEach(o => cmds.push(cmd(o, name, option)));
+        } else if (option.type === 1) { // subcommand
+          cmds.push(cmd(option, name));
         }
+      }
 
-        return cmds.map(c => `${c.name}\n${c.description}\n`)
-          .sort((a, b) => a.localeCompare(b));
-      })
-      .filter(i => i.length > 0)
-      .flat();
+      parsedInts.push(...cmds.map(c => `${c.name}\n${c.description}\n`)
+        .sort((a, b) => a.localeCompare(b))
+      )
+    }
 
-    const embeds = u.pagedEmbedsDescription(embed, ints.concat(commands).concat(miscFeatures));
+    const embeds = u.pagedEmbedsDescription(embed, parsedInts.concat(commands).concat(miscFeatures));
     await u.manyReplies(int, embeds.map(e => ({ embeds: [e] })), true);
-    await int.followUp({ components: [u.MessageActionRow().addComponents(tagButton)], flags: ["Ephemeral"] });
+    await int.followUp({ components: [new u.MessageActionRow().addComponents(tagButton)], flags: ["Ephemeral"] });
   }
 });
 
-/**
- * @param {Discord.APIApplicationCommand | Discord.APIApplicationCommandSubcommandOption} op
- * @param {string} baseName
- * @param {{ name: string }} [group]
- */
-function cmd(op, baseName = "", group) {
+function cmd(op: Discord.APIApplicationCommand | Discord.APIApplicationCommandSubcommandOption, baseName: string = "", group?: { name: string }) {
   // command or subcommand header
   let name = baseName ? `### /${baseName} ` : "## /";
   if (group) name += `${group.name} `;

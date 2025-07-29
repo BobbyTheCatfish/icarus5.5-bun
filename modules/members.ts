@@ -1,23 +1,20 @@
 // @ts-check
 
-const Augur = require("augurbot-ts"),
-  u = require("../utils/utils"),
-  c = require("../utils/modCommon"),
-  Discord = require("discord.js"),
-  config = require("../config/config.json"),
-  badgeUtils = require("../utils/badges"),
-  RankInfo = require("../utils/rankInfo"),
-  Jimp = require("jimp");
+import Augur from "augurbot-ts";
+import u from "../utils/utils";
+import c from "../utils/modCommon";
+import Discord from "discord.js";
+import config from "../config/config.json";
+import badgeUtils from "../utils/badges";
+import RankInfo from "../utils/rankInfo";
+import Jimp from "jimp";
 
-/** @type {import("@jimp/plugin-print").Font} */
-let font;
+let font: import("@jimp/plugin-print").Font;
 
 /**
  * Creates a profile card - a PNG that contains some user information in a fun format!
- * @param {Discord.GuildMember} member The member to create the profile card for.
- * @returns {Promise<Buffer|undefined>} File-like object to attach to your response.
  */
-async function makeProfileCard(member) {
+async function makeProfileCard(member: Discord.GuildMember): Promise<Buffer | undefined> {
   try {
     const members = member.guild.members.cache;
     const rank = await u.db.user.getRank(member.id, members);
@@ -105,10 +102,8 @@ async function makeProfileCard(member) {
 
 /**
  * Returns user information.
- * @param {Augur.GuildInteraction<"CommandSlash">} interaction The interaction that the user submits.
- * @param {Discord.GuildMember} user The user to get information for.
  */
-async function slashUserInfo(interaction, user) {
+async function slashUserInfo(interaction: Augur.GuildInteraction<"CommandSlash">, user: Discord.GuildMember) {
   const embed = await c.getSummaryEmbed(user, 0, interaction.guild, false);
   embed
   // un-mod-ifying it
@@ -119,10 +114,8 @@ async function slashUserInfo(interaction, user) {
 
 /**
  * Returns the profile card of the mentioned user. Or the current user.
- * @param {Augur.GuildInteraction<"CommandSlash">} interaction The interaction that the user submits.
- * @param {Discord.GuildMember} user The user to get the profile card for.
  */
-async function slashUserProfile(interaction, user) {
+async function slashUserProfile(interaction: Augur.GuildInteraction<"CommandSlash">, user: Discord.GuildMember) {
   await interaction.deferReply({ flags: u.ephemeralChannel(interaction) });
   const card = await makeProfileCard(user);
   if (!card) return; // error handled

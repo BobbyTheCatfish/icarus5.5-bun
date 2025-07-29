@@ -1,12 +1,10 @@
-// @ts-check
-const Augur = require("augurbot-ts"),
-  u = require("../utils/utils"),
-  config = require("../config/config.json"),
-  Discord = require("discord.js"),
-  /** @type {string[]} */
-  banned = require("../data/banned.json").features.suggestions;
+import Augur from "augurbot-ts";
+import u from "../utils/utils";
+import config from "../config/config.json";
+import Discord from "discord.js";
+import banned from "../data/banned.json";
 
-/** @typedef {import("../database/controllers/tag").tag} tag */
+type tag = import("../database/controllers/tag").tag;
 
 const hasLink = /http(s)?:\/\/(\w+(-\w+)*\.)+\w+/;
 const affiliateLinks = [
@@ -15,29 +13,25 @@ const affiliateLinks = [
   //  affiliate: "Amazon Affiliate",
   //  test: /amazon\.(com|co\.uk)\/(\w+(-\w+)*\/)?(gp\/product|dp)\/(\w+)/i,
   //  tag: /tag=ldsgamers-20/,
-  /** @param {string} match */
-  //  link: (match) => `https://www.${match[0]}?tag=ldsgamers-20`
+  //  link: (match: string) => `https://www.${match[0]}?tag=ldsgamers-20`
   // },
   {
     site: "CDKeys.com",
     affiliate: "CDKeys Affiliate",
     test: /cdkeys\.com(\/\w+(-\w+)*)*/i,
     tag: /mw_aref=LDSGamers/i,
-    /** @param {string} match */
-    link: match => `https://www.${match}?mw_aref=LDSGamers`
+    link: (match: string) => `https://www.${match}?mw_aref=LDSGamers`
   },
   // {
   //  site: "Humble Bundle",
   //  affiliate: "Humble Bundle Partner",
   //  test: /humblebundle\.com(\/\w+(-\w+)*)*/i,
   //  tag: /partner=ldsgamers/i,
-  /** @param {string} match */
-  //  link: (match) => `https://www.${match[0]}?partner=ldsgamers`
+  //  link: (match: string) => `https://www.${match[0]}?partner=ldsgamers`
   // },
 ];
 
-/** @param {Discord.Message} msg */
-function processLinks(msg) {
+function processLinks(msg: Discord.Message) {
   for (const site of affiliateLinks) {
     const match = site.test.exec(msg.cleanContent);
     if (match && !site.tag.test(msg.cleanContent)) {
@@ -48,7 +42,7 @@ function processLinks(msg) {
 
 // suggestion modals
 const replyModal = new u.Modal().addComponents(
-  u.ModalActionRow().addComponents([
+  new u.ModalActionRow().addComponents([
     new u.TextInput()
       .setCustomId("update")
       .setLabel("Message")
@@ -60,9 +54,8 @@ const replyModal = new u.Modal().addComponents(
 
 /**
  * Responds with the number of guild members, and how many are online.
- * @param {Discord.ChatInputCommandInteraction} interaction The interaction that the user submits.
  */
-async function slashLdsgMembers(interaction) {
+async function slashLdsgMembers(interaction: Discord.ChatInputCommandInteraction) {
   try {
     const ldsg = interaction.client.guilds.cache.get(u.sf.ldsg);
     if (!ldsg) throw new Error("Couldn't find LDSG");
@@ -72,15 +65,14 @@ async function slashLdsgMembers(interaction) {
 }
 
 const replyOption = [
-  u.MessageActionRow().setComponents([
+  new u.MessageActionRow().setComponents([
     new u.Button().setCustomId("suggestionReply").setEmoji("🗨️").setLabel("Reply to user").setStyle(Discord.ButtonStyle.Primary),
     new u.Button().setCustomId("suggestionManage").setEmoji("✏️").setLabel("Manage Ticket").setStyle(Discord.ButtonStyle.Primary),
   ])
 ];
 
-/** @param {Discord.ChatInputCommandInteraction} int */
-async function slashLdsgSuggest(int) {
-  if (banned.includes(int.user.id)) return int.editReply("Sorry, but you aren't allowed to make suggestions right now. Reach out to MGMT if you have questions.");
+async function slashLdsgSuggest(int: Discord.ChatInputCommandInteraction) {
+  if ((banned.features.suggestions as string[]).includes(int.user.id)) return int.editReply("Sorry, but you aren't allowed to make suggestions right now. Reach out to MGMT if you have questions.");
   const suggestion = int.options.getString("suggestion", true);
   await int.deferReply({ flags: ["Ephemeral"] });
   const embed = u.embed({ author: int.user })
@@ -92,8 +84,7 @@ async function slashLdsgSuggest(int) {
   return int.user.send({ content: "You have sent the following suggestion to the LDSG Team for review:", embeds: [embed] });
 }
 
-/** @param {Discord.ButtonInteraction<"cached">} int */
-async function suggestReply(int) {
+async function suggestReply(int: Discord.ButtonInteraction<"cached">) {
   const embed = u.embed(int.message.embeds[0]);
   // get user input
   await int.showModal(replyModal);
@@ -120,8 +111,7 @@ async function suggestReply(int) {
   }
 }
 
-/** @param {Discord.ButtonInteraction<"cached">} int */
-async function suggestManage(int) {
+async function suggestManage(int: Discord.ButtonInteraction<"cached">) {
   // make sure everything is good
   if (!int.channel) return int.reply({ content: "I couldn't access the channel you're in!", flags: ["Ephemeral"] });
   if (int.channel.parentId !== u.sf.channels.team.suggestionBox) return int.reply({ content: `This can only be done in <#${u.sf.channels.team.suggestionBox}>!`, flags: ["Ephemeral"] });
@@ -129,7 +119,7 @@ async function suggestManage(int) {
   // create modal
   const oldFields = (int.message.embeds[0]?.fields || []);
   const manageModal = new u.Modal().addComponents(
-    u.ModalActionRow().addComponents([
+    new u.ModalActionRow().addComponents([
       new u.TextInput()
         .setCustomId("title")
         .setLabel("Title")
@@ -138,7 +128,7 @@ async function suggestManage(int) {
         .setPlaceholder("New title for the forum post")
         .setValue(int.channel.name)
     ]),
-    u.ModalActionRow().addComponents([
+    new u.ModalActionRow().addComponents([
       new u.TextInput()
         .setCustomId("issue")
         .setLabel("Set Issue")
@@ -147,7 +137,7 @@ async function suggestManage(int) {
         .setPlaceholder("What issue is the user facing?")
         .setValue(oldFields.find(f => f.name === "Issue")?.value ?? "")
     ]),
-    u.ModalActionRow().addComponents([
+    new u.ModalActionRow().addComponents([
       new u.TextInput()
         .setCustomId("plans")
         .setLabel("Plans")
@@ -181,8 +171,7 @@ async function suggestManage(int) {
     await int.channel.setName(`Suggestion from ${user}`);
   }
 
-  /** @type {{ name: string, value: string }[]} */
-  const fields = [];
+  const fields: { name: string; value: string; }[] = [];
   if (issue) fields.push({ name: "Issue", value: issue });
   if (plans) fields.push({ name: "Plans", value: plans });
   em.setFields(fields);
@@ -205,7 +194,6 @@ const Module = new Augur.Module()
 
         // these commands are static tags
         default: {
-          /** @type {import("./tags").Shared} */
           const tu = interaction.client.moduleManager.shared.get("tags.js");
           if (!tu) return u.errorHandler(new Error("Couldn't get Tag Utils"), interaction);
 

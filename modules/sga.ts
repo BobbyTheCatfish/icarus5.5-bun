@@ -1,7 +1,7 @@
 // @ts-check
-const Augur = require("augurbot-ts"),
-  u = require('../utils/utils'),
-  Discord = require("discord.js");
+import Augur from "augurbot-ts";
+import u from '../utils/utils';
+import Discord from "discord.js";
 
 const dict = new u.Collection([
   ["ᔑ", "a"],
@@ -31,10 +31,10 @@ const dict = new u.Collection([
   ["॥", "y"],
   ["∩", "z"],
 ]);
+
 const zeroWidthSpace = "​";
 
-/** @param {String} sga */
-function translate(sga) {
+function translate(sga: string) {
   let to = "";
 
   let upper = false;
@@ -53,13 +53,12 @@ function translate(sga) {
   return to;
 }
 
-/** @param {Discord.Message} msg */
-async function handleMessage(msg) {
+async function handleMessage(msg: Discord.Message) {
   if (msg.author.bot || !dict.hasAny(...msg.content)) {
     return;
   }
 
-  const row = u.MessageActionRow()
+  const row = new u.MessageActionRow()
     .addComponents(
       new u.Button()
         .setCustomId('sgaTranslate')
@@ -72,8 +71,7 @@ async function handleMessage(msg) {
   });
 }
 
-/** @param {Discord.ButtonInteraction} inter */
-async function handleButton(inter) {
+async function handleButton(inter: Discord.ButtonInteraction) {
   try {
     const msg = await inter.message.fetchReference();
     const translated = translate(msg.content);

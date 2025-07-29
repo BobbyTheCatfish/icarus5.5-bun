@@ -1,39 +1,29 @@
 // @ts-check
-const Augur = require("augurbot-ts"),
-  Discord = require("discord.js"),
-  roleInfo = require("../utils/roleInfo"),
-  u = require("../utils/utils");
+import Augur from "augurbot-ts";
+import Discord from "discord.js";
+import roleInfo from "../utils/roleInfo";
+import u from "../utils/utils";
 
 const Module = new Augur.Module();
 
-/**
- * @param {Discord.GuildMember} member
- * @param {string} id
-*/
-const hasRole = (member, id) => member.roles.cache.has(id);
 
-/**
- * @param {Discord.BaseInteraction<"cached">} int
- * @param {Discord.Role} role
- */
-function giveableRole(int, role) {
+const hasRole = (member: Discord.GuildMember, id: string) => member.roles.cache.has(id);
+
+
+function giveableRole(int: Discord.BaseInteraction<"cached">, role: Discord.Role) {
   return !role.managed &&
     role.id !== role.guild.roles.everyone.id &&
     role.position < (int.guild.members.me?.roles.highest.position ?? 0);
 }
 
-/**
- * @param {Augur.GuildInteraction<"CommandSlash">} int
- * @param {Boolean} give
-*/
-async function slashRoleAdd(int, give = true) {
+async function slashRoleAdd(int: Augur.GuildInteraction<"CommandSlash">, give: boolean = true) {
   await int.deferReply({ flags: ["Ephemeral"] });
   const input = int.options.getString("role", true);
   const admin = u.perms.calc(int.member, ["mgr"]);
 
   // role finding!
   /** @type {Discord.Role | undefined} */
-  let role;
+  let role: Discord.Role | undefined;
   if (admin) role = int.guild.roles.cache.find(r => r.name.toLowerCase() === input.toLowerCase());
   else role = u.db.sheets.optRoles.find(r => r.role.name.toLowerCase() === input.toLowerCase())?.role;
   if (!role) return admin ? int.editReply(`I couldn't find the ${input} role.`) : int.editReply(`You didn't give me a valid role!`);
@@ -50,8 +40,7 @@ async function slashRoleAdd(int, give = true) {
   }
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
-async function slashRoleList(int) {
+async function slashRoleList(int: Augur.GuildInteraction<"CommandSlash">) {
   // get stored roles
   const roles = new u.Collection(u.db.sheets.optRoles.map(r => [r.role.id, r.role]));
   const [has, without] = roles.partition(r => int.member.roles.cache.has(r.id));
@@ -60,8 +49,7 @@ async function slashRoleList(int) {
   const embed = u.embed().setTitle("Opt-In Roles")
     .setDescription(`You can add these roles with </role add:${u.sf.commands.slashRole}> to recieve pings and gain access to certain channels\n`);
 
-  /** @type {string[]} */
-  const lines = [];
+  const lines: string[] = [];
   if (has.size > 0) lines.push("**Already Have**", ...has.map(h => h.toString()));
   lines.push("\n**Available to Add**");
   if (without.size > 0) lines.push(...without.map(w => w.toString()));
@@ -71,8 +59,7 @@ async function slashRoleList(int) {
   return u.manyReplies(int, processedEmbeds, ephemeral);
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
-async function slashRoleWhoHas(int) {
+async function slashRoleWhoHas(int: Augur.GuildInteraction<"CommandSlash">) {
   try {
     const ephemeral = int.channel?.id === u.sf.channels.general;
     await int.deferReply({ flags: ephemeral ? ["Ephemeral"] : undefined });
@@ -92,8 +79,7 @@ async function slashRoleWhoHas(int) {
   }
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
-async function slashRoleInventory(int) {
+async function slashRoleInventory(int: Augur.GuildInteraction<"CommandSlash">) {
   try {
     const member = int.member;
     const inv = roleInfo.getInventory(member)
@@ -108,8 +94,7 @@ async function slashRoleInventory(int) {
   } catch (e) { u.errorHandler(e, int); }
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
-async function slashRoleEquip(int) {
+async function slashRoleEquip(int: Augur.GuildInteraction<"CommandSlash">) {
   try {
     await int.deferReply({ flags: u.ephemeralChannel(int) });
 
@@ -125,12 +110,8 @@ async function slashRoleEquip(int) {
   } catch (e) { u.errorHandler(e, int); }
 }
 
-/**
- * @param {Discord.AutocompleteInteraction<"cached">} int
- * @param {Discord.Role} role
- * @param {string} input
- */
-const addFilter = (int, role, input, adding = false) => {
+
+const addFilter = (int: Discord.AutocompleteInteraction<"cached">, role: Discord.Role, input: string, adding = false) => {
   return role.name.toLowerCase().includes(input) &&
     giveableRole(int, role) &&
     !role.name.match(/(--)|(~~)|(\^\^)/) &&
@@ -163,7 +144,7 @@ Module.addInteraction({
     if (option.name === 'role') {
       const adding = sub === "add";
       /** @type {string[]} */
-      let roles;
+      let roles: string[];
       if (u.perms.calc(interaction.member, ["mgr"])) {
         roles = interaction.guild.roles.cache.filter(r => addFilter(interaction, r, input, adding))
           .sort((a, b) => b.comparePositionTo(a))
