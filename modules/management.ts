@@ -4,11 +4,12 @@ import u from "../utils/utils"
 import banners from "../data/banners.json"
 import fs from 'fs'
 import path from 'path'
+import { CakeShared } from "../types/sharedModuleTypes"
 
 const Module = new Augur.Module();
 
 
-function cakeFunctions(client: Discord.Client) {
+function cakeFunctions(client: Discord.Client): CakeShared | undefined {
   return client.moduleManager.shared.get("cake.js");
 }
 

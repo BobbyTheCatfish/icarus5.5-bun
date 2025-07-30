@@ -4,7 +4,7 @@ import Discord from "discord.js";
 import u from "../utils/utils";
 import fuzzy from "fuzzysort";
 
-type IGN = import("../database/sheetTypes").IGN;
+type IGN = import("../types/sheetTypes").IGN;
 type StoredIGN = import("../database/controllers/ign").IGN;
 
 function ignFieldMap(ign: IGN & { ign: string; }) {

@@ -4,6 +4,7 @@ import fs from 'fs';
 import axios from 'axios';
 import config from '../config/config.json';
 import u from "../utils/utils";
+import { TagsShared } from "../types/sharedModuleTypes";
 
 type tag = import("../database/controllers/tag").tag;
 
@@ -17,7 +18,7 @@ async function saveAttachment(attachment: Discord.Attachment, cmd: { _id: import
   response.data.pipe(fs.createWriteStream(config.tagFilePath + "/" + cmd._id.toString()));
 }
 
-const tags = new Discord.Collection<string, tag>();
+const tags: TagsShared["tags"] = new Discord.Collection();
 
 function runTag(msg: Discord.Message) {
   const cmd = u.parse(msg);
@@ -35,7 +36,7 @@ function runTag(msg: Discord.Message) {
 }
 
 
-function encodeTag(tag: import("../database/controllers/tag").tag, msg: Discord.Message | null, int?: Discord.ChatInputCommandInteraction) {
+const encodeTag: TagsShared["encodeTag"] = (tag, msg, int) => {
   const user = msg?.inGuild() ? msg.member : int?.inCachedGuild() ? int.member : int?.user ?? msg?.author ?? null;
   const origin = msg ?? int;
   if (!user || !origin) return "I couldn't process that command!";
@@ -249,7 +250,5 @@ const Module = new Augur.Module()
   } catch (error) { u.errorHandler(error, "Load Custom Tags"); }
 })
 .setShared({ tags, encodeTag });
-
-type Shared = { tags: typeof tags; encodeTag: typeof encodeTag; } | undefined;
 
 export = Module;

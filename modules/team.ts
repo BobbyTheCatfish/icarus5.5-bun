@@ -2,6 +2,7 @@ import fs from "fs";
 import Augur from "augurbot-ts";
 import u from "../utils/utils";
 import c from "../utils/modCommon";
+import { BankShared } from "../types/sharedModuleTypes";
 
 async function slashTeamRoleGive(int: Augur.GuildInteraction<"CommandSlash">, give = true) {
   try {
@@ -23,7 +24,7 @@ async function slashTeamRoleGive(int: Augur.GuildInteraction<"CommandSlash">, gi
 /** @param {Augur.GuildInteraction<"CommandSlash">} int */
 async function slashTeamBankAward(int: Augur.GuildInteraction<"CommandSlash">) {
   try {
-    const bankUtils = int.client.moduleManager.shared.get("bank.js");
+    const bankUtils: BankShared | undefined = int.client.moduleManager.shared.get("bank.js");
     if (!bankUtils) throw new Error("Could not access bank utilities from shared.");
     const { ember, gb, limit } = bankUtils;
 

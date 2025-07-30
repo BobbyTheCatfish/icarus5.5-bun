@@ -6,10 +6,11 @@ import config from '../config/config.json';
 import u from "../utils/utils";
 import {Moment} from "moment-timezone"
 import bdayLangs from "../data/birthday.json"
+import { CakeShared } from "../types/sharedModuleTypes";
 
 const Module = new Augur.Module();
 
-function celebrate(test = false) {
+const celebrate: CakeShared["celebrate"] = (test = false) => {
   if (u.moment().hours() === 15 || test) {
     birthdays().catch(error => u.errorHandler(error, (test ? "Test" : "Celebrate") + " Birthdays"));
     cakedays().catch(error => u.errorHandler(error, (test ? "Test" : "Celebrate") + " Cake Days"));
@@ -25,7 +26,7 @@ function checkDate(date: Moment, today: Moment, checkYear: boolean) {
 /**
  * Provide testing parameters for testing which days work
  */
-async function birthdays(testDate?: Date | string, testMember?: { discordId: string; ign: string | Date; }[]) {
+const birthdays: CakeShared["birthdays"] = async (testDate, testMember) => {
   // Send Birthday Messages, if saved by member
   try {
     const ldsg = Module.client.guilds.cache.get(u.sf.ldsg);
@@ -68,7 +69,7 @@ async function birthdays(testDate?: Date | string, testMember?: { discordId: str
 }
 
 /** Add tenure roles on member cake days */
-async function cakedays(testDate?: Date, testJoinDate?: Date, testMember?: Discord.Collection<string, Discord.GuildMember>) {
+const cakedays: CakeShared["cakedays"] = async (testDate, testJoinDate, testMember) => {
   try {
     const now = u.moment(testDate) ?? u.moment();
 
@@ -183,7 +184,5 @@ Module.addEvent("ready", () => {
     }, 60 * 60 * 1000);
   })
   .setShared({ cakedays, birthdays, celebrate });
-
-type Shared = { cakedays: typeof cakedays; birthdays: typeof birthdays; celebrate: typeof celebrate; } | undefined;
 
 export = Module;

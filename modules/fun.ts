@@ -9,6 +9,7 @@ import buttermelonFacts from '../data/buttermelonFacts.json'
 /** @type {Record<string, string>} */
 import emojiKitchenSpecialCodes from "../data/emojiKitchenSpecialCodes.json"
 import emojiSanitizeHelp from 'node-emoji'
+import { FilterShared } from "../types/sharedModuleTypes"
 
 const mineSweeperEmojis = ['0⃣', '1⃣', '2⃣', '3⃣', '4⃣', '5⃣', '6⃣', '7⃣', '8⃣', '💣'];
 
@@ -96,7 +97,7 @@ async function slashFunAcronym(int: Discord.ChatInputCommandInteraction) {
   // input or number between 3 and 5
   const len = int.options.getInteger("length") || Math.floor(Math.random() * 3) + 3;
 
-  const pf: import("profanity-matcher") | undefined = int.client.moduleManager.shared.get("01-filter.js")?.();
+  const pf = (int.client.moduleManager.shared.get("01-filter.js") as FilterShared | undefined)?.();
   if (!pf) throw new Error("Couldn't access profanity filter");
 
   let wordgen: string[] = [];
@@ -364,7 +365,7 @@ async function slashFunNamegame(int: Discord.ChatInputCommandInteraction) {
     const song = /<blockquote>\n(.*)<\/blockquote>/g.exec(response?.data)?.[1]?.replace(/<br ?\/>/g, "\n");
 
     // make sure its safe
-    const pf: import("profanity-matcher") | undefined = int.client.moduleManager.shared.get("01-filter.js")?.();
+    const pf = (int.client.moduleManager.shared.get("01-filter.js") as FilterShared | undefined)?.();
     if (!pf) throw new Error("Couldn't access profanity filter");
 
     const profane = pf.scan(song?.toLowerCase().replace(/\n/g, " ") ?? "").length;

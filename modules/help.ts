@@ -4,6 +4,7 @@ import Discord from "discord.js"
 import fs from "fs"
 import config from "../config/config.json"
 import u from "../utils/utils"
+import { TagsShared } from "../types/sharedModuleTypes"
 
 const miscFeatures = [
   "### SGA Translation\nClick the button under a message with Standard Galactic Alphabet to translate it to English",
@@ -35,7 +36,7 @@ const Module = new Augur.Module()
   id: "helpTags",
   type: "Button",
   process: async (int) => {
-    const tu = int.client.moduleManager.shared.get("tags.js");
+    const tu: TagsShared | undefined = int.client.moduleManager.shared.get("tags.js");
     if (!tu || tu.tags.size === 0) return int.reply({ content: "I couldn't find any tags. Try again later!", flags: ["Ephemeral"] });
 
     const ldsg = int.client.guilds.cache.get(u.sf.ldsg);

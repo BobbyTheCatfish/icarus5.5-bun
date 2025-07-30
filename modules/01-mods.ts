@@ -5,6 +5,7 @@ import u from "../utils/utils"
 import config from '../config/config.json'
 import c from "../utils/modCommon"
 import profanityMatcher from "profanity-matcher"
+import { FilterShared } from "../types/sharedModuleTypes"
 
 const Module = new Augur.Module();
 
@@ -66,7 +67,7 @@ async function slashModBan(interaction: Augur.GuildInteraction<"CommandSlash">) 
 }
 
 async function slashModFilter(interaction: Augur.GuildInteraction<"CommandSlash">) {
-  const pf: profanityMatcher | undefined = interaction.client.moduleManager.shared.get("01-filter.js")?.();
+  const pf = (interaction.client.moduleManager.shared.get("01-filter.js") as FilterShared | undefined)?.();
   if (!pf) throw new Error("Couldn't access profanity filter");
 
   await interaction.deferReply({ flags: ["Ephemeral"] });

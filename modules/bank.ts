@@ -5,20 +5,20 @@ import u from "../utils/utils"
 import config from "../config/config.json"
 import { customAlphabet } from "nanoid"
 import Discord from "discord.js"
-import SheetTypes from "../database/sheetTypes"
 import SnipCart from "../utils/snipcart"
+import { BankShared } from "../types/sharedModuleTypes"
 
 const SnipCartApi = new SnipCart(config.api.snipcart);
 
 const Module = new Augur.Module(),
-  gb = `<:gb:${u.sf.emoji.gb}>`,
-  ember = `<:ember:${u.sf.emoji.ember}>`,
-  limit = { gb: 1000, ember: 10000 };
+  gb: BankShared["gb"] = `<:gb:${u.sf.emoji.gb}>`,
+  ember: BankShared["ember"] = `<:ember:${u.sf.emoji.ember}>`,
+  limit: BankShared["limit"] = { gb: 1000, ember: 10000 };
 
 const chars = "123456789ABCDEFGHJKLMNPQRSTUVWXYZ";
 const nanoid = customAlphabet(chars, 8);
 
-async function buyGame(game: SheetTypes["AvailableGame"], user: Discord.GuildMember) {
+const buyGame: BankShared["buyGame"] = async (game, user) => {
   // get store assets
   const systems: Record<string, { redeem: string; img: string }> = {
     steam: {
@@ -295,7 +295,5 @@ Module.addInteraction({
   }
 })
 .setShared({ buyGame, limit, gb, ember });
-
-type BankShared = { buyGame: typeof buyGame, limit: typeof limit, gb: typeof gb, ember: typeof ember }
 
 export = Module;
