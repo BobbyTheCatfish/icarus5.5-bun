@@ -3,7 +3,7 @@ import { GoogleSpreadsheet } from "google-spreadsheet";
 import config from "../config/config.json"
 import { JWT } from "google-auth-library";
 import { Client } from "discord.js";
-import types from "./sheetTypes"
+import types from "../types/sheetTypes"
 import sf from "../utils/snowflakes"
 import { setBadgeData } from "../utils/badges"
 import Schemas from "google-spreadsheet-schema";

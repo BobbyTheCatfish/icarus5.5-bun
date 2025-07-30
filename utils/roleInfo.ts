@@ -33,7 +33,7 @@ export async function equip(member: GuildMember, baseName: string | null, baseId
   }
 
   /** @type {(import("../database/sheetTypes").Role & { color: import("discord.js").Role }) | undefined} */
-  let role: (import("../database/sheetTypes").Role & { color: import("discord.js").Role; }) | undefined;
+  let role: (import("../types/sheetTypes").Role & { color: import("discord.js").Role; }) | undefined;
   if (baseId) {
     role = u.db.sheets.roles.equip.get(baseId);
   } else if (baseName) {
