@@ -1,12 +1,7 @@
 // @ts-check
 import u from "./regUtils";
 
-/**
- * @param {string} name
- * @param {boolean} [req]
- * @returns
- */
-const userOp = (name, req = false) => new u.user()
+const userOp = (name: string, req = false) => new u.user()
   .setName(`${name ?? "user"}`)
   .setDescription(`User ${name ?? ""}`)
   .setRequired(req);

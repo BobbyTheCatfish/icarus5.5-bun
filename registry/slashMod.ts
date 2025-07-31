@@ -3,27 +3,24 @@ import u from "./regUtils";
 
 /**
  * Who do you want to X?
- * @param {string} action
  */
-const user = (action, req = true) => new u.user()
+const user = (action: string, req = true) => new u.user()
   .setName('user')
   .setDescription(`Who do you want to ${action}?`)
   .setRequired(req);
 
 /**
  * Why are they being X?
- * @param {string} action
 */
-const reason = (action, req = true) => new u.string()
+const reason = (action: string, req = true) => new u.string()
   .setName("reason")
   .setDescription(`Why are they being ${action}?`)
   .setRequired(req);
 
 /**
  * Should I add or remove the X? (Default: Y)
- * @param {string} obj
  */
-const action = (obj) => new u.string()
+const action = (obj: string) => new u.string()
   .setName("action")
   .setDescription(`Should I add or remove the ${obj}? (Default: Add)`)
   .setChoices({ name: "Add", value: "true" }, { name: "Remove", value: "false" })

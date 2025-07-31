@@ -8,13 +8,7 @@ const role = (action = "add") => new u.string()
   .setRequired(action === 'equip' ? false : true)
   .setAutocomplete(true);
 
-/**
- *
- * @param {number | null} num
- * @param {boolean} [req]
- * @returns
- */
-const user = (num, req = false) => new u.user()
+const user = (num: number | null, req = false) => new u.user()
   .setName(`${num ?? "user"}`)
   .setDescription(`User ${num ?? ""}`)
   .setRequired(num === 1 || req);
