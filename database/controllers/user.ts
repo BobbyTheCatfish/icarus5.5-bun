@@ -4,6 +4,7 @@ import moment from "moment-timezone"
 import config from "../../config/config.json"
 import User from "../models/User.model"
 import ChannelXP from "../models/ChannelXP.model"
+import { ActiveUser } from "../../types/sharedModuleTypes"
 
 type UserRecord = {
   discordId: string
@@ -44,7 +45,7 @@ export const TrackXPEnum = {
 const models = {
   TrackXPEnum,
   /** Add XP to a set of users */
-  addXp: async function(activity: Discord.Collection<string, import("../../modules/xp").ActiveUser[]>): Promise<{ users: UserRecord[]; oldUsers: UserRecord[]; xp: number }> {
+  addXp: async function(activity: Discord.Collection<string, ActiveUser[]>): Promise<{ users: UserRecord[]; oldUsers: UserRecord[]; xp: number }> {
     const xpBase = Math.floor(Math.random() * 3) + config.xp.base;
     const included = await User.find({ discordId: { $in: [...activity.keys()] }, trackXP: { $ne: TrackXPEnum.OFF } }, undefined, { lean: true });
     const uniqueIncluded = new Set(included.map(u => u.discordId));
@@ -168,8 +169,8 @@ const models = {
     const record = await User.findOne({ discordId }, undefined, { lean: true }).exec();
     if (!record || (filterOptedOut && record.trackXP === TrackXPEnum.OFF)) return null;
 
-    const seasonCount = await User.count({ trackXP: { $ne: TrackXPEnum.OFF }, currentXP: { $gt: record.currentXP }, discordId: { $in: members } });
-    const lifeCount = await User.count({ trackXP: { $ne: TrackXPEnum.OFF }, totalXP: { $gt: record.totalXP }, discordId: { $in: members } });
+    const seasonCount = await User.countDocuments({ trackXP: { $ne: TrackXPEnum.OFF }, currentXP: { $gt: record.currentXP }, discordId: { $in: members } });
+    const lifeCount = await User.countDocuments({ trackXP: { $ne: TrackXPEnum.OFF }, totalXP: { $gt: record.totalXP }, discordId: { $in: members } });
 
     return { ...record, rank: { season: seasonCount + 1, lifetime: lifeCount + 1 } };
   },

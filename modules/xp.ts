@@ -5,14 +5,8 @@ import u from "../utils/utils";
 import mc from "../utils/modCommon";
 import Rank from "../utils/rankInfo";
 import config from "../config/config.json";
+import { ActiveUser } from "../types/sharedModuleTypes";
 
-interface ActiveUser {
-  multiplier: number;
-  channelId: string;
-  discordId: string;
-  isVoice: boolean;
-  isMessage: boolean;
-}
 
 // There can be "channel of the week" style events, where that channel is worth more xp
 const highlights = new Set<string>();

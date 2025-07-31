@@ -22,3 +22,11 @@ export type TagsShared = {
     tags: Collection<string, tag>,
     encodeTag: (tag: tag, msg: Message | null, int?: ChatInputCommandInteraction) => string | Pick<MessageReplyOptions, "content" | "files" | "allowedMentions">
 }
+
+export interface ActiveUser {
+  multiplier: number;
+  channelId: string;
+  discordId: string;
+  isVoice: boolean;
+  isMessage: boolean;
+}
