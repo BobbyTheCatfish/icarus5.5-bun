@@ -3,6 +3,7 @@ import u from "../utils/utils";
 import config from "../config/config.json";
 import Discord from "discord.js";
 import banned from "../data/banned.json";
+import { TagsShared } from "../types/sharedModuleTypes";
 
 type tag = import("../database/controllers/tag").tag;
 
@@ -194,7 +195,7 @@ const Module = new Augur.Module()
 
         // these commands are static tags
         default: {
-          const tu = interaction.client.moduleManager.shared.get("tags.js");
+          const tu: TagsShared | undefined = interaction.client.moduleManager.shared.get("tags.js");
           if (!tu) return u.errorHandler(new Error("Couldn't get Tag Utils"), interaction);
 
           const tag = tu.tags.get(subcommand);
