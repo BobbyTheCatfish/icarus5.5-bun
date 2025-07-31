@@ -4,7 +4,6 @@ import Discord from "discord.js"
 import u from "../utils/utils"
 import config from '../config/config.json'
 import c from "../utils/modCommon"
-import profanityMatcher from "profanity-matcher"
 import { FilterShared } from "../types/sharedModuleTypes"
 
 const Module = new Augur.Module();
@@ -380,7 +379,7 @@ Module.addEvent("guildMemberAdd", async (member) => {
   c.watchlist = new Set(list.map(l => l.discordId));
 })
 .addEvent("messageCreate", watch)
-.addEvent("messageEdit", async (msg, newMsg) => {
+.addEvent("messageEdit", async (_msg, newMsg) => {
   watch(newMsg);
 })
 .addEvent("voiceStateUpdate", (oldS, newS) => {

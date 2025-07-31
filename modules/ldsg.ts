@@ -5,8 +5,6 @@ import Discord from "discord.js";
 import banned from "../data/banned.json";
 import { TagsShared } from "../types/sharedModuleTypes";
 
-type tag = import("../database/controllers/tag").tag;
-
 const hasLink = /http(s)?:\/\/(\w+(-\w+)*\.)+\w+/;
 const affiliateLinks = [
   // { //Functionality can be renabled if amazon will let us get a affiliate

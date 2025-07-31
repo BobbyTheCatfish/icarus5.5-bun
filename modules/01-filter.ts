@@ -490,7 +490,7 @@ const Module = new Augur.Module()
 .addEvent("filterUpdate", () => pf = new profanityFilter())
 .setShared(() => pf)
 .addEvent("ready", () => {
-  // eslint-disable-next-line no-unused-vars
+  // @ts-ignore
   const forWhenSpamWorks = () => setInterval(() => {
     spamming(Module.client);
     for (const [id, member] of active) {

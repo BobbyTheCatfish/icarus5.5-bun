@@ -259,7 +259,7 @@ async function slashFunRoll(int: Discord.ChatInputCommandInteraction) {
   
   if (rolls.length > maxShown + 3) {
     const extra = rolls.length - maxShown;
-    const reduced = rolls.filter((r, i) => i < maxShown);
+    const reduced = rolls.filter((_r, i) => i < maxShown);
     rollStr = `${reduced.join(" + ")}, + ${extra} more`;
   } else {
     rollStr = rolls.join(" + ");

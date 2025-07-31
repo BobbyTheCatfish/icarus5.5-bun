@@ -21,12 +21,6 @@ const mutedPerms = {
 let lowBoosts = false;
 const tier3 = 14;
 
-type Sponsor = {
-  Sponsor: string;
-  Channel: string;
-  Emoji: string;
-}
-
 // roles that SHOULD NOT be given when a user rejoins
 const dangerRoles = [
   ...Object.values(u.sf.roles.team).filter(sf => ![u.sf.roles.team.botTeam, u.sf.roles.team.emeritus].includes(sf)),

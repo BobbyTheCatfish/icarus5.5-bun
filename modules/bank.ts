@@ -4,7 +4,6 @@ import Augur from "augurbot-ts"
 import u from "../utils/utils"
 import config from "../config/config.json"
 import { customAlphabet } from "nanoid"
-import Discord from "discord.js"
 import SnipCart from "../utils/snipcart"
 import { BankShared } from "../types/sharedModuleTypes"
 

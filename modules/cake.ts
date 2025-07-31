@@ -137,7 +137,7 @@ const cakedays: CakeShared["cakedays"] = async (testDate, testJoinDate, testMemb
 
       if (testDate) embed.setDescription((embed.data.description ?? "") + " (Sorry if we're a bit late!)");
 
-      celebrating.sort((a, b, y1, y2) => y2 - y1);
+      celebrating.sort((_a, _b, y1, y2) => y2 - y1);
 
       for (const [years, cakeMembers] of celebrating) {
         embed.addFields({

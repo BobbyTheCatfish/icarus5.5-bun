@@ -27,7 +27,7 @@ const client = new AugurClient(config, {
 client.login();
 
 // LAST DITCH ERROR HANDLING
-process.on("unhandledRejection", (error, p) => p.catch(e => u.errorHandler(e, "Unhandled Rejection")));
+process.on("unhandledRejection", (_error, p) => p.catch(e => u.errorHandler(e, "Unhandled Rejection")));
 process.on("uncaughtException", (error) => u.errorHandler(error, "Uncaught Exception"));
 
 export default client
