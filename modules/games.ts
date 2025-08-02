@@ -155,7 +155,7 @@ async function eliteGetStations(system: EliteSystem, embed: Discord.EmbedBuilder
   if (system.stations.length <= 0) return "I couldn't find any stations in that system.";
   embed.setTitle(system.name).setURL(system.stationsURL);
 
-  const stationList: Discord.Collection<string, EliteStation[]> = new u.Collection();
+  const stationList = new u.Collection<string, EliteStation[]>();
   for (let i = 0; i < Math.min(system.stations.length, 25); i++) {
     const station = system.stations[i];
     // Filtering out fleet carriers. There can be over 100 of them (spam) and their names are user-determined (not always clean).

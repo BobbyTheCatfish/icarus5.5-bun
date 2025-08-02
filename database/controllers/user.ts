@@ -73,7 +73,7 @@ const models = {
     ).exec();
 
     // update channel xp
-    const uniqueChannels: Discord.Collection<string, number[]> = new Discord.Collection();
+    const uniqueChannels = new Discord.Collection<string, number[]>();
     const channels = activity.filter((_, id) => uniqueIncluded.has(id)).map(a => a).flat();
     for (const val of channels) {
       uniqueChannels.ensure(val.channelId, () => []).push(val.multiplier);

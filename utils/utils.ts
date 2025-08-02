@@ -353,8 +353,8 @@ const utils = {
   autocompleteSort: <T>(filterTerm: string, terms: Discord.Collection<string, T>): Discord.Collection<string, T> => {
     filterTerm = filterTerm.toLowerCase();
     return terms
-      .filter((v, k) => k.toLowerCase().includes(filterTerm))
-      .sort((v1, v2, k1, k2) => {
+      .filter((_v, k) => k.toLowerCase().includes(filterTerm))
+      .sort((_v1, _v2, k1, k2) => {
         const aStarts = k1.toLowerCase().startsWith(filterTerm);
         const bStarts = k2.toLowerCase().startsWith(filterTerm);
         if (aStarts && bStarts) return k1.localeCompare(k2);
