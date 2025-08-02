@@ -46,7 +46,6 @@ async function update(oldUser: Discord.GuildMember | Discord.PartialGuildMember 
         newUser instanceof Discord.User ? newUser.username : newUser.displayName
       ];
       if (oldUser.displayName !== newUser.displayName || usernames[0] !== usernames[1]) {
-        /** @param {string} a @param {string} b */
         const same = (a: string, b: string) => u.escapeText(a === b ? a : `${a} (${b})`);
 
         embed.addFields(
@@ -76,10 +75,10 @@ const Module = new Augur.Module()
       if (channel.permissionsFor(channel.client.user)?.has(["ViewChannel", "ManageChannels"])) {
         // muted role
         channel.permissionOverwrites.create(u.sf.roles.moderation.muted, mutedPerms, { reason: "New channel permissions update" })
-        .catch(/** @param {Error} e */(e: Error) => u.errorHandler(e, `Update New Channel Permissions: ${channel.name}`));
+        .catch((e: Error) => u.errorHandler(e, `Update New Channel Permissions: ${channel.name}`));
         // duct tape role
         channel.permissionOverwrites.create(u.sf.roles.moderation.ductTape, mutedPerms, { reason: "New channel permissions update" })
-          .catch(/** @param {Error} e */(e: Error) => u.errorHandler(e, `Update New Channel Permissions: ${channel.name}`));
+          .catch((e: Error) => u.errorHandler(e, `Update New Channel Permissions: ${channel.name}`));
       } else {
         channel.client.getTextChannel(u.sf.channels.team.logistics)?.send({ embeds: [
           u.embed({

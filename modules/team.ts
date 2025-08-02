@@ -21,7 +21,6 @@ async function slashTeamRoleGive(int: Augur.GuildInteraction<"CommandSlash">, gi
   } catch (error) { u.errorHandler(error, int); }
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
 async function slashTeamBankAward(int: Augur.GuildInteraction<"CommandSlash">) {
   try {
     const bankUtils: BankShared | undefined = int.client.moduleManager.shared.get("bank.js");

@@ -95,17 +95,12 @@ async function slashClockworkReminder(int: Augur.GuildInteraction<"CommandSlash"
   await int.editReply({ content, components: [testDmRow] });
 }
 
-/**
- * @param {number|import("moment").Moment|Date} num
- * @param {Discord.TimestampStylesString} [dec]
-*/
 function toTime(num: number | Moment | Date, dec: Discord.TimestampStylesString = "f") {
   if (typeof num === "number") return u.time(new Date(num), dec);
   if (num instanceof Date) return u.time(num, dec);
   return u.time(num.toDate(), dec);
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
 async function slashClockworkCancel(int: Augur.GuildInteraction<"CommandSlash">) {
   const inputId = int.options.getString("id");
   await int.deferReply({ flags: ["Ephemeral"] });

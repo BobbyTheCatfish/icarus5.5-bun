@@ -38,22 +38,19 @@ class SnipCart {
   
   // DISCOUNTS
   
-  /** @param {string | { id: string }} discount */
   deleteDiscount(discount: string | { id: string; }) {
     const id = ((typeof discount === "string") ? discount : discount.id);
     return this.callApi(`/discounts/${id}`, undefined, "DELETE");
   };
   
-  /** @param {{ id: string }} discount */
   editDiscount(discount: { id: string; }) {
     return this.callApi(`/discounts/${discount.id}`, discount, "PUT");
   };
   
-  /** @param {string | { id: string }} code */
   getDiscountCode(code: string | { id: string; }) {
     return new Promise((fulfill, reject) => {
       this.callApi("/discounts").then(discounts =>
-        fulfill(discounts.find(/** @param {any} d */ (d: any) => d.code === code))
+        fulfill(discounts.find((d: any) => d.code === code))
       ).catch(reject);
     });
   };

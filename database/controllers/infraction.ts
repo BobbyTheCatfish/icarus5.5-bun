@@ -35,7 +35,7 @@ export default {
     /** @type {Infraction[]} */
     // -1 is cleared, 0 is unhandled
     return Infraction.find({ discordId, timestamp: { $gte: since }, value: { $gt: 0 } }, undefined, { lean: true }).exec()
-      .then(/** @param {Infraction[]} records */ (records: Infraction[]) => ({
+      .then((records: Infraction[]) => ({
         discordId,
         count: records.length,
         points: records.reduce((c, r) => c + r.value, 0),

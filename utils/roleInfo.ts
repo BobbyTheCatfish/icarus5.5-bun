@@ -1,5 +1,5 @@
 // @ts-check
-import { GuildMember } from "discord.js";
+import { GuildMember, Role } from "discord.js";
 import u from "./utils"
 
 export type EquipRole = {
@@ -19,9 +19,6 @@ export function getInventory(member: GuildMember, override = true) {
 
 /**
  * null = no role, true = success, false = not equipable
- * @param {GuildMember} member
- * @param {string | null} baseName
- * @param {string} [baseId]
  */
 export async function equip(member: GuildMember, baseName: string | null, baseId?: string) {
   const allColors = u.db.sheets.roles.equip.map(r => r.color.id).filter(r => member.roles.cache.has(r));
@@ -32,8 +29,7 @@ export async function equip(member: GuildMember, baseName: string | null, baseId
     return true;
   }
 
-  /** @type {(import("../database/sheetTypes").Role & { color: import("discord.js").Role }) | undefined} */
-  let role: (import("../types/sheetTypes").Role & { color: import("discord.js").Role; }) | undefined;
+  let role: (import("../types/sheetTypes").Role & { color: Role; }) | undefined;
   if (baseId) {
     role = u.db.sheets.roles.equip.get(baseId);
   } else if (baseName) {

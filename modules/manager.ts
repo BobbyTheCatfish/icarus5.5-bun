@@ -116,7 +116,6 @@ async function slashManagerUserTransfer(int: Augur.GuildInteraction<"CommandSlas
   return int.editReply({ embeds: [embed] });
 }
 
-/** @param {Discord.GuildMember} sponsor */
 async function createSponsorChannel(sponsor: Discord.GuildMember) {
   // Create the channel
   const guild = sponsor.guild;

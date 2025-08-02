@@ -5,18 +5,6 @@ import petPetGif from 'pet-pet-gif';
 import Jimp from "jimp";
 import { ColorActionName } from "@jimp/plugin-color";
 
-/**
- * @callback filterFunction
- * @param {Discord.ChatInputCommandInteraction} int
- * @param {{name: string, img: Jimp}} img
- *
- * @callback process
- * @param {number} x
- * @param {number} y
- * @param {Jimp} canvas
- * @param {number} index
- */
-
 type FilterFunction = (int: Discord.ChatInputCommandInteraction, img: { name: string, img: Jimp }) => void
 type BasicFilterProcess = (x: number, y: number, canvas: Jimp, index: number) => void
 

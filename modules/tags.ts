@@ -82,7 +82,6 @@ function deleteAttachment(embed: Discord.EmbedBuilder, command: tag) {
   if (fs.existsSync(path)) fs.unlinkSync(path);
 }
 
-/** @param {Augur.GuildInteraction<"CommandSlash">} int */
 async function slashTagSet(int: Augur.GuildInteraction<"CommandSlash">) {
   // Get and validate input
   const name = int.options.getString('name', true).toLowerCase().replace(/[ \n]/g, "");

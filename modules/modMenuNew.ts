@@ -410,7 +410,6 @@ async function handleModMenu(submitted: Augur.GuildInteraction<"SelectMenuString
   }
 }
 
-/** @param {Augur.GuildInteraction<"ContextBase">} int */
 function permComponents(int: Augur.GuildInteraction<"ContextBase">) {
   let components = [...menuOptions.everyone];
   if (!(banned.features.flag as string[]).includes(int.user.id)) components.push(menuOptions.flag);
@@ -423,7 +422,6 @@ function permComponents(int: Augur.GuildInteraction<"ContextBase">) {
   ));
 }
 
-/** @param {Augur.GuildInteraction<"ContextMessage"|"ContextUser">} int */
 async function sendModMenu(int: Augur.GuildInteraction<"ContextMessage" | "ContextUser">) {
   await int.deferReply({ flags: ["Ephemeral"] });
   const id = u.customId();

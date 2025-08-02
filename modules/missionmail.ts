@@ -42,10 +42,6 @@ async function loadEmails() {
   }
 }
 
-/**
- * @param {receive.ImapFlow} receiver
- * @returns {Promise<number>}
- */
 async function sendUnsent(receiver: receive.ImapFlow): Promise<number> {
   if (!receiver.usable) throw new Error("Missionary Email Receiver not usable, cannot check for new emails.");
 
@@ -210,7 +206,7 @@ Module
 
       const embedCount = parseInt(int.customId.substring(approveIdPrefix.length));
       const pagedMessages = await int.channel?.messages.fetch({ before: int.message.id, limit: embedCount + 10 })
-        .then((/** @type {Discord.Collection<String, Discord.Message<true>>} */ msgs: Discord.Collection<String, Discord.Message<true>>) => msgs.filter(m => m.author.id === int.client.user.id).first(embedCount));
+        .then((msgs: Discord.Collection<String, Discord.Message<true>>) => msgs.filter(m => m.author.id === int.client.user.id).first(embedCount));
 
       if (!pagedMessages) return int.reply({ content: "I couldn't find the messages to forward!" });
 

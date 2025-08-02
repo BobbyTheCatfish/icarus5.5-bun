@@ -141,7 +141,6 @@ const models = {
     const member = options.member;
     const limit = options.limit ?? 10;
 
-    /** @param {UserRecord[]} users */
     const mapper = (users: UserRecord[]) => users.map((u, i) => ({ ...u, rank: i + 1 }));
 
     const query = () => User.find({ trackXP: { $ne: TrackXPEnum.OFF }, discordId: { $in: members } }, undefined, { lean: true }).limit(limit);
