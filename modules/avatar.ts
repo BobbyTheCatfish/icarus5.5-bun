@@ -36,7 +36,6 @@ async function sendImg(int: Discord.ChatInputCommandInteraction, img: Buffer | s
 
 /** Get the image from an interaction. */
 function targetImg(int: Discord.ChatInputCommandInteraction, size: Discord.ImageSize = 256) {
-  /** @type {Discord.GuildMember | Discord.User | null} */
   let target: Discord.GuildMember | Discord.User | null;
   if (int.inCachedGuild()) target = int.options.getMember("user");
   target ??= int.options.getUser("user") ?? int.user;

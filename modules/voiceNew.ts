@@ -175,7 +175,6 @@ const lock: voice = async (int, channel, trying = false) => {
   return int;
 }
 
-/** @type {voice} */
 const unlock: voice = async (int, channel, trying = false) => {
   if (!isLocked(channel)) {
     if (!trying && int instanceof Discord.ButtonInteraction) {
@@ -332,7 +331,6 @@ Module.addEvent("interactionCreate", async (int) => {
       return int.editReply("I've added empty voice channels if there weren't before.");
     }
     if (!channel) return int.editReply("You need to be in a voice channel to run these commands!");
-    /** @type {VoiceReturn} */
     let result: VoiceReturn;
     const user = int.options.getUser("user");
     switch (subcommand) {

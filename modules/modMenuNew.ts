@@ -63,7 +63,6 @@ async function getReason(int: Discord.StringSelectMenuInteraction, description: 
   return modalSubmit;
 }
 
-/** @type {user} */
 const avatar: user = (int, target) => {
   if (!target) return usrErr(int);
   const embed = u.embed()

@@ -118,7 +118,6 @@ const models = {
     else query.sort({ totalXP: "desc" });
 
     const records = await query.limit(limit).exec();
-    /** @type {(UserRecord & {rank: number})[]} */
     const ranked: (UserRecord & { rank: number })[] = records.map((r, i) => {
       return { ...r, rank: i + 1 };
     });

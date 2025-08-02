@@ -56,7 +56,6 @@ async function sendUnsent(receiver: receive.ImapFlow): Promise<number> {
   for (const rawMsg of messages) {
 
     // parse the email source into readable stuff
-    /** @type {interpret.ParsedEmail} */
     const parsed: interpret.ParsedEmail = await new Promise((res) => {
       const parser = new interpret.MailParser();
       parser.on("end", result => res(result));

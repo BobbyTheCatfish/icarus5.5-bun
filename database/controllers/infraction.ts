@@ -32,7 +32,7 @@ export default {
   getSummary: async function(discordId: string, time: number = 28) {
     if (typeof discordId !== "string") throw new TypeError(outdated);
     const since = moment().tz("America/Denver").subtract(time, "days");
-    /** @type {Infraction[]} */
+
     // -1 is cleared, 0 is unhandled
     return Infraction.find({ discordId, timestamp: { $gte: since }, value: { $gt: 0 } }, undefined, { lean: true }).exec()
       .then((records: Infraction[]) => ({

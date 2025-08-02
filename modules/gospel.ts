@@ -3,7 +3,6 @@ import Augur from "augurbot-ts";
 import Discord from "discord.js";
 import Parser from "rss-parser";
 import u from "../utils/utils";
-/** @type {Record<string, Record<string, string[][]>>} */
 import jstRef from "../data/gospel/jst-reference.json";
 import books from "../data/gospel/books.json";
 import scriptureMasteries from "../data/gospel/scripture-mastery-reference.json";
@@ -114,15 +113,12 @@ async function slashGospelVerse(interaction: Discord.ChatInputCommandInteraction
     return;
   }
 
-  /** @type {Discord.ActionRowBuilder<Discord.MessageActionRowComponentBuilder>[]} */
   const components: Discord.ActionRowBuilder<Discord.MessageActionRowComponentBuilder>[] = [];
   let content;
 
   if (versesNums.length > 0) {
-    /** @type {string[]} */
     const verseContent: string[] = [];
-    /** @type {Set<string>} */
-    const jstLookups: Set<string> = new Set();
+    const jstLookups = new Set<string>();
 
     for (const num of versesNums) {
       if (bookJson[bookRef.bookName][chapter][num]) {
@@ -289,7 +285,6 @@ const Module = new Augur.Module()
     const [book, chapter, index] = footer.split(" | ").slice(1);
     const bookRef = books.find(b => b.bookName === book);
 
-    /** @type {string[]} */
     const lines: string[] = [];
     const indexes = index.split(",");
     for (const i of indexes) {

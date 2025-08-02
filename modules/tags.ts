@@ -239,7 +239,7 @@ const Module = new Augur.Module()
 .addEvent("messageCreate", async (msg) => {
   if (!msg.author.bot) return runTag(msg);
 })
-.addEvent("messageEdit", async (oldMsg, msg) => {
+.addEvent("messageEdit", async (_oldMsg, msg) => {
   if (!msg.author.bot) return runTag(msg);
 })
 .setInit(async () => {

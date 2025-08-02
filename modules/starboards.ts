@@ -100,7 +100,6 @@ const Module = new Augur.Module()
       if (modifyingEmbed) {
 
         const richEmbed = u.embed(modifyingEmbed).setColor(0xff0000);
-        /** @type {(Discord.Embed | Discord.EmbedBuilder)[]} */
         const embeds: (Discord.Embed | Discord.EmbedBuilder)[] = [richEmbed];
         if (embed2 && embed1) embeds.unshift(embed1);
 

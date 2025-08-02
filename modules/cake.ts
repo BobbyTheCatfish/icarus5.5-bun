@@ -39,7 +39,6 @@ const birthdays: CakeShared["birthdays"] = async (testDate, testMember) => {
 
     const bdays = testMember ?? await u.db.ign.findMany(ldsg.members.cache.map(m => m.id), "birthday");
 
-    /** @type {(Discord.GuildMember | undefined)[]} */
     const celebrating: (Discord.GuildMember | undefined)[] = [];
     const year = new Date().getFullYear();
     for (const birthday of bdays) {

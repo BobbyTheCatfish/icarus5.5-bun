@@ -6,7 +6,7 @@ import u from "../utils/utils"
 import axios, { AxiosError } from 'axios'
 import Jimp from 'jimp'
 import buttermelonFacts from '../data/buttermelonFacts.json'
-/** @type {Record<string, string>} */
+
 import emojiKitchenSpecialCodes from "../data/emojiKitchenSpecialCodes.json"
 import emojiSanitizeHelp from 'node-emoji'
 import { FilterShared } from "../types/sharedModuleTypes"

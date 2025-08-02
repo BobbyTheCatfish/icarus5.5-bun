@@ -284,10 +284,8 @@ export async function loadData(cli: Client, loggedIn = true, justRows = false, s
     return data;
   }
 
-  /** @type {Promise<void>[]} */
   const promises: Promise<void>[] = [];
   for (const key in sheetMap) {
-    /** @type {keyof typeof sheetMap} */
     // @ts-ignore
     const typeCorrectKey: keyof typeof sheetMap = key;
     if (typeCorrectKey === "games") {

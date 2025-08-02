@@ -22,7 +22,6 @@ async function slashRoleAdd(int: Augur.GuildInteraction<"CommandSlash">, give: b
   const admin = u.perms.calc(int.member, ["mgr"]);
 
   // role finding!
-  /** @type {Discord.Role | undefined} */
   let role: Discord.Role | undefined;
   if (admin) role = int.guild.roles.cache.find(r => r.name.toLowerCase() === input.toLowerCase());
   else role = u.db.sheets.optRoles.find(r => r.role.name.toLowerCase() === input.toLowerCase())?.role;
@@ -143,7 +142,6 @@ Module.addInteraction({
     // /role add/remove
     if (option.name === 'role') {
       const adding = sub === "add";
-      /** @type {string[]} */
       let roles: string[];
       if (u.perms.calc(interaction.member, ["mgr"])) {
         roles = interaction.guild.roles.cache.filter(r => addFilter(interaction, r, input, adding))

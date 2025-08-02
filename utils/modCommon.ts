@@ -537,7 +537,6 @@ const modCommon = {
   spamCleanup: async function(searchContent: string[], guild: Discord.Guild, message: Discord.Message<true>, auto: boolean = false) {
     const timeDiff = config.spamThreshold.cleanupLimit * (auto ? 1 : 2) * 1000;
     const contents = u.unique(searchContent);
-    /** @type {Promise<Discord.Collection<Discord.Snowflake, Discord.Message | Discord.PartialMessage | undefined>>[]} */
     const promises: Promise<Discord.Collection<Discord.Snowflake, Discord.Message | Discord.PartialMessage | undefined>>[] = [];
     for (const [, channel] of guild.channels.cache) {
       const perms = channel.permissionsFor(message.client.user);

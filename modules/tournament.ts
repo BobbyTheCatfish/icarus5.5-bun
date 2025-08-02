@@ -15,10 +15,10 @@ async function getTournaments(state: string): Promise<{ start_at: string; name: 
   const url = "https://api.challonge.com/v1/tournaments.json?" + urlParams;
 
   // @ts-ignore... it can be called lol
-  const response = await axios({ url, method: "get" }).catch((/** @type {axios.AxiosError} */ e: axios.AxiosError) => {
+  const response = await axios({ url, method: "get" }).catch((e: axios.AxiosError) => {
     throw new Error("Tournament API Call Error " + e.status);
   });
-  return response.data.map((/** @type {{ tournament: any }} */ t: { tournament: any; }) => t.tournament);
+  return response.data.map((t: { tournament: any; }) => t.tournament);
 }
 
 Module.addInteraction({ name: "tournaments",
