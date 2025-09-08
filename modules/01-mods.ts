@@ -1,10 +1,10 @@
 // @ts-check
-import Augur from "augurbot-ts"
-import Discord from "discord.js"
-import u from "../utils/utils"
-import config from '../config/config.json'
-import c from "../utils/modCommon"
-import { FilterShared } from "../types/sharedModuleTypes"
+const Augur = require("augurbot-ts");
+const Discord = require("discord.js");
+const u = require("../utils/utils");
+const config = require("../config/config.json");
+const c = require("../utils/modCommon");
+const { FilterShared } = require("../types/sharedModuleTypes");
 
 const Module = new Augur.Module();
 
@@ -420,4 +420,4 @@ Module.addEvent("guildMemberAdd", async (member) => {
   }
 });
 
-export = Module;
+module.exports = Module;

@@ -1,8 +1,8 @@
 // @ts-check
-import Tag from "../models/Tag.model";
-import { Types as MongoTypes } from "mongoose";
+const Tag = require("../models/Tag.model");
+const { Types as MongoTypes } = require("mongoose");
 
-export type tag = {
+type tag = {
   tag: string;
   response?: string | null;
   attachment?: string | null;
@@ -10,7 +10,7 @@ export type tag = {
   _id: MongoTypes.ObjectId;
 }
 
-export default {
+module.exports = {
   /** Fetch all tags */
   fetchAllTags: function(): Promise<tag[]> {
     return Tag.find({}, undefined, { lean: true }).exec();

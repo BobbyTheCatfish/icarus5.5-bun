@@ -1,7 +1,7 @@
 // @ts-check
-import u from "./regUtils";
+const u = require("./regUtils");
 
-export default new u.cmd()
+module.exports = new u.cmd()
   .setName("help")
   .setDescription("Get a list of commands and custom tags in the server.")
   .toJSON();

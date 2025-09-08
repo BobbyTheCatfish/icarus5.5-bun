@@ -1,7 +1,7 @@
-import Augur from "augurbot-ts";
-import u from "../utils/utils";
-import c from "../utils/modCommon";
-import Rank from "../utils/rankInfo";
+const Augur = require("augurbot-ts");
+const u = require("../utils/utils");
+const c = require("../utils/modCommon");
+const Rank = require("../utils/rankInfo");
 
 async function slashRankLeaderboard(interaction: Augur.GuildInteraction<"CommandSlash">) {
   try {
@@ -133,4 +133,4 @@ const Module = new Augur.Module()
   });
 
 
-export = Module;
+module.exports = Module;

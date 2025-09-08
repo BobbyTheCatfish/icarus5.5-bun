@@ -1,5 +1,5 @@
 // @ts-check
-import u from "./regUtils";
+const u = require("./regUtils");
 
 const verse = new u.sub()
   .setName("verse")
@@ -34,7 +34,7 @@ const news = new u.sub()
   .setName("news")
   .setDescription("Gets LDS news");
 
-export default new u.cmd()
+module.exports = new u.cmd()
   .setName("gospel")
   .setDescription("Search gospel topics")
   .addSubcommand(verse)

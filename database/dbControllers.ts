@@ -2,20 +2,20 @@
 const config = require("../config/config.json"),
   mongoose = require("mongoose");
 
-import bank from "./controllers/bank";
-import ign from "./controllers/ign";
-import infraction from "./controllers/infraction";
-import tags from "./controllers/tag";
-import user from "./controllers/user";
-import reminder from "./controllers/reminder";
-import starboard from "./controllers/starboard";
-import tournament from "./controllers/tournament";
+const bank = require("./controllers/bank");
+const ign = require("./controllers/ign");
+const infraction = require("./controllers/infraction");
+const tags = require("./controllers/tag");
+const user = require("./controllers/user");
+const reminder = require("./controllers/reminder");
+const starboard = require("./controllers/starboard");
+const tournament = require("./controllers/tournament");
 
-import { data, loadData, functionSchemas as schemas } from "./sheets";
+const { data, loadData, functionSchemas: schemas } = require("./sheets");
 
 mongoose.connect(config.db.db, config.db.settings);
 
-export default {
+module.exports = {
   bank,
   ign,
   infraction,

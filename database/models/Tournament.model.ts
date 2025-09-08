@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const participant = {
   id: {
@@ -137,4 +137,4 @@ const TournamentSchema = new mongoose.Schema({
   }
 });
 
-export default mongoose.model("Tournaments", TournamentSchema);
+module.exports = mongoose.model("Tournaments", TournamentSchema);

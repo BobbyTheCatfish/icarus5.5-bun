@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const InfractionSchema = new mongoose.Schema({
   discordId: {
@@ -41,4 +41,4 @@ const InfractionSchema = new mongoose.Schema({
   }
 });
 
-export default mongoose.model("Infraction", InfractionSchema);
+module.exports = mongoose.model("Infraction", InfractionSchema);

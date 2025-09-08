@@ -1,4 +1,4 @@
-import axios from "axios"
+const axios = require("axios");
 
 class SnipCart {
   key: any;
@@ -65,4 +65,4 @@ class SnipCart {
 
 }
 
-export default SnipCart
+module.exports = SnipCart

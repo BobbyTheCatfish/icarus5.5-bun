@@ -1,5 +1,5 @@
 // @ts-check
-import u from "./regUtils";
+const u = require("./regUtils");
 
 const roll = new u.sub()
   .setName("roll")
@@ -195,7 +195,7 @@ const buttermelon = new u.sub()
   .setName("buttermelon")
   .setDescription("Get a random buttermelon fact.");
 
-export default new u.cmd()
+module.exports = new u.cmd()
   .setName("fun")
   .setDescription("Its all fun and games 'till someone gets banned.")
   .addSubcommand(roll)

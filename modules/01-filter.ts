@@ -1,10 +1,10 @@
-import Augur from"augurbot-ts";
-import banned from"../data/banned.json";
-import Discord from"discord.js";
-import config from'../config/config.json';
-import profanityFilter from"profanity-matcher";
-import u from"../utils/utils";
-import c from"../utils/modCommon";
+const Augur from"augurbot-ts";
+const banned from"../data/banned.json";
+const Discord from"discord.js";
+const config from'../config/config.json';
+const profanityFilter from"profanity-matcher";
+const u from"../utils/utils";
+const c from"../utils/modCommon";
 
 
 const bannedWords = new RegExp(banned.words.join("|"), "i"),
@@ -506,4 +506,4 @@ const Module = new Augur.Module()
 .setInit((grown) => grown ? c.grownups = grown : null);
 
 
-export = Module;
+module.exports = Module;

@@ -1,8 +1,8 @@
-import fs from "fs";
-import Augur from "augurbot-ts";
-import u from "../utils/utils";
-import c from "../utils/modCommon";
-import { BankShared } from "../types/sharedModuleTypes";
+const fs = require("fs");
+const Augur = require("augurbot-ts");
+const u = require("../utils/utils");
+const c = require("../utils/modCommon");
+const { BankShared } = require("../types/sharedModuleTypes");
 
 async function slashTeamRoleGive(int: Augur.GuildInteraction<"CommandSlash">, give = true) {
   try {
@@ -237,4 +237,4 @@ const Module = new Augur.Module()
   }
 });
 
-export = Module;
+module.exports = Module;

@@ -1,13 +1,13 @@
 // @ts-check
-import { GuildMember } from "discord.js";
-import config from "../config/config.json";
-import snowflakes from "../config/snowflakes.json"
-import tsf from "../config/snowflakes-testing.json"
+const { GuildMember } = require("discord.js");
+const config = require("../config/config.json");
+const snowflakes = require("../config/snowflakes.json");
+const tsf = require("../config/snowflakes-testing.json");
 
 // circular dependancy, had to duplicate code :(
 const sf = config.devMode ? tsf : snowflakes;
 
-export type Perm = (m: GuildMember) => boolean
+type Perm = (m: GuildMember) => boolean
 
 const permFuncs = {
   botOwner: (m: GuildMember) => config.ownerId === m.id,
@@ -46,5 +46,5 @@ const perms = {
 
 };
 
-export default perms;
-export type PermKeys = keyof typeof permFuncs
+module.exports = perms;
+type PermKeys = keyof typeof permFuncs

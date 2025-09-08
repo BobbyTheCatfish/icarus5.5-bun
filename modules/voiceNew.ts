@@ -1,6 +1,6 @@
-import Augur from 'augurbot-ts';
-import Discord from 'discord.js';
-import u from '../utils/utils';
+const Augur = require("augurbot-ts");
+const Discord = require("discord.js");
+const u = require("../utils/utils");
 
 const Module = new Augur.Module();
 
@@ -416,4 +416,4 @@ async function updateChannels(oldState?: Discord.VoiceState, newState?: Discord.
   processing = false;
 }
 
-export = Module;
+module.exports = Module;

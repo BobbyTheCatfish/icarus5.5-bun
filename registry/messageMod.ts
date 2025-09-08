@@ -1,7 +1,7 @@
 // @ts-check
-import u from "./regUtils";
+const u = require("./regUtils");
 
-export default u.msgContext()
+module.exports = u.msgContext()
   .setName("Moderation")
   .setContexts(u.contexts.Guild)
   .toJSON();

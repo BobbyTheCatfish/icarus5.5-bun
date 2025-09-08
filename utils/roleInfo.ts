@@ -1,8 +1,8 @@
 // @ts-check
-import { GuildMember, Role } from "discord.js";
-import u from "./utils"
+const { GuildMember, Role } = require("discord.js");
+const u = require("./utils");
 
-export type EquipRole = {
+type EquipRole = {
   baseId: string;
   inherited: string[];
   colorId: string;
@@ -11,7 +11,7 @@ export type EquipRole = {
 /**
  * Get the roles that a given member can equip
  */
-export function getInventory(member: GuildMember, override = true) {
+function getInventory(member: GuildMember, override = true) {
   const equipRoles = u.db.sheets.roles.equip;
   if (override && u.perms.calc(member, ["mgmt"])) return equipRoles;
   return equipRoles.filter(r => member.roles.cache.hasAny(r.base.id, ...r.parents));
@@ -20,7 +20,7 @@ export function getInventory(member: GuildMember, override = true) {
 /**
  * null = no role, true = success, false = not equipable
  */
-export async function equip(member: GuildMember, baseName: string | null, baseId?: string) {
+async function equip(member: GuildMember, baseName: string | null, baseId?: string) {
   const allColors = u.db.sheets.roles.equip.map(r => r.color.id).filter(r => member.roles.cache.has(r));
   const inventory = getInventory(member);
 
@@ -52,4 +52,4 @@ export async function equip(member: GuildMember, baseName: string | null, baseId
   return true;
 }
 
-export default { equip, getInventory }
+module.exports = { equip, getInventory }

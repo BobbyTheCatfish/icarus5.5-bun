@@ -1,5 +1,5 @@
 // @ts-check
-import u from "./regUtils";
+const u = require("./regUtils");
 
 const userOp = (name: string, req = false) => new u.user()
   .setName(`${name ?? "user"}`)
@@ -38,7 +38,7 @@ const sponsor = new u.subGroup()
   .setDescription("Manage sponsor channels and emoji")
   .addSubcommand(channel);
 
-export default new u.cmd()
+module.exports = new u.cmd()
   .setName("manager")
   .setDescription("Commands for the Discord Managers")
   .setContexts(u.contexts.Guild)

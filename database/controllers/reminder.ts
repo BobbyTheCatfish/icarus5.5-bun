@@ -1,8 +1,8 @@
-import { nanoid } from "nanoid";
-import { Moment } from "moment-timezone";
-import Reminder from "../models/Reminder.model";
+const { nanoid } = require("nanoid");
+const { Moment } = require("moment-timezone");
+const Reminder = require("../models/Reminder.model");
 
-export type Timer = {
+type Timer = {
   id: string;
   discordId: string;
   reminder: string;
@@ -11,7 +11,7 @@ export type Timer = {
   isTimer: boolean;
 }
 
-export default {
+module.exports = {
   fetchAll: (): Promise<Timer[]> => {
     return Reminder.find({}, undefined, { lean: true });
   },

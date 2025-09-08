@@ -1,8 +1,7 @@
-// @ts-check
-import Augur from "augurbot-ts";
-import Discord from "discord.js";
-import u from "../utils/utils";
-import fuzzy from "fuzzysort";
+const Augur = require("augurbot-ts");
+const Discord = require("discord.js");
+const u = require("../utils/utils");
+const fuzzy = require("fuzzysort");
 
 type IGN = import("../types/sheetTypes").IGN;
 type StoredIGN = import("../database/controllers/ign").IGN;
@@ -297,4 +296,4 @@ const Module = new Augur.Module()
 });
 
 
-export = Module;
+module.exports = Module;

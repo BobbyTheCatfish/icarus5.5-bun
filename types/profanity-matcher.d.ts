@@ -7,6 +7,6 @@ declare module "profanity-matcher" {
     remove_word(word: string): boolean
     save_words(badwords: string[]): boolean
   }
-  export = profanityMatcher
+  module.exports = profanityMatcher
 }
 

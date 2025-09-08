@@ -1,5 +1,5 @@
 // @ts-check
-import u from "./regUtils";
+const u = require("./regUtils");
 
 const role = (action = "add") => new u.string()
   .setName(action === 'equip' ? "color" : "role")
@@ -40,7 +40,7 @@ const list = new u.sub()
   .setName("list")
   .setDescription("Get a list of opt-in roles, including a list of ones you have.");
 
-export default new u.cmd()
+module.exports = new u.cmd()
   .setName("role")
   .setDescription("Add and remove self-assignable roles")
   .addSubcommand(add)

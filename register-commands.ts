@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
-import fs from "fs"
-import path from "path"
-import * as Discord from "discord.js"
-import axios, { AxiosError } from "axios"
-import config from "./config/config.json"
-import sf from "./utils/snowflakes.ts"
+const fs = require("fs");
+const path = require("path");
+const Discord = require("discord.js");
+const axios = require("axios");
+const config = require("./config/config.json");
+const sf = require("./utils/snowflakes.ts");
 
 /************************
  * BEGIN "CONFIG" BLOCK *
@@ -102,7 +102,7 @@ async function patch(filepaths: string[], global: boolean) {
   console.log(commandPath)
   const data: RegFile[] = [];
   for (const file of filepaths) {
-    const load: RegFile = (await import(path.resolve(commandPath, file))).default;
+    const load: RegFile = (await const(path.resolve(commandPath, file))).default;
     data.push(load);
   }
   const registered: { data: RegisteredCommand[] } | void = await axios({
@@ -124,7 +124,7 @@ async function patch(filepaths: string[], global: boolean) {
   return registered?.data;
 }
 
-export default async function register() {
+async function register() {
   const applicationId = config.applicationId;
   if (!applicationId) return console.log("Please put your application ID in config/config.json\nYou can find the ID here:\nhttps://discord.com/developers/applications");
 
@@ -161,3 +161,5 @@ export default async function register() {
 if (process.cwd() === __dirname) {
   register();
 }
+
+module.exports = register;

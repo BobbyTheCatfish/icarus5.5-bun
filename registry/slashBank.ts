@@ -1,5 +1,5 @@
 // @ts-check
-import u from "./regUtils";
+const u = require("./regUtils");
 
 const give = new u.sub()
   .setName("give")
@@ -71,7 +71,7 @@ const discount = new u.sub()
       .setRequired(true)
   );
 
-export default new u.cmd()
+module.exports = new u.cmd()
   .setName("bank")
   .setDescription("Interact with the server currencies.")
   .setContexts(u.contexts.Guild)

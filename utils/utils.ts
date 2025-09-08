@@ -1,13 +1,13 @@
-import "augurbot-ts"
-import { AxiosError } from "axios"
-import * as Discord from "discord.js"
-import { escapeMarkdown, ComponentType } from 'discord.js'
-import sf from "./snowflakes.ts"
-import db from "../database/dbControllers"
-import p from './perms.js'
-import moment from 'moment-timezone'
-import config from "../config/config.json"
-import { nanoid } from "nanoid"
+const Augur = require("augurbot-ts");
+const { AxiosError } = require("axios");
+const Discord = require("discord.js");
+const { escapeMarkdown, ComponentType } = require("discord.js");
+const sf = require("./snowflakes.ts");
+const db = require("../database/dbControllers");
+const p = require("./perms.js");
+const moment = require("moment-timezone");
+const config = require("../config/config.json");
+const { nanoid } = require("nanoid");
 
 const errorLog = new Discord.WebhookClient({ url: config.webhooks.error });
 
@@ -465,4 +465,4 @@ const utils = {
   }
 };
 
-export default utils;
+module.exports = utils;

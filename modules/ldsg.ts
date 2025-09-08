@@ -1,9 +1,9 @@
-import Augur from "augurbot-ts";
-import u from "../utils/utils";
-import config from "../config/config.json";
-import Discord from "discord.js";
-import banned from "../data/banned.json";
-import { TagsShared } from "../types/sharedModuleTypes";
+const Augur = require("augurbot-ts");
+const u = require("../utils/utils");
+const config = require("../config/config.json");
+const Discord = require("discord.js");
+const banned = require("../data/banned.json");
+const { TagsShared } = require("../types/sharedModuleTypes");
 
 const hasLink = /http(s)?:\/\/(\w+(-\w+)*\.)+\w+/;
 const affiliateLinks = [
@@ -228,4 +228,4 @@ const Module = new Augur.Module()
     }
   });
 
-export = Module;
+module.exports = Module;

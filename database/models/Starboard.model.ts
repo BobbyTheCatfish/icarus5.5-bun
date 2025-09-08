@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const StarboardSchema = new mongoose.Schema({
   messageId: {
@@ -11,4 +11,4 @@ const StarboardSchema = new mongoose.Schema({
   }
 });
 
-export default mongoose.model("Starboard", StarboardSchema);
+module.exports = mongoose.model("Starboard", StarboardSchema);

@@ -1,5 +1,5 @@
-import Augur from "augurbot-ts";
-import u from "../utils/utils.js";
+const Augur = require("augurbot-ts");
+const u = require("../utils/utils.js");
 
 // Message context menu for bookmarking a message.
 
@@ -31,4 +31,4 @@ const Module = new Augur.Module()
   }
 });
 
-export = Module;
+module.exports = Module;

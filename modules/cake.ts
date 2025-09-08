@@ -1,12 +1,12 @@
 // @ts-check
 // ! Functions here are called in management.js. Make sure to test those calls as well
-import Augur from "augurbot-ts";
-import Discord from 'discord.js';
-import config from '../config/config.json';
-import u from "../utils/utils";
-import {Moment} from "moment-timezone"
-import bdayLangs from "../data/birthday.json"
-import { CakeShared } from "../types/sharedModuleTypes";
+const Augur = require("augurbot-ts");
+const Discord = require("discord.js");
+const config = require("../config/config.json");
+const u = require("../utils/utils");
+const {Moment} = require("moment-timezone");
+const bdayLangs = require("../data/birthday.json");
+const { CakeShared } = require("../types/sharedModuleTypes");
 
 const Module = new Augur.Module();
 
@@ -184,4 +184,4 @@ Module.addEvent("ready", () => {
   })
   .setShared({ cakedays, birthdays, celebrate });
 
-export = Module;
+module.exports = Module;

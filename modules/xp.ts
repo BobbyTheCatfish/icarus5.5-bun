@@ -1,11 +1,11 @@
-import Discord from "discord.js";
-import banned from "../data/banned.json";
-import Augur from "augurbot-ts";
-import u from "../utils/utils";
-import mc from "../utils/modCommon";
-import Rank from "../utils/rankInfo";
-import config from "../config/config.json";
-import { ActiveUser } from "../types/sharedModuleTypes";
+const Discord = require("discord.js");
+const banned = require("../data/banned.json");
+const Augur = require("augurbot-ts");
+const u = require("../utils/utils");
+const mc = require("../utils/modCommon");
+const Rank = require("../utils/rankInfo");
+const config = require("../config/config.json");
+const { ActiveUser } = require("../types/sharedModuleTypes");
 
 
 // There can be "channel of the week" style events, where that channel is worth more xp
@@ -339,4 +339,4 @@ Module.setUnload(() => active)
   })
   .setUnload(() => active);
 
-export = Module;
+module.exports = Module;

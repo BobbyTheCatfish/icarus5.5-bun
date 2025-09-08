@@ -1,7 +1,7 @@
-import Discord from "discord.js";
+const Discord = require("discord.js");
 
 
-export type AvailableGame = {
+type AvailableGame = {
     title: string;
     system: string;
     rating: string;
@@ -11,12 +11,12 @@ export type AvailableGame = {
     steamId: string;
 }
 
-export type BoughtGame = AvailableGame & {
+type BoughtGame = AvailableGame & {
     recipient: string | null;
     date: Date | null;
 }
 
-export type IGN = {
+type IGN = {
     name: string;
     system: string;
     category: string;
@@ -24,14 +24,14 @@ export type IGN = {
     link: string | null;
 }
 
-export type OptRole = {
+type OptRole = {
     name: string;
     role: Discord.Role;
     badge: string | null;
     badgeLore: string | null;
 }
 
-export type Role = {
+type Role = {
     type: "Equip" | "Comment" | "Team Assign" | "Rank" | "Year";
     base: Discord.Role;
     color: Discord.Role | null;
@@ -41,13 +41,13 @@ export type Role = {
     badgeLore: string | null;
 }
 
-export type ColorRole = Omit<Role, "color"> & { color: Discord.Role; };
-export type LevelStrRole = Omit<Role, "level"> & { level: string; };
-export type LevelNumRole = Omit<Role, "level"> & { level: number; };
+type ColorRole = Omit<Role, "color"> & { color: Discord.Role; };
+type LevelStrRole = Omit<Role, "level"> & { level: string; };
+type LevelNumRole = Omit<Role, "level"> & { level: number; };
 
-export type FullRole = Omit<Role, "level" | "color"> & { level: string; color: Discord.Role; };
+type FullRole = Omit<Role, "level" | "color"> & { level: string; color: Discord.Role; };
 
-export type Sponsor = {
+type Sponsor = {
     userId: string;
     channel: Discord.TextChannel | null;
     emojiId: string | null;
@@ -55,7 +55,7 @@ export type Sponsor = {
     archiveAt: Date | null;
 }
 
-export type Starboard = {
+type Starboard = {
     channel: Discord.GuildTextBasedChannel;
     priorityChannels: Set<string>;
     priorityEmoji: Set<string>;
@@ -63,26 +63,26 @@ export type Starboard = {
     approval: boolean;
 }
 
-export type TourneyChampion = {
+type TourneyChampion = {
     tourneyName: string;
     userId: string;
     takeAt: Date | null;
     key: string;
 }
 
-export type ChannelXPSetting = {
+type ChannelXPSetting = {
     channelId: string;
     emoji: Set<string>;
     posts: number;
     preferMedia: boolean;
 }
 
-export type PlayingDefault = {
+type PlayingDefault = {
     channelId: string;
     name: string;
 }
 
-export default interface SheetTypes {
+module.exports = interface SheetTypes {
     AvailableGame: AvailableGame;
     BoughtGame: BoughtGame;
     IGN: IGN;

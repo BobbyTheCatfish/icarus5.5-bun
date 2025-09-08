@@ -7,7 +7,7 @@ function request(path: string, params?: Record<any, any>) {
     .then((a: { data: any }) => a.data);
 }
 
-export type EliteStation = {
+type EliteStation = {
   name: string;
   id: number;
   type: string;
@@ -15,7 +15,7 @@ export type EliteStation = {
   controllingFaction?: { name: string; };
 }
 
-export type EliteFaction = {
+type EliteFaction = {
   influence: number;
   name: string;
   state: string;
@@ -24,7 +24,7 @@ export type EliteFaction = {
   id: number;
 }
 
-export type EliteSystem = {
+type EliteSystem = {
   name: string;
   id: number;
   requirePermit: boolean;
@@ -38,7 +38,7 @@ export type EliteSystem = {
   factionsURL: string;
 }
 
-export type EliteBody = {
+type EliteBody = {
   id: number;
   type: string;
   isScoopable: boolean;
@@ -79,7 +79,7 @@ function getEliteStatus(): Promise<{ lastUpdate: string; type: string; message: 
   return request("www.edsm.net/api-status-v1/elite-server");
 }
 
-export default {
+module.exports = {
   getSystemInfo,
   getEliteStatus
 };

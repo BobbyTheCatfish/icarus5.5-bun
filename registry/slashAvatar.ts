@@ -1,4 +1,4 @@
-import u from "./regUtils";
+const u = require("./regUtils");
 
 const user = new u.user()
   .setName("user")
@@ -26,7 +26,7 @@ const filter = new u.string()
   );
 
 
-export default new u.cmd()
+module.exports = new u.cmd()
   .setName("avatar")
   .setDescription("See someone's avatar or apply a filter to it.")
   .addUserOption(user)

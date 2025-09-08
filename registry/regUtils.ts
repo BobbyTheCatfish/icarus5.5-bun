@@ -1,7 +1,7 @@
-import Discord from "discord.js"
-import config from "../config/config.json";
+const Discord = require("discord.js");
+const config = require("../config/config.json");
 
-export default {
+module.exports = {
   privateCommand: config.devMode ? null : 0,
   cmd: Discord.SlashCommandBuilder,
   userContext: () => new Discord.ContextMenuCommandBuilder().setType(2),

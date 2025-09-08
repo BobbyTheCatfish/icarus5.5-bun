@@ -1,11 +1,11 @@
 // @ts-check
-import Augur from "augurbot-ts";
-import Discord from "discord.js";
-import Parser from "rss-parser";
-import u from "../utils/utils";
-import jstRef from "../data/gospel/jst-reference.json";
-import books from "../data/gospel/books.json";
-import scriptureMasteries from "../data/gospel/scripture-mastery-reference.json";
+const Augur = require("augurbot-ts");
+const Discord = require("discord.js");
+const Parser = require("rss-parser");
+const u = require("../utils/utils");
+const jstRef = require("../data/gospel/jst-reference.json");
+const books = require("../data/gospel/books.json");
+const scriptureMasteries = require("../data/gospel/scripture-mastery-reference.json");
 
 interface Book {
   bookName: string;
@@ -338,4 +338,4 @@ const Module = new Augur.Module()
 });
 
 
-export = Module;
+module.exports = Module;

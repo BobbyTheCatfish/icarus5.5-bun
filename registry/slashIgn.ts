@@ -1,5 +1,5 @@
 // @ts-check
-import u from "./regUtils";
+const u = require("./regUtils");
 
 const set = new u.sub()
   .setName("set")
@@ -101,7 +101,7 @@ const whois = new u.sub()
       .setAutocomplete(true)
   );
 
-export default new u.cmd()
+module.exports = new u.cmd()
   .setName("ign")
   .setDescription("Save and view various game system IGNs or social network names")
   .setContexts(u.contexts.Guild, u.contexts.BotDM)

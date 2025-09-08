@@ -1,10 +1,10 @@
 // @ts-check
-import Discord from "discord.js"
-import moment from "moment-timezone"
-import config from "../../config/config.json"
-import User from "../models/User.model"
-import ChannelXP from "../models/ChannelXP.model"
-import { ActiveUser } from "../../types/sharedModuleTypes"
+const Discord = require("discord.js");
+const moment = require("moment-timezone");
+const config = require("../../config/config.json");
+const User = require("../models/User.model");
+const ChannelXP = require("../models/ChannelXP.model");
+const { ActiveUser } = require("../../types/sharedModuleTypes");
 
 type UserRecord = {
   discordId: string
@@ -35,7 +35,7 @@ const outdated = "Expected a Discord ID but likely recieved an object instead. T
 /**
  * @enum {number}
  */
-export const TrackXPEnum = {
+const TrackXPEnum = {
   OFF: 0,
   SILENT: 1,
   FULL: 2
@@ -211,4 +211,4 @@ const models = {
   }
 };
 
-export default models;
+module.exports = models;

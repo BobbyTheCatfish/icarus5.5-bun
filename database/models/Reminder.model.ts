@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const ReminderSchema = new mongoose.Schema({
   discordId: {
@@ -27,4 +27,4 @@ const ReminderSchema = new mongoose.Schema({
   }
 });
 
-export default mongoose.model("Remind", ReminderSchema);
+module.exports = mongoose.model("Remind", ReminderSchema);

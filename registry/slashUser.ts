@@ -1,5 +1,5 @@
 // @ts-check
-import u from "./regUtils";
+const u = require("./regUtils");
 
 const info = new u.sub()
   .setName("info")
@@ -21,7 +21,7 @@ const profile = new u.sub()
     .setRequired(false)
 );
 
-export default new u.cmd()
+module.exports = new u.cmd()
   .setName("user")
   .setDescription("Member information")
   .addSubcommand(info)

@@ -1,10 +1,10 @@
 
-import Augur from "augurbot-ts";
-import Discord from 'discord.js';
-import u from "../utils/utils";
-import c from "../utils/modCommon";
-import config from '../config/config.json';
-import { features } from "../data/banned.json"
+const Augur = require("augurbot-ts");
+const Discord = require("discord.js");
+const u = require("../utils/utils");
+const c = require("../utils/modCommon");
+const config = require("../config/config.json");
+const { features } = require("../data/banned.json");
 
 const mutedPerms = {
   // text
@@ -262,4 +262,4 @@ const Module = new Augur.Module()
 });
 
 
-export = Module;
+module.exports = Module;

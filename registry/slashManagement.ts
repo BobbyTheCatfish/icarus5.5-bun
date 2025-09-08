@@ -1,5 +1,5 @@
 // @ts-check
-import u from "./regUtils";
+const u = require("./regUtils");
 
 const date = new u.string()
 .setName("date")
@@ -39,7 +39,7 @@ const channelActivity = new u.sub()
   .setName("channel-activity")
   .setDescription("Get a list of inactive channels");
 
-export default new u.cmd()
+module.exports = new u.cmd()
   .setName("management")
   .setDescription("Management Commands")
   .setContexts(u.contexts.Guild)

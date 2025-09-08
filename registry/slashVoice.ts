@@ -1,5 +1,5 @@
 // @ts-check
-import u from "./regUtils";
+const u = require("./regUtils");
 
 const controls = new u.sub()
   .setName("controls")
@@ -46,7 +46,7 @@ const kick = new u.sub()
     .setRequired(true)
   );
 
-export default new u.cmd()
+module.exports = new u.cmd()
   .setName("voice")
   .setDescription("Voice channel options")
   .addSubcommand(controls)

@@ -1,8 +1,8 @@
 // @ts-check
-import Augur from "augurbot-ts";
-import Discord from "discord.js";
-import roleInfo from "../utils/roleInfo";
-import u from "../utils/utils";
+const Augur = require("augurbot-ts");
+const Discord = require("discord.js");
+const roleInfo = require("../utils/roleInfo");
+const u = require("../utils/utils");
 
 const Module = new Augur.Module();
 
@@ -198,4 +198,4 @@ Module.addInteraction({
   }
 });
 
-export = Module;
+module.exports = Module;

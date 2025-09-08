@@ -1,9 +1,9 @@
 // @ts-check
-import Discord, { ButtonStyle } from "discord.js";
+const Discord, { ButtonStyle } = require("discord.js");
 
-import u from "./utils"
-import config from "../config/config.json"
-import Augur from "augurbot-ts"
+const u = require("./utils");
+const config = require("../config/config.json");
+const Augur = require("augurbot-ts");
 
 const embedColors = {
   action: 0xff0000,
@@ -617,7 +617,7 @@ const modCommon = {
       } else {
         await target.roles.remove([u.sf.roles.moderation.trusted, u.sf.roles.moderation.trustedPlus]);
         success = true;
-        target.send(messageFromMods + `You have been removed from "Trusted" in ${interaction.guild.name}.\n`
+        target.send(messageFromMods + `You have been removed = require("Trusted"); in ${interaction.guild.name}.\n`
           + "This means you no longer have the ability to post images. "
           + `Please remember to follow our ${code} when posting images or links in the future.\n`
         ).catch(() => blocked(target));
@@ -673,7 +673,7 @@ const modCommon = {
         await target.roles.remove(u.sf.roles.moderation.trustedPlus);
         success = true;
         target.send(messageFromMods +
-          `You have been removed from "Trusted+" in ${interaction.guild.name}. `
+          `You have been removed = require("Trusted+"); in ${interaction.guild.name}. `
           + "This means you no longer have the ability to stream video in the server. "
           + `Please remember to follow our ${code}.`
         ).catch(() => blocked(target));
@@ -778,4 +778,4 @@ const modCommon = {
   grownups: new u.Collection<string, NodeJS.Timeout>()
 };
 
-export default modCommon;
+module.exports = modCommon;

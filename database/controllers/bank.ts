@@ -1,7 +1,7 @@
-import moment from "moment-timezone";
-import Bank from "../models/Bank.model";
+const moment = require("moment-timezone");
+const Bank = require("../models/Bank.model");
 
-export type CurrencyRecord = {
+type CurrencyRecord = {
   discordId: string;
   timestamp: Date;
   description: string;
@@ -13,7 +13,7 @@ export type CurrencyRecord = {
 
 const outdated = "Expected a Discord ID but likely recieved an object instead. That's deprecated now!";
 
-export default {
+module.exports = {
   /** Get all user records */
   getAll: async function(discordId: string): Promise<CurrencyRecord[]> {
     if (typeof discordId !== "string") throw new TypeError(outdated);

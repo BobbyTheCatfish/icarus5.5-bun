@@ -1,13 +1,13 @@
 // @ts-check
 
-import Augur from "augurbot-ts";
-import u from "../utils/utils";
-import c from "../utils/modCommon";
-import Discord from "discord.js";
-import config from "../config/config.json";
-import badgeUtils from "../utils/badges";
-import RankInfo from "../utils/rankInfo";
-import Jimp from "jimp";
+const Augur = require("augurbot-ts");
+const u = require("../utils/utils");
+const c = require("../utils/modCommon");
+const Discord = require("discord.js");
+const config = require("../config/config.json");
+const badgeUtils = require("../utils/badges");
+const RankInfo = require("../utils/rankInfo");
+const Jimp = require("jimp");
 
 let font: import("@jimp/plugin-print").Font;
 
@@ -143,4 +143,4 @@ const Module = new Augur.Module()
     }
   });
 
-export = Module;
+module.exports = Module;

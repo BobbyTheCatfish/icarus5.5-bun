@@ -1,7 +1,7 @@
 // Gets the badges that belong to the user based on a list of roles.
-import { Collection, Role } from "discord.js";
-import fs from "fs"
-import config from "../config/config.json"
+const { Collection, Role } = require("discord.js");
+const fs = require("fs");
+const config = require("../config/config.json");
 
 type Badge = {
   image: string;
@@ -10,7 +10,7 @@ type Badge = {
 }
 
 const badges = new Collection<string, Badge>();
-export function setBadgeData(optRoles: typeof import("../database/sheets").data.optRoles, roles: typeof import("../database/sheets").data.roles) {
+function setBadgeData(optRoles: typeof import("../database/sheets").data.optRoles, roles: typeof import("../database/sheets").data.roles) {
   badges.clear();
 
   for (const [id, role] of roles.all) {
@@ -43,7 +43,7 @@ export function setBadgeData(optRoles: typeof import("../database/sheets").data.
  * Based on the list of roles inserted, return the list of badge objects that the member
  * should have on their profile card.
  */
-export function getBadges(roles: Collection<string, Role>): (Badge & { name: string; })[] {
+function getBadges(roles: Collection<string, Role>): (Badge & { name: string; })[] {
   const guild = roles.first()?.guild;
 
   return badges.filter((b, id) => roles.has(id) && !roles.hasAny(...b.overrides))
@@ -53,4 +53,4 @@ export function getBadges(roles: Collection<string, Role>): (Badge & { name: str
     });
 }
 
-export default { getBadges, setBadgeData };
+module.exports = { getBadges, setBadgeData };

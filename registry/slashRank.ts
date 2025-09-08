@@ -1,5 +1,5 @@
 // @ts-check
-import u from "./regUtils";
+const u = require("./regUtils");
 
 const leaderboard = new u.sub()
   .setName("leaderboard")
@@ -36,7 +36,7 @@ const view = new u.sub()
       .setRequired(false)
   );
 
-export default new u.cmd()
+module.exports = new u.cmd()
   .setName("rank")
   .setDescription("Interact with the XP system.")
   .setContexts(u.contexts.Guild)

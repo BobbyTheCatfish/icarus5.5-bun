@@ -1,7 +1,7 @@
 // @ts-check
-import u from "./regUtils";
+const u = require("./regUtils");
 
-export default new u.cmd()
+module.exports = new u.cmd()
   .setName("tournaments")
   .setDescription("Get a list of tournaments in the server.")
   .setContexts(u.contexts.Guild)

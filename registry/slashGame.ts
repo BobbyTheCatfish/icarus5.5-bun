@@ -1,5 +1,5 @@
 // @ts-check
-import u from "./regUtils";
+const u = require("./regUtils");
 
 const minecraft = new u.sub()
   .setName("minecraft-skin")
@@ -42,7 +42,7 @@ const playing = new u.sub()
         .setDescription("The game to search for (leave blank for a list of all games being played)")
     );
 
-export default new u.cmd()
+module.exports = new u.cmd()
   .setName("game")
   .setDescription("Get information on games")
   .setContexts(u.contexts.Guild)

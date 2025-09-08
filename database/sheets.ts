@@ -1,12 +1,12 @@
 // @ts-check
-import { GoogleSpreadsheet } from "google-spreadsheet";
-import config from "../config/config.json"
-import { JWT } from "google-auth-library";
-import { Client } from "discord.js";
-import types from "../types/sheetTypes"
-import sf from "../utils/snowflakes"
-import { setBadgeData } from "../utils/badges"
-import Schemas from "google-spreadsheet-schema";
+const { GoogleSpreadsheet } = require("google-spreadsheet");
+const config = require("../config/config.json");
+const { JWT } = require("google-auth-library");
+const { Client } = require("discord.js");
+const types = require("../types/sheetTypes");
+const sf = require("../utils/snowflakes");
+const { setBadgeData } = require("../utils/badges");
+const Schemas = require("google-spreadsheet-schema");
 
 let client: Client;
 
@@ -41,7 +41,7 @@ const sheetMap = {
   siteSurvey: "Site Feedback"
 };
 
-export const functionSchemas: {
+const functionSchemas: {
   optRoles: Schemas.Mapper<types["OptRole"]>,
   wipChannels: Schemas.Mapper<types["PlayingDefault"]>,
   sponsors: Schemas.Mapper<types["Sponsor"]>,
@@ -132,7 +132,7 @@ export const functionSchemas: {
   }
 };
 
-export const data = {
+const data = {
   docs: {
     config: makeDocument(),
     games: makeDocument(config.google.sheets.games)
@@ -204,7 +204,7 @@ export const data = {
   roles: {
     all: new Schemas.SchemaFunction("Base Role ID", functionSchemas.rolesBase),
     // @ts-ignore
-    team: new Schemas.SchemaFunction("Base Role ID", functionSchemas.levelRole) as Schemas.SchemaFunction<string, Omit<types.LevelStrRole, "level"> & { level: import("../utils/perms").Perms }>,
+    team: new Schemas.SchemaFunction("Base Role ID", functionSchemas.levelRole) as Schemas.SchemaFunction<string, Omit<types.LevelStrRole, "level"> & { level: const("../utils/perms").Perms }>,
     equip: new Schemas.SchemaFunction("Base Role ID", functionSchemas.colorRole),
     rank: new Schemas.SchemaFunction("Level", functionSchemas.numRole, "number"),
     year: new Schemas.SchemaFunction("Level", functionSchemas.numRole, "number"),
@@ -260,7 +260,7 @@ async function setData(sheet: keyof Omit<typeof data, "docs">, doc: GoogleSpread
   await data[sheet].load(worksheet);
 }
 
-export async function loadData(cli: Client, loggedIn = true, justRows = false, sheet?: keyof Omit<typeof data, "docs">) {
+async function loadData(cli: Client, loggedIn = true, justRows = false, sheet?: keyof Omit<typeof data, "docs">) {
   client = cli;
   loggedIn; // remove if the change worked
   if (!data.docs) throw new Error("Something has gone terribly wrong during sheets loadData");
@@ -306,7 +306,7 @@ function noBlank(e: any, key?: string) {
   return !blank.includes(e);
 }
 
-export default {
+module.exports = {
   loadData,
   data,
   schemas: functionSchemas

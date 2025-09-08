@@ -1,9 +1,9 @@
-import Augur from "augurbot-ts";
-import Discord from "discord.js";
-import config from "../config/config.json";
-import fs from "fs";
-import path from "path";
-import u from "../utils/utils";
+const Augur = require("augurbot-ts");
+const Discord = require("discord.js");
+const config = require("../config/config.json");
+const fs = require("fs");
+const path = require("path");
+const u = require("../utils/utils");
 
 function fieldMismatches(obj1: Record<string, any>, obj2: Record<string, any>): [string[], string[]] {
   const keys1 = new Set(Object.keys(obj1));
@@ -316,4 +316,4 @@ const Module = new Augur.Module()
 })
 .setUnload(() => true);
 
-export = Module;
+module.exports = Module;

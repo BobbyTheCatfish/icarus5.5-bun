@@ -1,5 +1,5 @@
 // @ts-check
-import u from "./regUtils";
+const u = require("./regUtils");
 
 // GENERAL FUNCTIONS
 const role = (action = "add") => new u.string()
@@ -97,7 +97,7 @@ const rankReset = new u.sub()
       .setRequired(true)
   );
 
-export default new u.cmd()
+module.exports = new u.cmd()
   .setName("team")
   .setDescription("Do team stuff. idk.")
   .addSubcommandGroup(

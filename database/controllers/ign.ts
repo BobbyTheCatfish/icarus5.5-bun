@@ -1,12 +1,12 @@
-import Ign from "../models/Ign.model";
+const Ign = require("../models/Ign.model");
 
-export type IGN = {
+type IGN = {
   discordId: string;
   system: string;
   ign: string;
 }
 
-export default {
+module.exports = {
   /** Delete an IGN */
   delete: function(discordId: string, system: string): Promise<IGN | null> {
     return Ign.findOneAndDelete({ discordId, system }, { lean: true, new: false }).exec();

@@ -46,4 +46,4 @@ const Rank = {
   }
 };
 
-export default Rank;
+module.exports = Rank;

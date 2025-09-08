@@ -1,9 +1,9 @@
 // @ts-check
-import Augur from "augurbot-ts";
-import eliteAPI, { EliteStation, EliteSystem } from '../utils/EliteApi';
-import axios from 'axios';
-import Discord from 'discord.js';
-import u from "../utils/utils";
+const Augur = require("augurbot-ts");
+const eliteAPI, { EliteStation, EliteSystem } = require("../utils/EliteApi");
+const axios = require("axios");
+const Discord = require("discord.js");
+const u = require("../utils/utils");
 
 const Module = new Augur.Module();
 
@@ -235,4 +235,4 @@ Module.addInteraction({
   }, 6 * 60 * 60_000);
 });
 
-export = Module;
+module.exports = Module;

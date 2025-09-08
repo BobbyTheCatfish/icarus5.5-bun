@@ -1,6 +1,6 @@
-import moment from 'moment-timezone';
-import Discord from "discord.js";
-import Infraction from "../models/Infraction.model"
+const moment = require("moment-timezone");
+const Discord = require("discord.js");
+const Infraction = require("../models/Infraction.model");
 
 type Infraction = {
   discordId: string;
@@ -16,7 +16,7 @@ type Infraction = {
 
 const outdated = "Expected a Discord ID but likely recieved an object instead. That's deprecated now!";
 
-export default {
+module.exports = {
 
   /** Get an infraction by its associated mod flag. */
   getByFlag: function(flagId: string): Promise<Infraction | null> {

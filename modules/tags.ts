@@ -1,10 +1,10 @@
-import Augur from "augurbot-ts";
-import Discord from 'discord.js';
-import fs from 'fs';
-import axios from 'axios';
-import config from '../config/config.json';
-import u from "../utils/utils";
-import { TagsShared } from "../types/sharedModuleTypes";
+const Augur = require("augurbot-ts");
+const Discord = require("discord.js");
+const fs = require("fs");
+const axios = require("axios");
+const config = require("../config/config.json");
+const u = require("../utils/utils");
+const { TagsShared } = require("../types/sharedModuleTypes");
 
 type tag = import("../database/controllers/tag").tag;
 
@@ -250,4 +250,4 @@ const Module = new Augur.Module()
 })
 .setShared({ tags, encodeTag });
 
-export = Module;
+module.exports = Module;

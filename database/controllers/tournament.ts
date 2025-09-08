@@ -1,6 +1,6 @@
-import { nanoid } from "nanoid";
-import Tournament from "../models/Tournament.model";
-import names from "../../data/nameParts.json"
+const { nanoid } = require("nanoid");
+const Tournament = require("../models/Tournament.model");
+const names = require("../../data/nameParts.json");
 
 type EliminationBracket = {
   startSeed: number;
@@ -57,7 +57,7 @@ function removeEmptyTeams(tournament: Tournament) {
   return tournament.teams.filter(te => te.participants.length > 0);
 }
 
-export default {
+module.exports = {
   /**
    * @param {BaseTourney & {id: string}} tournament
    * @returns {Promise<Tournament>}
