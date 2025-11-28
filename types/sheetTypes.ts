@@ -1,4 +1,4 @@
-const Discord = require("discord.js");
+import * as Discord from "discord.js";
 
 
 type AvailableGame = {
@@ -82,7 +82,7 @@ type PlayingDefault = {
     name: string;
 }
 
-module.exports = interface SheetTypes {
+export default interface SheetTypes {
     AvailableGame: AvailableGame;
     BoughtGame: BoughtGame;
     IGN: IGN;

@@ -1,14 +1,14 @@
 // @ts-check
-const { GoogleSpreadsheet } = require("google-spreadsheet");
-const config = require("../config/config.json");
-const { JWT } = require("google-auth-library");
-const { Client } = require("discord.js");
-const types = require("../types/sheetTypes");
-const sf = require("../utils/snowflakes");
-const { setBadgeData } = require("../utils/badges");
-const Schemas = require("google-spreadsheet-schema");
+import { GoogleSpreadsheet } from "google-spreadsheet";
+import config from "../config/config.json";
+import { JWT } from "google-auth-library";
+import type types from "../types/sheetTypes";
+import sf from "../utils/snowflakes";
+import { setBadgeData } from "../utils/badges";
+import Schemas from "google-spreadsheet-schema";
+import { AugurClient } from "augurbot-ts";
 
-let client: Client;
+let client: AugurClient;
 
 function makeDocument(sheetId?: string) {
   const keys = config.google.creds;
@@ -41,7 +41,7 @@ const sheetMap = {
   siteSurvey: "Site Feedback"
 };
 
-const functionSchemas: {
+export const functionSchemas: {
   optRoles: Schemas.Mapper<types["OptRole"]>,
   wipChannels: Schemas.Mapper<types["PlayingDefault"]>,
   sponsors: Schemas.Mapper<types["Sponsor"]>,
@@ -132,7 +132,7 @@ const functionSchemas: {
   }
 };
 
-const data = {
+export const data = {
   docs: {
     config: makeDocument(),
     games: makeDocument(config.google.sheets.games)
@@ -203,8 +203,7 @@ const data = {
 
   roles: {
     all: new Schemas.SchemaFunction("Base Role ID", functionSchemas.rolesBase),
-    // @ts-ignore
-    team: new Schemas.SchemaFunction("Base Role ID", functionSchemas.levelRole) as Schemas.SchemaFunction<string, Omit<types.LevelStrRole, "level"> & { level: const("../utils/perms").Perms }>,
+    team: new Schemas.SchemaFunction("Base Role ID", functionSchemas.levelRole) as Schemas.SchemaFunction<"string", Omit<types["LevelStrRole"], "level"> & { level: import("../utils/perms").PermKeys }>,
     equip: new Schemas.SchemaFunction("Base Role ID", functionSchemas.colorRole),
     rank: new Schemas.SchemaFunction("Level", functionSchemas.numRole, "number"),
     year: new Schemas.SchemaFunction("Level", functionSchemas.numRole, "number"),
@@ -219,7 +218,7 @@ const data = {
 
 async function setData(sheet: keyof Omit<typeof data, "docs">, doc: GoogleSpreadsheet) {
   if (sheet === "games") {
-    const worksheet = doc.sheetsByIndex[0];
+    const worksheet = doc.sheetsByIndex[0]!;
     const rows = await worksheet.getRows();
 
     await data.games.available.load(worksheet, (row) => !row.get("Recipient ID") && !row.get("Date"), rows);
@@ -227,7 +226,7 @@ async function setData(sheet: keyof Omit<typeof data, "docs">, doc: GoogleSpread
     return;
   }
 
-  const worksheet = doc.sheetsByTitle[sheetMap[sheet]];
+  const worksheet = doc.sheetsByTitle[sheetMap[sheet]]!;
 
   if (sheet === "xpSettings") {
     const rows = await worksheet.getRows();
@@ -260,7 +259,7 @@ async function setData(sheet: keyof Omit<typeof data, "docs">, doc: GoogleSpread
   await data[sheet].load(worksheet);
 }
 
-async function loadData(cli: Client, loggedIn = true, justRows = false, sheet?: keyof Omit<typeof data, "docs">) {
+export async function loadData(cli: AugurClient, loggedIn = true, justRows = false, sheet?: keyof Omit<typeof data, "docs">) {
   client = cli;
   loggedIn; // remove if the change worked
   if (!data.docs) throw new Error("Something has gone terribly wrong during sheets loadData");
@@ -306,7 +305,7 @@ function noBlank(e: any, key?: string) {
   return !blank.includes(e);
 }
 
-module.exports = {
+export default {
   loadData,
   data,
   schemas: functionSchemas

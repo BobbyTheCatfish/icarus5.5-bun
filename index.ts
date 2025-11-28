@@ -1,13 +1,13 @@
-const { AugurClient } = require("augurbot-ts");
-const config = require("./config/config.json");
-const { AllowedMentionsTypes, Partials } = require("discord.js");
-const u = require("./utils/utils");
-const s = require("./database/sheets");
+import { AugurClient } from "augurbot-ts";
+import config from "./config/config.json";
+import { AllowedMentionsTypes, Partials } from "discord.js";
+import u from "./utils/utils";
+import s from "./database/sheets";
 
 // eslint-disable-next-line no-console
 if (!config.getMessageContent) console.log("Message content is turned off.");
 
-// @ts-expect-error config.json includes more properties and augur doesn't like that.
+// @ts-expect-error events prop isn't specific enough
 const client = new AugurClient(config, {
   clientOptions: {
     allowedMentions: {
@@ -30,4 +30,4 @@ client.login();
 process.on("unhandledRejection", (_error, p) => p.catch(e => u.errorHandler(e, "Unhandled Rejection")));
 process.on("uncaughtException", (error) => u.errorHandler(error, "Uncaught Exception"));
 
-module.exports = client
+export default client

@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const IgnSchema = new mongoose.Schema({
   discordId: {
@@ -15,4 +15,4 @@ const IgnSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Ign", IgnSchema);
+export default mongoose.model("Ign", IgnSchema);

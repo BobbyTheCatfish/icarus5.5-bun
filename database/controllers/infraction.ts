@@ -1,6 +1,6 @@
-const moment = require("moment-timezone");
-const Discord = require("discord.js");
-const Infraction = require("../models/Infraction.model");
+import moment from "moment-timezone";
+import { Collection } from "discord.js";
+import Infraction from "../models/Infraction.model";
 
 type Infraction = {
   discordId: string;
@@ -16,7 +16,7 @@ type Infraction = {
 
 const outdated = "Expected a Discord ID but likely recieved an object instead. That's deprecated now!";
 
-module.exports = {
+export default {
 
   /** Get an infraction by its associated mod flag. */
   getByFlag: function(flagId: string): Promise<Infraction | null> {
@@ -44,14 +44,14 @@ module.exports = {
       }));
   },
   /** Get the infraction counts for different users */
-  getCounts: async function(discordIds: string[], time: number = 28): Promise<Discord.Collection<string, number>> {
+  getCounts: async function(discordIds: string[], time: number = 28): Promise<Collection<string, number>> {
     if (!Array.isArray(discordIds)) throw new TypeError("discordIds must be an array of IDs");
     const since = moment().tz("America/Denver").subtract(time, "days");
     const records = await Infraction.aggregate([
       { $match: { timestamp: { $gte: since }, value: { $gt: 0 } } },
       { $group: { _id: "$discordId", count: { $sum: 1 } } }
     ]).exec();
-    return new Discord.Collection(records.map(r => [r._id, r.count]));
+    return new Collection(records.map(r => [r._id, r.count]));
   },
   /** Remove/delete an infraction */
   remove: function(flag: string): Promise<Infraction | null> {

@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const ChannelXPSchema = new Schema({
@@ -13,4 +13,4 @@ const ChannelXPSchema = new Schema({
   }
 });
 
-module.exports = mongoose.model("ChannelXP", ChannelXPSchema);
+export default mongoose.model("ChannelXP", ChannelXPSchema);

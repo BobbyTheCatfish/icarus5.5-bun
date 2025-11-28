@@ -1,6 +1,6 @@
-const { nanoid } = require("nanoid");
-const Tournament = require("../models/Tournament.model");
-const names = require("../../data/nameParts.json");
+import { nanoid } from "nanoid";
+import Tournament from "../models/Tournament.model";
+import names from "../../data/nameParts.json";
 
 type EliminationBracket = {
   startSeed: number;
@@ -57,7 +57,7 @@ function removeEmptyTeams(tournament: Tournament) {
   return tournament.teams.filter(te => te.participants.length > 0);
 }
 
-module.exports = {
+export default {
   /**
    * @param {BaseTourney & {id: string}} tournament
    * @returns {Promise<Tournament>}
@@ -119,7 +119,7 @@ module.exports = {
     const newId = nanoid();
     const newTeam = {
       id: newId,
-      name: team.name || names.names[Math.floor(Math.random() * names.names.length)],
+      name: team.name || names.names[Math.floor(Math.random() * names.names.length)]!,
       participants: [{ id: userId, ign }],
       elimBracket: {
         startSeed: 0,

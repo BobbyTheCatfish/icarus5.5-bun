@@ -1,12 +1,11 @@
-// @ts-check
-const Starboard = require("../models/Starboard.model");
+import Starboard from "../models/Starboard.model";
 
 interface StarboardPost {
   messageId: string;
   postedAt: number;
 }
 
-module.exports = {
+export default {
   getMessage: (messageId: string): Promise<StarboardPost | null> => {
     return Starboard.findOne({ messageId }, { lean: true }).exec();
   },

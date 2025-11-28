@@ -1,29 +1,30 @@
-const profanityMatcher = require("profanity-matcher");
-const SheetTypes = require("./sheetTypes");
-const { ChatInputCommandInteraction, Collection, EmbedBuilder, GuildMember, Message, MessageReplyOptions } = require("discord.js");
+import profanityMatcher from "profanity-matcher";
+import type SheetTypes from "./sheetTypes";
+import { ChatInputCommandInteraction, Collection, EmbedBuilder, GuildMember, Message, type MessageReplyOptions } from "discord.js";
 
-type FilterShared = () => profanityMatcher
+export type FilterShared = () => typeof profanityMatcher
 
-type BankShared = {
+export type BankShared = {
     buyGame: (game: SheetTypes["AvailableGame"], user: GuildMember) => Promise<false | EmbedBuilder>,
     limit: { gb: number, ember: number },
     gb: string;
     ember: string;
 }
 
-type CakeShared = {
+export type CakeShared = {
     cakedays: (testDate?: Date, testJoinDate?: Date, testMember?: Collection<string, GuildMember>) => Promise<void>,
     birthdays: (testDate?: Date | string, testMember?: { discordId: string; ign: string | Date; }[]) => Promise<void>,
     celebrate: (test?: boolean) => void
 }
 
 type tag = import("../database/controllers/tag").tag;
-type TagsShared = {
+
+export type TagsShared = {
     tags: Collection<string, tag>,
     encodeTag: (tag: tag, msg: Message | null, int?: ChatInputCommandInteraction) => string | Pick<MessageReplyOptions, "content" | "files" | "allowedMentions">
 }
 
-interface ActiveUser {
+export interface ActiveUser {
   multiplier: number;
   channelId: string;
   discordId: string;

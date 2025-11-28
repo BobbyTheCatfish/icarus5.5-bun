@@ -1,10 +1,9 @@
-// @ts-check
-const Discord = require("discord.js");
-const moment = require("moment-timezone");
-const config = require("../../config/config.json");
-const User = require("../models/User.model");
-const ChannelXP = require("../models/ChannelXP.model");
-const { ActiveUser } = require("../../types/sharedModuleTypes");
+import { Collection, GuildMember } from "discord.js";
+import moment from "moment-timezone";
+import config from "../../config/config.json";
+import User from "../models/User.model";
+import ChannelXP from "../models/ChannelXP.model";
+import { type ActiveUser } from "../../types/sharedModuleTypes";
 
 type UserRecord = {
   discordId: string
@@ -24,7 +23,7 @@ type UserRecord = {
 type RankedUser = UserRecord & { rank: { season: number; lifetime: number} } 
 
 type leaderboardOptions = {
-  memberIds: Discord.Collection<string, Discord.GuildMember> | string[]
+  memberIds: Collection<string, GuildMember> | string[]
   limit?: number
   member?: string
   season?: boolean
@@ -45,7 +44,7 @@ const TrackXPEnum = {
 const models = {
   TrackXPEnum,
   /** Add XP to a set of users */
-  addXp: async function(activity: Discord.Collection<string, ActiveUser[]>): Promise<{ users: UserRecord[]; oldUsers: UserRecord[]; xp: number }> {
+  addXp: async function(activity: Collection<string, ActiveUser[]>): Promise<{ users: UserRecord[]; oldUsers: UserRecord[]; xp: number }> {
     const xpBase = Math.floor(Math.random() * 3) + config.xp.base;
     const included = await User.find({ discordId: { $in: [...activity.keys()] }, trackXP: { $ne: TrackXPEnum.OFF } }, undefined, { lean: true });
     const uniqueIncluded = new Set(included.map(u => u.discordId));
@@ -73,7 +72,7 @@ const models = {
     ).exec();
 
     // update channel xp
-    const uniqueChannels = new Discord.Collection<string, number[]>();
+    const uniqueChannels = new Collection<string, number[]>();
     const channels = activity.filter((_, id) => uniqueIncluded.has(id)).map(a => a).flat();
     for (const val of channels) {
       uniqueChannels.ensure(val.channelId, () => []).push(val.multiplier);
@@ -107,7 +106,7 @@ const models = {
   },
   /** Get the top X of the leaderboard */
   getLeaderboard: async function(options: leaderboardOptions): Promise<(UserRecord & { rank: number })[]> {
-    const members = (options.memberIds instanceof Discord.Collection ? Array.from(options.memberIds.keys()) : options.memberIds);
+    const members = (options.memberIds instanceof Collection ? Array.from(options.memberIds.keys()) : options.memberIds);
     const member = options.member;
     const season = options.season;
     const limit = options.limit ?? 10;
@@ -136,7 +135,7 @@ const models = {
 
   /** Get the top X of both leaderboards */
   getBothLeaderboards: async function(options: Omit<leaderboardOptions, "season"> & { rank?: RankedUser | null }): Promise<{ season: (UserRecord & { rank: number })[]; life: (UserRecord & { rank: number })[] }> {
-    const members = (options.memberIds instanceof Discord.Collection ? Array.from(options.memberIds.keys()) : options.memberIds);
+    const members = (options.memberIds instanceof Collection ? Array.from(options.memberIds.keys()) : options.memberIds);
     const member = options.member;
     const limit = options.limit ?? 10;
 
@@ -160,8 +159,8 @@ const models = {
     return { season, life };
   },
   /** Get a user's rank */
-  getRank: async function(discordId: string, members: Discord.Collection<string, Discord.GuildMember> | string[], filterOptedOut = true): Promise<(UserRecord & { rank: { season: number; lifetime: number } }) | null> {
-    members = (members instanceof Discord.Collection ? Array.from(members.keys()) : members);
+  getRank: async function(discordId: string, members: Collection<string, GuildMember> | string[], filterOptedOut = true): Promise<(UserRecord & { rank: { season: number; lifetime: number } }) | null> {
+    members = (members instanceof Collection ? Array.from(members.keys()) : members);
 
     // Get requested user
     const record = await User.findOne({ discordId }, undefined, { lean: true }).exec();
@@ -182,8 +181,8 @@ const models = {
     return User.findOne({ discordId }, undefined, { upsert: true, lean: true }).exec();
   },
   /** Update a member's roles in the database */
-  updateRoles: function(member?: Discord.GuildMember, roles?: string[], backupId?: string): Promise<UserRecord | null> {
-    if (member && !(member instanceof Discord.GuildMember)) throw new Error("Expected a GuildMember");
+  updateRoles: function(member?: GuildMember, roles?: string[], backupId?: string): Promise<UserRecord | null> {
+    if (member && !(member instanceof GuildMember)) throw new Error("Expected a GuildMember");
     if (backupId && typeof backupId !== 'string') throw new Error(outdated);
     return User.findOneAndUpdate(
       { discordId: backupId ?? member?.id },
@@ -192,8 +191,8 @@ const models = {
     ).exec();
   },
   /** Updates a guild member's tenure in the server database. */
-  updateTenure: function(member: Discord.GuildMember): Promise<UserRecord | null> {
-    if (!(member instanceof Discord.GuildMember)) throw new Error("Expected a GuildMember");
+  updateTenure: function(member: GuildMember): Promise<UserRecord | null> {
+    if (!(member instanceof GuildMember)) throw new Error("Expected a GuildMember");
     return User.findOneAndUpdate(
       { discordId: member.id },
       { $inc: { priorTenure: (moment().diff(moment(member.joinedAt), "days") || 0) } },
@@ -211,4 +210,4 @@ const models = {
   }
 };
 
-module.exports = models;
+export default models;

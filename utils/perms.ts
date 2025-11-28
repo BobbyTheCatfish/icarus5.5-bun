@@ -1,8 +1,8 @@
 // @ts-check
-const { GuildMember } = require("discord.js");
-const config = require("../config/config.json");
-const snowflakes = require("../config/snowflakes.json");
-const tsf = require("../config/snowflakes-testing.json");
+import { GuildMember } from "discord.js";
+import config from "../config/config.json";
+import snowflakes from "../config/snowflakes.json";
+import tsf from "../config/snowflakes-testing.json";
 
 // circular dependancy, had to duplicate code :(
 const sf = config.devMode ? tsf : snowflakes;
@@ -46,5 +46,6 @@ const perms = {
 
 };
 
-module.exports = perms;
-type PermKeys = keyof typeof permFuncs
+export default perms
+
+export type PermKeys = keyof typeof permFuncs

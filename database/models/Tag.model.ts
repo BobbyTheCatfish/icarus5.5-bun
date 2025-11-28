@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const TagSchema = new mongoose.Schema({
   tag: { type: String, required: true, unique: true },
@@ -7,4 +7,4 @@ const TagSchema = new mongoose.Schema({
   attachmentMime: { type: String, default: null }
 });
 
-module.exports = mongoose.model("Tag", TagSchema);
+export default mongoose.model("Tag", TagSchema);

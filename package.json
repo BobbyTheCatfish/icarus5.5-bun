@@ -1,23 +1,24 @@
 {
-  "name": "icarus5.5-bun",
-  "module": "index.ts",
-  "type": "commonjs",
-  "private": true,
-  "devDependencies": {
-    "@types/bun": "latest",
-    "@types/cors": "^2.8.17",
-    "@types/crypto-js": "^4.2.2",
-    "@types/express": "^5.0.0",
-    "@types/express-fileupload": "^1.5.1",
-    "@types/express-session": "^1.18.1",
-    "@types/express-ws": "^3.0.5",
-    "@types/html-to-text": "^9.0.4",
-    "@types/imapflow": "^1.0.20",
-    "@types/jquery": "^3.5.32",
-    "@types/mailparser-mit": "^1.0.4",
-    "@types/passport": "^1.0.17",
-    "typescript": "5.4.3"
+  "name": "icarus",
+  "version": "5.5.0",
+  "description": "Custom Discord bot for the LDSG community",
+  "main": "icarus.js",
+  "scripts": {
+    "lint": "eslint . --max-warnings=0",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "register": "node register-commands.js",
+    "tscheck": "tsc"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BobbyTheCatfish/icarus5.5.git"
+  },
+  "author": "BobbyTheCatfish",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BobbyTheCatfish/icarus5.5/issues"
+  },
+  "homepage": "https://github.com/BobbyTheCatfish/icarus5.5#readme",
   "dependencies": {
     "@discordjs/voice": "^0.18.0",
     "@twurple/api": "^7.2.1",
@@ -46,15 +47,39 @@
     "mailparser-mit": "^1.0.0",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.45",
-    "mongoose": "^8.16.5",
+    "mongoose": "^7.6.3",
     "nanoid": "^3.1.25",
+    "no-repeat": "npm:@bobbythecatfish/no-repeat@^1.1.1",
+    "node-cron": "^4.2.1",
     "node-emoji": "^2.1.3",
+    "openai": "^5.10.2",
     "passport": "^0.7.0",
     "passport-discord-auth": "^1.1.1",
     "pet-pet-gif": "^1.0.9",
     "profanity-matcher": "^1.0.1",
     "rss-parser": "^3.12.0",
     "sharp": "^0.33.5",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "typescript": "^5.4.3"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/crypto-js": "^4.2.2",
+    "@types/express": "^5.0.0",
+    "@types/express-fileupload": "^1.5.1",
+    "@types/express-session": "^1.18.1",
+    "@types/express-ws": "^3.0.5",
+    "@types/html-to-text": "^9.0.4",
+    "@types/imapflow": "^1.0.20",
+    "@types/jquery": "^3.5.32",
+    "@types/mailparser-mit": "^1.0.4",
+    "@types/node-schedule": "^2.1.8",
+    "@types/passport": "^1.0.17",
+    "eslint": "^8.52.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-jsdoc": "^46.8.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^6.1.1"
   }
 }
