@@ -1,4 +1,3 @@
-// @ts-check
 import config from "../config/config.json";
 import mongoose from "mongoose";
 

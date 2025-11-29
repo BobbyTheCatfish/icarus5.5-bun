@@ -38,6 +38,15 @@ const sponsor = new u.subGroup()
   .setDescription("Manage sponsor channels and emoji")
   .addSubcommand(channel);
 
+const houseReport = new u.sub()
+  .setName("house-report")
+  .setDescription("Generate a report of the current house standings");
+
+const rank = new u.subGroup()
+  .setName("rank")
+  .setDescription("Manage leaderboard Settings")
+  .addSubcommand(houseReport);
+
 export default new u.cmd()
   .setName("manager")
   .setDescription("Commands for the Discord Managers")
@@ -45,4 +54,5 @@ export default new u.cmd()
   .setDefaultMemberPermissions(u.privateCommand)
   .addSubcommandGroup(user)
   .addSubcommandGroup(sponsor)
+  .addSubcommandGroup(rank)
   .toJSON();

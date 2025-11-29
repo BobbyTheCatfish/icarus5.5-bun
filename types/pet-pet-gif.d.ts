@@ -6,5 +6,5 @@ type PetPetOptions = {
 
 declare module "pet-pet-gif" {
   function petpet(avatarURL: string, options?: PetPetOptions): Promise<Buffer>
-  export default petpet
+  export default petpet;
 }

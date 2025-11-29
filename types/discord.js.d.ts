@@ -1,6 +1,6 @@
 import type { AugurOptions, BotConfig, CommandExecution, InteractionExecution } from "augurbot-ts/dist/types/ClientTypes";
 import type { ErrorHandler, ParseFunction } from "augurbot-ts/dist/types/UtilTypes";
-import * as Discord from "discord.js"
+import * as Discord from "discord.js";
 import type ModuleManager from "augurbot-ts/dist/managers/Modules";
 
 declare module 'discord.js' {
@@ -13,7 +13,7 @@ declare module 'discord.js' {
         commandExecution: CommandExecution
         interactionExecution: InteractionExecution
         applicationId: string
-        delayStart: () => Promise<any>;
+        delayStart: () => Promise<unknown>;
         getTextChannel(id: string): Discord.TextChannel | null;
         getDmChannel(id: string): Discord.DMChannel | null;
         getGroupDmChannel(id: string): Discord.PartialGroupDMChannel | null;
@@ -26,5 +26,5 @@ declare module 'discord.js' {
         getStage(id: string): Discord.StageChannel | null;
         getDirectory(id: string): Discord.DirectoryChannel | null;
         getForumChannel(id: string): Discord.ForumChannel | null;
-    } 
+    }
 }

@@ -3,7 +3,6 @@ import * as Discord from "discord.js";
 import u from "../utils/utils";
 import c from "../utils/modCommon";
 import config from "../config/config.json";
-import { features } from "../data/banned.json";
 
 const mutedPerms = {
   // text

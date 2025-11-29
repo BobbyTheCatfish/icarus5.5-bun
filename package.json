@@ -4,7 +4,7 @@
   "description": "Custom Discord bot for the LDSG community",
   "main": "icarus.js",
   "scripts": {
-    "lint": "eslint . --max-warnings=0",
+    "lint": "npx eslint . --max-warnings=0",
     "test": "echo \"Error: no test specified\" && exit 1",
     "register": "bun run register-commands.ts",
     "tscheck": "tsc"
@@ -65,6 +65,7 @@
     "typescript": "^5.4.3"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.1",
     "@types/cors": "^2.8.17",
     "@types/crypto-js": "^4.2.2",
     "@types/express": "^5.0.0",
@@ -77,7 +78,16 @@
     "@types/mailparser-mit": "^1.0.4",
     "@types/node-schedule": "^2.1.8",
     "@types/passport": "^1.0.17",
-    "eslint": "^8.52.0",
+    "eslint": "^8.57.1",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsdoc": "^61.4.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^7.2.1",
+    "typescript-eslint": "^8.48.0"
+  },
+  "outdatedDependencies": {
+    "eslint": "^8.57.1",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.29.0",
     "eslint-plugin-jsdoc": "^46.8.2",

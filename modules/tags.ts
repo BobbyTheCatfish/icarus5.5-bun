@@ -5,7 +5,7 @@ import axios from "axios";
 import config from "../config/config.json";
 import u from "../utils/utils";
 import { type TagsShared } from "../types/sharedModuleTypes";
-import { type tag } from "../database/controllers/tag"
+import { type Tag } from "../database/controllers/tag"
 import { type Types as MongoTypes } from "mongoose";
 
 async function saveAttachment(attachment: Discord.Attachment, cmd: { _id: MongoTypes.ObjectId; }) {
@@ -76,7 +76,7 @@ const encodeTag: TagsShared["encodeTag"] = (tag, msg, int) => {
   };
 }
 
-function deleteAttachment(embed: Discord.EmbedBuilder, command: tag) {
+function deleteAttachment(embed: Discord.EmbedBuilder, command: Tag) {
   embed.addFields({ name: "Attachment", value: "[Deleted]" });
   const path = `${config.tagFilePath}/${command._id.toString()}`;
   if (fs.existsSync(path)) fs.unlinkSync(path);

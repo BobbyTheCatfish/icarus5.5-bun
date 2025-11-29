@@ -61,12 +61,12 @@ async function slashModBan(interaction: Augur.GuildInteraction<"CommandSlash">) 
   const days = interaction.options.getInteger("clean") ?? 1;
   if (!target) return interaction.editReply(noTarget);
 
-  const ban = await c.ban(interaction, target, reason, days);
-  return interaction.editReply(ban);
+  const banResponse = await c.ban(interaction, target, reason, days);
+  if (banResponse) return banResponse.interaction.editReply(banResponse.payload);
 }
 
 async function slashModFilter(interaction: Augur.GuildInteraction<"CommandSlash">) {
-  
+
   const pf = (interaction.client.moduleManager.shared.get("01-filter.js") as FilterShared | undefined)?.();
 
   if (!pf) throw new Error("Couldn't access profanity filter");
@@ -121,8 +121,8 @@ async function slashModKick(interaction: Augur.GuildInteraction<"CommandSlash">)
   const reason = interaction.options.getString("reason", true);
   if (!target) return interaction.editReply(noTarget);
 
-  const kick = await c.kick(interaction, target, reason);
-  return interaction.editReply(kick);
+  const kickResponse = await c.kick(interaction, target, reason);
+  if (kickResponse) kickResponse.interaction.editReply(kickResponse.payload);
 }
 
 async function slashModMute(interaction: Augur.GuildInteraction<"CommandSlash">) {
@@ -350,7 +350,7 @@ async function slashModGrownups(interaction: Augur.GuildInteraction<"CommandSlas
 
   const grownupTimer = c.grownups.get(interaction.channelId);
   if (grownupTimer) clearTimeout(grownupTimer);
-  
+
   if (time === 0) {
     c.grownups.delete(interaction.channel.id);
   } else {

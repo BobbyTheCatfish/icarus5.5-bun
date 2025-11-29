@@ -1,4 +1,3 @@
-import moment from "moment-timezone";
 import Bank from "../models/Bank.model";
 
 export type CurrencyRecord = {
@@ -18,21 +17,6 @@ export default {
   getAll: async function(discordId: string): Promise<CurrencyRecord[]> {
     if (typeof discordId !== "string") throw new TypeError(outdated);
     return Bank.find({ discordId }, undefined, { lean: true }).exec();
-  },
-  getReport: async function(discordIds: string[], startDate: moment.Moment): Promise<CurrencyRecord[]> {
-    if (!startDate) {
-      const seasonStart = moment.tz("America/Denver").startOf("month").hour(19);
-      const monthsAgo = seasonStart.month() % 4;
-      seasonStart.subtract(monthsAgo, "months");
-      startDate ??= seasonStart;
-    }
-
-    return Bank.find({
-      discordId: { $in: discordIds },
-      currency: "em",
-      hp: true,
-      timestamp: { $gte: startDate.toDate() }
-    }, undefined, { lean: true }).exec();
   },
   /** Gets a user's current balance for a given currency. */
   getBalance: async function(discordId: string): Promise<{ discordId: string; gb: number; em: number; }> {

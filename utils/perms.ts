@@ -7,7 +7,7 @@ import tsf from "../config/snowflakes-testing.json";
 // circular dependancy, had to duplicate code :(
 const sf = config.devMode ? tsf : snowflakes;
 
-type Perm = (m: GuildMember) => boolean
+// type Perm = (m: GuildMember) => boolean
 
 const permFuncs = {
   botOwner: (m: GuildMember) => config.ownerId === m.id,
@@ -26,7 +26,7 @@ const permFuncs = {
   trustPlus: (m: GuildMember) => m.roles.cache.has(sf.roles.moderation.trustedPlus),
   trusted: (m: GuildMember) => m.roles.cache.has(sf.roles.moderation.trusted),
   notMuted: (m: GuildMember) => !m.roles.cache.hasAny(sf.roles.moderation.muted, sf.roles.moderation.ductTape),
-  everyone: (m: GuildMember) => true
+  everyone: (_m: GuildMember) => true
 };
 
 const perms = {
@@ -46,6 +46,6 @@ const perms = {
 
 };
 
-export default perms
+export default perms;
 
 export type PermKeys = keyof typeof permFuncs

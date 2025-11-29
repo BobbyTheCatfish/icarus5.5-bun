@@ -9,12 +9,12 @@ export type AvailableGame = {
     code: string;
     key: string;
     steamId: string;
-}
+};
 
 export type BoughtGame = AvailableGame & {
     recipient: string | null;
     date: Date | null;
-}
+};
 
 export type IGN = {
     name: string;
@@ -22,14 +22,14 @@ export type IGN = {
     category: string;
     aliases: string[];
     link: string | null;
-}
+};
 
 export type OptRole = {
     name: string;
     role: Discord.Role;
     badge: string | null;
     badgeLore: string | null;
-}
+};
 
 export type Role = {
     type: "Equip" | "Comment" | "Team Assign" | "Rank" | "Year";
@@ -39,7 +39,7 @@ export type Role = {
     level: string | null;
     badge: string | null;
     badgeLore: string | null;
-}
+};
 
 export type ColorRole = Omit<Role, "color"> & { color: Discord.Role; };
 export type LevelStrRole = Omit<Role, "level"> & { level: string; };
@@ -53,7 +53,7 @@ export type Sponsor = {
     emojiId: string | null;
     enabled: boolean;
     archiveAt: Date | null;
-}
+};
 
 export type Starboard = {
     channel: Discord.GuildTextBasedChannel;
@@ -61,28 +61,28 @@ export type Starboard = {
     priorityEmoji: Set<string>;
     threshold: number;
     approval: boolean;
-}
+};
 
 export type TourneyChampion = {
     tourneyName: string;
     userId: string;
     takeAt: Date | null;
     key: string;
-}
+};
 
 export type ChannelXPSetting = {
     channelId: string;
     emoji: Set<string>;
     posts: number;
     preferMedia: boolean;
-}
+};
 
 export type PlayingDefault = {
     channelId: string;
     name: string;
-}
+};
 
-export default interface SheetTypes {
+export interface SheetTypes {
     AvailableGame: AvailableGame;
     BoughtGame: BoughtGame;
     IGN: IGN;

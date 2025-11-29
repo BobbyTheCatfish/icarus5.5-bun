@@ -30,4 +30,4 @@ client.login();
 process.on("unhandledRejection", (_error, p) => p.catch(e => u.errorHandler(e, "Unhandled Rejection")));
 process.on("uncaughtException", (error) => u.errorHandler(error, "Uncaught Exception"));
 
-export default client
+export default client;

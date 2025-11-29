@@ -1,8 +1,7 @@
-// @ts-check
 import { GoogleSpreadsheet } from "google-spreadsheet";
 import config from "../config/config.json";
 import { JWT } from "google-auth-library";
-import type types from "../types/sheetTypes";
+import type { SheetTypes } from "../types/sheetTypes";
 import sf from "../utils/snowflakes";
 import { setBadgeData } from "../utils/badges";
 import Schemas from "google-spreadsheet-schema";
@@ -42,14 +41,14 @@ const sheetMap = {
 };
 
 export const functionSchemas: {
-  optRoles: Schemas.Mapper<types["OptRole"]>,
-  wipChannels: Schemas.Mapper<types["PlayingDefault"]>,
-  sponsors: Schemas.Mapper<types["Sponsor"]>,
-  starboards: Schemas.Mapper<types["Starboard"]>,
-  rolesBase: Schemas.Mapper<types["Role"]>,
-  colorRole: Schemas.Mapper<types["ColorRole"]>,
-  levelRole: Schemas.Mapper<types["LevelStrRole"]>
-  numRole: Schemas.Mapper<types["LevelNumRole"]>
+  optRoles: Schemas.Mapper<SheetTypes["OptRole"]>,
+  wipChannels: Schemas.Mapper<SheetTypes["PlayingDefault"]>,
+  sponsors: Schemas.Mapper<SheetTypes["Sponsor"]>,
+  starboards: Schemas.Mapper<SheetTypes["Starboard"]>,
+  rolesBase: Schemas.Mapper<SheetTypes["Role"]>,
+  colorRole: Schemas.Mapper<SheetTypes["ColorRole"]>,
+  levelRole: Schemas.Mapper<SheetTypes["LevelStrRole"]>
+  numRole: Schemas.Mapper<SheetTypes["LevelNumRole"]>
 } = {
   optRoles: (row) => {
     const id = row.get("RoleID");
@@ -203,7 +202,7 @@ export const data = {
 
   roles: {
     all: new Schemas.SchemaFunction("Base Role ID", functionSchemas.rolesBase),
-    team: new Schemas.SchemaFunction("Base Role ID", functionSchemas.levelRole) as Schemas.SchemaFunction<"string", Omit<types["LevelStrRole"], "level"> & { level: import("../utils/perms").PermKeys }>,
+    team: new Schemas.SchemaFunction("Base Role ID", functionSchemas.levelRole) as Schemas.SchemaFunction<"string", Omit<SheetTypes["LevelStrRole"], "level"> & { level: import("../utils/perms").PermKeys }>,
     equip: new Schemas.SchemaFunction("Base Role ID", functionSchemas.colorRole),
     rank: new Schemas.SchemaFunction("Level", functionSchemas.numRole, "number"),
     year: new Schemas.SchemaFunction("Level", functionSchemas.numRole, "number"),
@@ -259,9 +258,9 @@ async function setData(sheet: keyof Omit<typeof data, "docs">, doc: GoogleSpread
   await data[sheet].load(worksheet);
 }
 
-export async function loadData(cli: Client, loggedIn = true, justRows = false, sheet?: keyof Omit<typeof data, "docs">) {
+export async function loadData(cli: Client, _loggedIn = true, justRows = false, sheet?: keyof Omit<typeof data, "docs">) {
   client = cli;
-  loggedIn; // remove if the change worked
+  // loggedIn; // remove if the change worked
   if (!data.docs) throw new Error("Something has gone terribly wrong during sheets loadData");
 
   if (!justRows) {
@@ -285,8 +284,7 @@ export async function loadData(cli: Client, loggedIn = true, justRows = false, s
 
   const promises: Promise<void>[] = [];
   for (const key in sheetMap) {
-    // @ts-ignore
-    const typeCorrectKey: keyof typeof sheetMap = key;
+    const typeCorrectKey = key as keyof typeof sheetMap;
     if (typeCorrectKey === "games") {
       promises.push(setData(typeCorrectKey, games));
     } else {
@@ -300,8 +298,11 @@ export async function loadData(cli: Client, loggedIn = true, justRows = false, s
 
 const blank = ["", undefined, null];
 
-function noBlank(e: any, key?: string) {
-  if (key && typeof e === "object") return !blank.includes(e[key]);
+function noBlank(e: Record<string, string | null | undefined> | string | null | undefined, key?: string) {
+  if (typeof e === "object") {
+    if (key && e) return !blank.includes(e[key as keyof typeof e]);
+    return false;
+  }
   return !blank.includes(e);
 }
 

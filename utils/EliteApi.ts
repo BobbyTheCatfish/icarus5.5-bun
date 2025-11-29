@@ -1,9 +1,11 @@
 // @ts-check
 import axios from "axios";
 
-function request(path: string, params?: Record<any, any>) {
-  // @ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function request(path: string, params?: Record<string, any>) {
+
   return axios(`https://${path}`, { params })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .then((a: { data: any }) => a.data);
 }
 
@@ -24,6 +26,14 @@ export type EliteFaction = {
   id: number;
 }
 
+export type EliteBody = {
+  id: number;
+  type: string;
+  isScoopable: boolean;
+  distanceToArrival: number;
+  name: string;
+}
+
 export type EliteSystem = {
   name: string;
   id: number;
@@ -36,14 +46,6 @@ export type EliteSystem = {
   bodiesURL: string;
   stationsURL: string;
   factionsURL: string;
-}
-
-export type EliteBody = {
-  id: number;
-  type: string;
-  isScoopable: boolean;
-  distanceToArrival: number;
-  name: string;
 }
 
 async function getSystemInfo(systemName: string) {

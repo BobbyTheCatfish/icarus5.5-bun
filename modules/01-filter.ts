@@ -17,14 +17,14 @@ const processing = new Set<string>();
 // first value is for trusted, second is for non-trusted
 const thresh = config.spamThreshold;
 
-type activeMember = {
+type ActiveMember = {
   id: string;
   messages: Discord.Message<true>[];
   verdict?: number;
   count?: number;
 }
 
-const active = new u.Collection<string, activeMember>();
+const active = new u.Collection<string, ActiveMember>();
 
 async function spamming(client: Discord.Client) {
   // no point in doing it if nobodys posting
@@ -125,8 +125,7 @@ async function processMessageLanguage(msg: Discord.Message) {
 
   const linkMap = (l: { tld?: string; url: string; }) => (l.tld ?? "") + l.url;
 
-  // @ts-ignore
-  const linkFilter = (prop: string, l: { tld: string | undefined; url: string; }) => new RegExp(banned[prop].join('|'), 'gi').test(linkMap(l));
+  const linkFilter = (prop: string, l: { tld: string | undefined; url: string; }) => new RegExp(banned[prop as "links" | "scam"].join('|'), 'gi').test(linkMap(l));
 
 
   // LINK FILTER
@@ -254,19 +253,19 @@ function reportInvites(msg: Discord.Message<true>, rawInvites: string[], invites
 /** Process Discord invites */
 async function processDiscordInvites(msg: Discord.Message) {
   if (!msg.inGuild()) return null;
-  
+
   const bot = msg.client;
 
   const inviteRegex = /(https?:\/\/)?discord(app)?\.(gg(\/invite)?\/|com\/(invite|events)\/)(\w+)/ig;
   const matched = msg.cleanContent.match(inviteRegex);
   if (!matched) return null;
-  
+
   const code = matched.map(m => ({ event: /discord(app)?\.com\/events/i.test(m), code: m.replace(/(https?:\/\/)?discord(app)?\.(gg(\/invite)?\/|com\/(invite|events)\/)/, "") }));
   const filtered = code.filter(co => co.code !== msg.guild.id);
   if (filtered.length === 0) return null;
-  
+
   const foundInvites = filtered.map(inv => inv.event ? bot.fetchGuildWidget(inv.code) : bot.fetchInvite(inv.code.trim()));
-  
+
   try {
     const resolved = await Promise.all(foundInvites);
     return reportInvites(msg, matched, resolved);
@@ -486,11 +485,11 @@ const Module = new Augur.Module()
   }
   processCardAction(int);
 })
-// @ts-ignore it does exist...
+// @ts-expect-error it does exist...
 .addEvent("filterUpdate", () => pf = new profanityFilter())
 .setShared(() => pf)
 .addEvent("ready", () => {
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const forWhenSpamWorks = () => setInterval(() => {
     spamming(Module.client);
     for (const [id, member] of active) {

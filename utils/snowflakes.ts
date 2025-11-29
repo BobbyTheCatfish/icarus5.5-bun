@@ -4,5 +4,5 @@ import commandSF from "../config/snowflakes-commands.json";
 import config from "../config/config.json";
 
 export default {
-    ...(config.devMode ? testSF : realSF ), ...commandSF
-}
+  ...(config.devMode ? testSF : realSF), ...commandSF
+};

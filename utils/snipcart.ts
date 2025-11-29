@@ -1,68 +1,64 @@
 import axios from "axios";
+import config from "../config/config.json";
 
-class SnipCart {
-  key: any;
-  constructor(auth: any) {
-    this.key = auth;
-  }
-
-  async callApi (call: string, data: Record<any, any> = {}, method: string = "get"): Promise<any> {
-    method = method.toUpperCase();
-  
-    call = encodeURI(call);
-  
-    if (method === "GET") {
-      const urlParams = Object.keys(data).map((key) =>
-        encodeURIComponent(key) + "=" + encodeURIComponent(data[key])
-      ).join("&");
-      call += (urlParams ? "?" + urlParams : "");
-    }
-  
-    // @ts-ignore
-    const response = await axios({
-      baseURL: "https://app.snipcart.com/api",
-      url: call,
-      data,
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-      },
-      auth: {
-        username: this.key, password: ""
-      },
-      method
-    });
-  
-    return response.data;
-  };
-  
-  // DISCOUNTS
-  
-  deleteDiscount(discount: string | { id: string; }) {
-    const id = ((typeof discount === "string") ? discount : discount.id);
-    return this.callApi(`/discounts/${id}`, undefined, "DELETE");
-  };
-  
-  editDiscount(discount: { id: string; }) {
-    return this.callApi(`/discounts/${discount.id}`, discount, "PUT");
-  };
-  
-  getDiscountCode(code: string | { id: string; }) {
-    return new Promise((fulfill, reject) => {
-      this.callApi("/discounts").then(discounts =>
-        fulfill(discounts.find((d: any) => d.code === code))
-      ).catch(reject);
-    });
-  };
-  
-  getDiscounts() {
-    return this.callApi("/discounts");
-  };
-
-  newDiscount(discount: { name: string; combinable: boolean; maxNumberOfUsages: number; trigger: string; code: string; type: string; amount: number; }) {
-    return this.callApi("/discounts", discount, "POST");
-  };
-
+type DiscountCreateProps = {
+  name: string
+  trigger: string
+  code: string
+  type: string
+  amount?: number | null
+  rate?: number | null
+  combinable?: boolean
+  maxNumberOfUsages?: number
 }
 
-export default SnipCart
+type DiscountProps = {
+  archived: boolean;
+  id: string;
+}
+
+type Discount = DiscountCreateProps & DiscountProps
+
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function call<T>(endpoint: string, data: Record<any, any> | any[] = {}, method: string = "get"): Promise<T> {
+  return axios({
+    url: `https://app.snipcart.com/api/${endpoint}`,
+    method,
+    data,
+    headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+      "Authorization": `Basic ${config.api.snipcart}`
+    },
+  })
+  .then(/** @param {{ data: T }} res */ (res: { data: T; }) => res.data);
+}
+
+function getAllDiscounts(): Promise<Discount[]> {
+  return call("/discounts");
+}
+
+function getDiscountByCode(code: string): Promise<Discount | undefined> {
+  return getAllDiscounts().then(discounts => discounts.find(d => d.code === code));
+}
+
+function newDiscount(discount: DiscountCreateProps): Promise<Discount> {
+  return call("/discounts", discount, "POST");
+}
+
+function editDiscount(discountId: string, discount: DiscountCreateProps & Partial<DiscountProps>): Promise<Discount | undefined> {
+  return call(`/discounts/${discountId}`, discount, "PUT");
+}
+
+function deleteDiscount(discountId: string): Promise<void> {
+  return call(`/discounts/${discountId}`, undefined, "DELETE");
+}
+
+export default {
+  getDiscountByCode,
+  getAllDiscounts,
+  newDiscount,
+  editDiscount,
+  deleteDiscount
+};

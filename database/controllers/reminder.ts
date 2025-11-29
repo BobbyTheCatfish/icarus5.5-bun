@@ -6,8 +6,8 @@ export type Timer = {
   id: string;
   discordId: string;
   reminder: string;
-  timestamp: number;
-  started: number;
+  timestamp: Date;
+  started: Date;
   isTimer: boolean;
 }
 

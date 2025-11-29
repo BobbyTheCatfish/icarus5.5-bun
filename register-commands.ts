@@ -63,14 +63,16 @@ function getCommandType(typeId: number) {
   }
 }
 
+type RateLimitData = { retry_after: number }
+
 function displayError(error: AxiosError) {
   if (error.response) {
     if (error.response.status === 429) {
-      console.log("You're being rate limited! try again after " + (error.response.data as any).retry_after + " seconds. Starting countdown...");
+      console.log("You're being rate limited! try again after " + (error.response.data as RateLimitData).retry_after + " seconds. Starting countdown...");
       setTimeout(() => {
         console.log("try now!");
         process.exit();
-      }, (error.response.data as any).retry_after * 1000);
+      }, (error.response.data as RateLimitData).retry_after * 1000);
     } else if (error.response.status === 400) {
       console.log("You've got a bad bit of code somewhere! Unfortunately it won't tell me where :(");
     } else if (error.response.status === 401) {
@@ -99,7 +101,7 @@ async function patch(filepaths: string[], global: boolean) {
 
   const commandPath = path.resolve(process.cwd() === __dirname ? __dirname : process.cwd(), "./registry");
   // const commandPath = path.resolve(process.cwd(), "./registry");
-  console.log(commandPath)
+
   const data: RegFile[] = [];
   for (const file of filepaths) {
     const load: RegFile = (await import(path.resolve(commandPath, file))).default;
@@ -157,11 +159,10 @@ async function register() {
   console.log("\nCommand snowflake files updated\n");
   process.exit();
 }
-console.log(process.versions.bun)
 
 
 if (process.cwd() === __dirname) {
   register();
 }
 
-export default register
+export default register;

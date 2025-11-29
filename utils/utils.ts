@@ -1,4 +1,3 @@
-import { AugurClient } from "augurbot-ts";
 import { AxiosError } from "axios";
 import * as Discord from "discord.js";
 import { escapeMarkdown, ComponentType } from "discord.js";
@@ -20,7 +19,8 @@ type ParsedInteraction = {
 function parseInteraction(int: Discord.BaseInteraction): ParsedInteraction {
   if (int.isChatInputCommand() || int.isAutocomplete()) {
     let command = "";
-    let data: Record<any, any> & {name: string, value?: string | number | boolean}[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let data: Record<string, any> & {name: string, value?: string | number | boolean}[] = [];
 
     if (int.isAutocomplete()) command += "Autocomplete for ";
     if (int.isChatInputCommand()) {
@@ -40,7 +40,7 @@ function parseInteraction(int: Discord.BaseInteraction): ParsedInteraction {
     }
     return { command, data: data.map(a => ({ name: a.name, value: a.value })) };
   } else if (int.isCommand()) {
-    return { command: int.commandName, data: [] }
+    return { command: int.commandName, data: [] };
   } else if (int.isMessageComponent()) {
     const data = [{ name: "Type", value: Discord.ComponentType[int.componentType] }];
 
@@ -58,7 +58,7 @@ function parseInteraction(int: Discord.BaseInteraction): ParsedInteraction {
     };
   }
 
-  return { command: null, data: [] }
+  return { command: null, data: [] };
 }
 
 const utils = {
@@ -113,13 +113,13 @@ const utils = {
       .setColor(0xff0000)
       .setTitle(title)
       .setDescription(prompt);
-    const confirmTrue = utils.customId(),
-      confirmFalse = utils.customId();
+    const confirmTrue = "utilConfirmTrue",
+      confirmFalse = "utilConfirmFalse";
 
     const response = {
       embeds: [embed],
       components: [
-         new utils.MessageActionRow().addComponents(
+        new utils.MessageActionRow().addComponents(
           new utils.Button().setCustomId(confirmTrue).setEmoji("✅").setLabel("Confirm").setStyle(Discord.ButtonStyle.Success),
           new utils.Button().setCustomId(confirmFalse).setEmoji("⛔").setLabel("Cancel").setStyle(Discord.ButtonStyle.Danger)
         )
@@ -127,18 +127,28 @@ const utils = {
       content: null
     };
 
-    if (interaction.replied || interaction.deferred) await interaction.editReply(response);
-    else await interaction.reply({ ...response, flags: ["Ephemeral"], content: undefined });
+    let msg;
+    if (interaction.replied || interaction.deferred) msg = await interaction.editReply(response);
+    else msg = await interaction.reply({ ...response, flags: ["Ephemeral"], content: undefined });
 
-    const confirm = await interaction.channel?.awaitMessageComponent({
+    const confirm = await msg.awaitMessageComponent({
       filter: (button) => button.user.id === interaction.user.id && (button.customId === confirmTrue || button.customId === confirmFalse),
       componentType: ComponentType.Button,
-      time: 60000
-    }).catch(() => ({ customId: "confirmTimeout" }));
+      time: 60_000
+    }).catch(() => null);
 
-    if (confirm?.customId === confirmTrue) return true;
-    else if (confirm?.customId === confirmFalse) return false;
-    return null;
+    if (!confirm) {
+      await interaction.editReply({ content: "I fell asleep waiting for your input...", embeds: [], components: [] });
+      return null;
+    }
+
+    if (confirm.customId === confirmFalse) {
+      await confirm.update({ content: "Action canceled.", embeds: [], components: [] });
+      return null;
+    }
+
+    await confirm.deferUpdate();
+    return confirm;
   },
 
   /** Database controllers */
@@ -160,9 +170,9 @@ const utils = {
     else if (msg.stickers.size > 0) embed.setImage(msg.stickers.first()?.url ?? null);
     return embed;
   },
-  
+
   customId: nanoid,
-  
+
   escapeText: escapeMarkdown,
 
   /**
@@ -216,7 +226,7 @@ const utils = {
         (em.description?.length ?? 0) +
         (em.footer?.text.length ?? 0);
     };
-    
+
     let strTotal = embedLength();
     for (const [fieldName, fieldLines] of lines) {
       let field = "";
@@ -272,11 +282,12 @@ const utils = {
   },
 
   parseInteraction,
-  
+
   /**
    * Handles a command exception/error. Most likely called from a catch.
    * Reports the error and lets the user know.
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   errorHandler: function(error: Error | null, message: any = null) {
     if (!error || (error.name === "AbortError")) return;
 
@@ -302,8 +313,8 @@ const utils = {
 
     } else if (message instanceof Discord.BaseInteraction) {
       const loc = (message.inGuild() ? `${message.guild?.name} > ${message.channel?.name}` : "DM");
-      /* eslint-disable-next-line no-console*/
 
+      /* eslint-disable-next-line no-console*/
       console.error(`Interaction by ${message.user.username} in ${loc}`);
 
       if (message.isRepliable() && (message.deferred || message.replied)) message.editReply("I've run into an error. I've let my devs know.").catch(utils.noop).then(utils.clean);
@@ -345,7 +356,7 @@ const utils = {
     embed.setDescription(stack);
     return errorLog.send({ embeds: [embed] });
   },
-  
+
   /** The webhook that handles error logging */
   errorLog,
 
@@ -411,14 +422,14 @@ const utils = {
 
   /** Shortcut to utils/perms.js */
   perms: p,
-  
+
   /** Choose a random element from an array */
   rand: function<K>(selections: K[]): K {
     return selections[Math.floor(Math.random() * selections.length)]!;
   },
 
   time: Discord.time,
-  
+
   /** Shortcut to snowflakes.json or snowflakes-testing.json depending on if devMode is turned on */
   sf,
 
@@ -442,7 +453,7 @@ const utils = {
     const col = new Discord.Collection(items.map(i => [i[key], i]));
     return Array.from(col.values());
   },
-  
+
   getHouseInfo: function(member?: Discord.GuildMember | null) {
     const houseInfo = [
       { id: sf.roles.houses.housebb, name: "Brightbeam", color: 0x00a1da },

@@ -4,6 +4,7 @@ import config from "../../config/config.json";
 import User from "../models/User.model";
 import ChannelXP from "../models/ChannelXP.model";
 import { type ActiveUser } from "../../types/sharedModuleTypes";
+import type { Types } from "mongoose";
 
 export type UserRecord = {
   discordId: string
@@ -18,9 +19,10 @@ export type UserRecord = {
   sendBdays: boolean
   watching: boolean
   twitchFollow: boolean
+  _id: Types.ObjectId
 }
 
-export type RankedUser = UserRecord & { rank: { season: number; lifetime: number} } 
+export type RankedUser = UserRecord & { rank: { season: number; lifetime: number} }
 
 export type leaderboardOptions = {
   memberIds: Collection<string, GuildMember> | string[]
@@ -207,7 +209,31 @@ const models = {
   update: function(discordId: string, update: Partial<UserRecord>): Promise<UserRecord | null> {
     if (typeof discordId !== "string") throw new Error(outdated);
     return User.findOneAndUpdate({ discordId }, update, { lean: true, new: true, upsert: true });
-  }
+  },
+  getReport: function(discordIds: string[], startDate?: moment.Moment): Promise<{discordId: string, em: number, currentXP: number}[]> {
+    if (!startDate) {
+      const seasonStart = moment.tz("America/Denver").startOf("month").hour(19);
+      const monthsAgo = seasonStart.month() % 4;
+      seasonStart.subtract(monthsAgo, "months");
+      startDate ??= seasonStart;
+    }
+
+    return User.aggregate([
+      { $match: { discordId: { $in: discordIds } } },
+      { $lookup: { from: "banks", localField: "discordId", foreignField: "discordId", as: "banks" } },
+      { $unwind: { path: "$banks", preserveNullAndEmptyArrays: true } },
+      { $match: { "banks.hp": true, "banks.currency": "em", "banks.timestamp": { $gte: startDate.toDate() } } },
+      { $group: { _id: "$_id", discordId: { $first: "$discordId" }, currentXP: { $first: "$currentXP" }, em: { $sum: "$banks.value" } } },
+      { $project: { discordId: true, currentXP: true, em: true } }
+    ]).exec();
+
+    // Use this once mongo has been updated
+    // return User.aggregate([
+    //   { $match: { discordId: { $in: discordIds } } },
+    //   { $lookup: { from: "banks", localField: "discordId", foreignField: "discordId", as: "banks", pipeline: [{ $match: { hp: true, currency: "em", timestamp: { $gte: startDate.toDate() } } }] } },
+    //   { $project: { discordId: true, currentXP: true, em: { $sum: "$banks.value" } } }
+    // ]).exec();
+  },
 };
 
 export default models;

@@ -1,5 +1,5 @@
 import profanityMatcher from "profanity-matcher";
-import type SheetTypes from "./sheetTypes";
+import type { SheetTypes } from "./sheetTypes";
 import { ChatInputCommandInteraction, Collection, EmbedBuilder, GuildMember, Message, type MessageReplyOptions } from "discord.js";
 
 export type FilterShared = () => profanityMatcher
@@ -17,11 +17,11 @@ export type CakeShared = {
     celebrate: (test?: boolean) => void
 }
 
-type tag = import("../database/controllers/tag").tag;
+type Tag = import("../database/controllers/tag").Tag;
 
 export type TagsShared = {
-    tags: Collection<string, tag>,
-    encodeTag: (tag: tag, msg: Message | null, int?: ChatInputCommandInteraction) => string | Pick<MessageReplyOptions, "content" | "files" | "allowedMentions">
+    tags: Collection<string, Tag>,
+    encodeTag: (tag: Tag, msg: Message | null, int?: ChatInputCommandInteraction) => string | Pick<MessageReplyOptions, "content" | "files" | "allowedMentions">
 }
 
 export interface ActiveUser {

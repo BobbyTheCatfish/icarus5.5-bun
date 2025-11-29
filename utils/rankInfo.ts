@@ -34,12 +34,12 @@ const Rank = {
     "LDSG Chat **Level %LEVEL%** belongs to you.",
     "Do something nice with **Level %LEVEL%** in LDSG chat."
   ],
-  
+
   level: function(xp: number | string) {
     if (typeof xp === 'string') xp = parseInt(xp, 10);
     return Math.floor((1 + Math.sqrt(1 + (8 * xp) / xpScale)) / 2);
   },
-  
+
   minXp: function(level: number | string) {
     if (typeof level === 'string') level = parseInt(level, 10);
     return xpScale * (Math.pow(2 * level - 1, 2) - 1) / 8;

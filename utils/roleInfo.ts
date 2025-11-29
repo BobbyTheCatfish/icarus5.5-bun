@@ -2,12 +2,6 @@
 import { GuildMember, Role } from "discord.js";
 import u from "./utils";
 
-type EquipRole = {
-  baseId: string;
-  inherited: string[];
-  colorId: string;
-}
-
 /**
  * Get the roles that a given member can equip
  */
@@ -52,4 +46,4 @@ async function equip(member: GuildMember, baseName: string | null, baseId?: stri
   return true;
 }
 
-export default { equip, getInventory }
+export default { equip, getInventory };

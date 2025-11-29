@@ -11,7 +11,7 @@ export default {
   delete: function(discordId: string, system: string): Promise<IGN | null> {
     return Ign.findOneAndDelete({ discordId, system }, { lean: true, new: false }).exec();
   },
-  
+
   /** Find a specific IGN */
   findOne: function(discordId: string, system: string): Promise<IGN | null> {
     return Ign.findOne({ discordId, system }, undefined, { lean: true }).exec();
@@ -26,7 +26,7 @@ export default {
   /** Find a list of all IGNs for a given system */
   findMany: function(discordId: string | string[], system?: string | null): Promise<IGN[]> {
     let ids: string[] | string | { $in: string[]; };
-    let query: any;
+    let query: { discordId: string | string[] | { $in: string[] }, system?: string };
 
     if (Array.isArray(discordId)) ids = { $in: discordId };
     else ids = discordId;

@@ -10,11 +10,11 @@ const ReminderSchema = new mongoose.Schema({
     required: true,
   },
   timestamp: {
-    type: Number,
+    type: Date,
     required: true,
   },
   started: {
-    type: Number,
+    type: Date,
     required: true
   },
   isTimer: {

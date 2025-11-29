@@ -1,6 +1,6 @@
 // @ts-check
 import Discord, { ButtonStyle } from "discord.js";
-import nameParts from "../data/nameParts.json"
+import nameParts from "../data/nameParts.json";
 import u from "./utils";
 import config from "../config/config.json";
 import Augur from "augurbot-ts";
@@ -85,6 +85,144 @@ type FlagInfo = {
   furtherInfo?: string;
 }
 
+type ModAction = <T extends Augur.GuildInteraction<"CommandSlash" | "SelectMenuString">>(interaction: T, target: Discord.GuildMember, reason: string, days?: number) =>
+  Promise<{ payload: Discord.InteractionEditReplyOptions | string, interaction: T | Discord.ButtonInteraction} | null>;
+
+const ban: ModAction = async (interaction, target, reason, days = 1) => {
+  let success = false;
+  let confirm;
+  try {
+    if (!compareRoles(interaction.member, target)) return { payload: `You have insufficient permissions to ban ${target}!`, interaction };
+    else if (!target.bannable) return { payload: `I have insufficient permissions to ban ${target}!`, interaction };
+
+    confirm = await u.confirmInteraction(interaction, `Ban ${target} for:\n${reason}?`, `Confirm Ban on ${u.escapeText(target.displayName)}`);
+    if (!confirm) return null;
+
+    // The actual ban part
+    const targetRoles = target.roles.cache.clone();
+    await target.send({ content: messageFromMods, embeds: [ u.embed()
+        .setTitle("User Ban")
+        .setDescription(`You have been banned from ${interaction.guild.name}`)
+        .addFields({ name: "Details", value: reason })
+        .setFooter({ text: `${interaction.member} has issued this ban.` })
+    ] }).catch(() => blocked(target));
+
+    await target.ban({ deleteMessageSeconds: days * 24 * 60 * 60, reason });
+    success = true;
+
+    // Save infraction
+    await u.db.infraction.save({
+      discordId: target.id,
+      description: `[User Ban]: ${reason}`,
+      value: 30,
+      mod: interaction.member.id
+    });
+
+    // Save roles
+    targetRoles.delete(u.sf.roles.moderation.trusted);
+    u.db.user.updateRoles(target, targetRoles.map(r => r.id));
+
+    // Log it
+    interaction.client.getTextChannel(u.sf.channels.mods.logs)?.send({ embeds: [
+      logEmbed(interaction, target)
+          .setTitle(`${interaction.client.emojis.cache.get(u.sf.emoji.banhammer) ?? ""} User Ban`)
+          .addFields({ name: "Reason", value: reason })
+          .setColor(embedColors.info)
+          .setFooter({ text: `Deleted ${days} day(s) of messages` })
+    ] });
+
+    // Return results
+    return {
+      payload: {
+        embeds: [
+          u.embed({ author: target })
+              .setColor(embedColors.success)
+              .setDescription(`${target} banned for:\n${reason}`)
+        ],
+        components: []
+      },
+      interaction: confirm
+    };
+  } catch (error) {
+    await u.errorHandler(error, interaction);
+    return {
+      payload: "I ran into an error! " + (success ? `${target} was banned though.` : `${target} wasn't banned.`),
+      interaction: confirm ?? interaction
+    };
+  }
+};
+
+const kick: ModAction = async (interaction, target, reason) => {
+  let success = false;
+  let confirm;
+  try {
+    if (!compareRoles(interaction.member, target)) return { payload: `You have insufficient permissions to kick ${target}!`, interaction };
+    else if (!target.kickable) return { payload: `I have insufficient permissions to kick ${target}!`, interaction };
+
+    confirm = await u.confirmInteraction(interaction, `Kick ${target} for:\n${reason}?`, `Confirm Kick on ${u.escapeText(target.displayName)}`);
+    if (!confirm) return null;
+
+    if (!confirm) {
+      return {
+        payload: {
+          embeds: [u.embed({ author: target }).setColor(embedColors.handled).setDescription(`Kick ${confirm === false ? "cancelled" : "timed out"}`)],
+          components: []
+        },
+        interaction: confirm
+      };
+    }
+    // The actual kick part
+    const targetRoles = target.roles.cache.clone();
+    await target.send({ content: messageFromMods, embeds: [
+      u.embed()
+        .setTitle("User Kick")
+        .setDescription(`You have been kicked from ${interaction.guild.name}.`)
+        .addFields({ name: "Details", value: reason })
+        .setFooter({ text: `${interaction.member.displayName} has issued this kick.` })
+    ] }).catch(() => blocked(target));
+
+    await target.kick(reason);
+    success = true;
+
+    // Save infraction
+    await u.db.infraction.save({
+      discordId: target.id,
+      description: `[User Kick]: ${reason}`,
+      value: 30,
+      mod: interaction.member.id
+    });
+
+    // Save roles
+    targetRoles.delete(u.sf.roles.moderation.trusted);
+    u.db.user.updateRoles(target, targetRoles.map(r => r.id));
+
+    // Log it
+    interaction.client.getTextChannel(u.sf.channels.mods.logs)?.send({ embeds: [
+      logEmbed(interaction, target)
+          .setTitle(`👢 User Kick`)
+          .addFields({ name: "Reason", value: reason })
+          .setColor(embedColors.info)
+    ] });
+    return {
+      payload: {
+        embeds: [
+          u.embed({ author: target })
+            .setColor(embedColors.success)
+            .setDescription(`${target} kicked for:\n${reason}`)
+        ],
+        components: []
+      },
+      interaction: confirm
+    };
+  } catch (error) {
+    await u.errorHandler(error, interaction);
+    return {
+      payload: `I ran into an error! ${target} ` + (success ? "*was* kicked though." : "wasn't kicked."),
+      interaction: confirm ?? interaction
+    };
+  }
+};
+
 const modCommon = {
   blocked,
   compareRoles,
@@ -97,66 +235,9 @@ const modCommon = {
   colors: embedColors,
 
   /** BAN HAMMER!!! */
-  ban: async function(interaction: Augur.GuildInteraction<"CommandSlash" | "SelectMenuString">, target: Discord.GuildMember, reason: string, days: number = 1) {
-    let success = false;
-    try {
-      if (!compareRoles(interaction.member, target)) return `You have insufficient permissions to ban ${target}!`;
-      else if (!target.bannable) return `I have insufficient permissions to ban ${target}!`;
-
-      const confirm = await u.confirmInteraction(interaction, `Ban ${target} for:\n${reason}?`, `Confirm Ban on ${u.escapeText(target.displayName)}`);
-      if (!confirm) {
-        return {
-          embeds: [u.embed({ author: interaction.member }).setColor(embedColors.handled).setDescription(`Ban ${confirm === false ? "cancelled" : "timed out"}`)],
-          components: []
-        };
-      } else if (confirm) {
-
-        // The actual ban part
-        const targetRoles = target.roles.cache.clone();
-        await target.send({ content: messageFromMods, embeds: [ u.embed()
-          .setTitle("User Ban")
-          .setDescription(`You have been banned from ${interaction.guild.name}`)
-          .addFields({ name: "Details", value: reason })
-          .setFooter({ text: `${interaction.member} has issued this ban.` })
-        ] }).catch(() => blocked(target));
-        await target.ban({ deleteMessageSeconds: days * 24 * 60 * 60, reason });
-        success = true;
-        // Save infraction
-        u.db.infraction.save({
-          discordId: target.id,
-          description: `[User Ban]: ${reason}`,
-          value: 30,
-          mod: interaction.member.id
-        });
-
-        // Save roles
-        targetRoles.delete(u.sf.roles.moderation.trusted);
-        u.db.user.updateRoles(target, targetRoles.map(r => r.id));
-
-        // Log it
-        interaction.client.getTextChannel(u.sf.channels.mods.logs)?.send({ embeds: [
-          logEmbed(interaction, target)
-            .setTitle(`${interaction.client.emojis.cache.get(u.sf.emoji.banhammer) ?? ""} User Ban`)
-            .addFields({ name: "Reason", value: reason })
-            .setColor(embedColors.info)
-            .setFooter({ text: `Deleted ${days} day(s) of messages` })
-        ] });
-        // Return results
-        return {
-          embeds: [
-            u.embed({ author: target })
-              .setColor(embedColors.success)
-              .setDescription(`${target} banned for:\n${reason}`)
-          ],
-          components: []
-        };
-      }
-      return "...Nothing happened.";
-    } catch (error) {
-      await u.errorHandler(error, interaction);
-      return "I ran into an error! " + (success ? `${target} was banned though.` : `${target} wasn't banned.`);
-    }
-  },
+  ban,
+  /** They get the boot */
+  kick,
 
   /** Generate and send a warning card in #mod-logs */
   createFlag: async function(flagInfo: FlagInfo, interaction?: Discord.CommandInteraction | Discord.AnySelectMenuInteraction) {
@@ -166,7 +247,7 @@ const modCommon = {
     const client = msg?.client ?? member?.client;
     const isMember = member instanceof Discord.GuildMember;
     const bot = isMember ? member.user.bot : member instanceof Discord.Webhook ? member : member.bot;
-    
+
     const user = msg?.webhookId ? await msg.fetchWebhook().catch(u.noop) ?? member : member;
     if (msg && !msg.inGuild()) return null;
 
@@ -306,64 +387,6 @@ const modCommon = {
     }
     return embed;
 
-  },
-  /** They get the boot */
-  kick: async function(interaction: Augur.GuildInteraction<"CommandSlash" | "SelectMenuString">, target: Discord.GuildMember, reason: string) {
-    let success = false;
-    try {
-      if (!compareRoles(interaction.member, target)) return `You have insufficient permissions to kick ${target}!`;
-      else if (!target.kickable) return `I have insufficient permissions to kick ${target}!`;
-
-      const confirm = await u.confirmInteraction(interaction, `Kick ${target} for:\n${reason}?`, `Confirm Kick on ${u.escapeText(target.displayName)}`);
-
-      if (!confirm) {
-        return {
-          embeds: [u.embed({ author: target }).setColor(embedColors.handled).setDescription(`Kick ${confirm === false ? "cancelled" : "timed out"}`)],
-          components: []
-        };
-      }
-      // The actual kick part
-      const targetRoles = target.roles.cache.clone();
-      await target.send({ content: messageFromMods, embeds: [
-        u.embed()
-        .setTitle("User Kick")
-        .setDescription(`You have been kicked from ${interaction.guild.name}.`)
-        .addFields({ name: "Details", value: reason })
-        .setFooter({ text: `${interaction.member.displayName} has issued this kick.` })
-      ] }).catch(() => blocked(target));
-      await target.kick(reason);
-      success = true;
-      // Save infraction
-      u.db.infraction.save({
-        discordId: target.id,
-        description: `[User Kick]: ${reason}`,
-        value: 30,
-        mod: interaction.member.id
-      });
-
-      // Save roles
-      targetRoles.delete(u.sf.roles.moderation.trusted);
-      u.db.user.updateRoles(target, targetRoles.map(r => r.id));
-
-      // Log it
-      interaction.client.getTextChannel(u.sf.channels.mods.logs)?.send({ embeds: [
-        logEmbed(interaction, target)
-          .setTitle(`👢 User Kick`)
-          .addFields({ name: "Reason", value: reason })
-          .setColor(embedColors.info)
-      ] });
-      return {
-        embeds: [
-          u.embed({ author: target })
-          .setColor(embedColors.success)
-          .setDescription(`${target} kicked for:\n${reason}`)
-        ],
-        components: []
-      };
-    } catch (error) {
-      await u.errorHandler(error, interaction);
-      return `I ran into an error! ${target} ` + (success ? "*was* kicked though." : "wasn't kicked.");
-    }
   },
 
   /** Prevent someone from talking */
@@ -639,7 +662,10 @@ const modCommon = {
       const past = give ? "gave" : "took";
       try {
         if (recipient.roles.cache.has(role.id) === give) return `${recipient} ${give ? "already has" : "doesn't have"} the ${role} role`;
-        give ? await recipient?.roles.add(role.id) : await recipient?.roles.remove(role.id);
+
+        if (give) await recipient?.roles.add(role.id);
+        else await recipient?.roles.remove(role.id);
+
         const returnStr = `Successfully ${past} the ${role} role ${give ? "to" : "from"} ${recipient}`;
         const embed = u.embed({ author: recipient, color: 0x00ffff })
             .setTitle(`User ${give ? "added to" : "removed from"} ${role.name}`)
@@ -765,16 +791,16 @@ const modCommon = {
       return "I ran into an error! " + (success ? "I *was* able to save the warning though." : "I wasn't able to save the warning.");
     }
   },
-  
+
   warnMessage: function(mod: string) {
     return "We have received one or more complaints regarding content you posted.\n"
     + `We have reviewed the content in question and have determined, in our sole discretion, that it is against our ${code}.\n`
     + "This content was removed on your behalf. As a reminder, if we believe that you are frequently in breach of our Code of Conduct or are otherwise acting inconsistently with the letter or spirit of the code, we may limit, suspend or terminate your access to the LDSG Discord server.\n\n"
     + `**${mod}** has issued this warning.`;
   },
-  
+
   watchlist: new Set<string>(),
-  
+
   grownups: new u.Collection<string, NodeJS.Timeout>()
 };
 

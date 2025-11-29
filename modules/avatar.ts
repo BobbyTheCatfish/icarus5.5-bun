@@ -43,11 +43,12 @@ function targetImg(int: Discord.ChatInputCommandInteraction, size: Discord.Image
 }
 
 /** Apply a filter function with parameters. Useful for when there isn't much logic to it */
-async function basicFilter(int: Discord.ChatInputCommandInteraction, image: { name: string; img: Jimp; }, filter: string, params?: Record<any, any> | number[]) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function basicFilter(int: Discord.ChatInputCommandInteraction, image: { name: string; img: Jimp; }, filter: string, params?: Record<string, any> | number[]) {
   const { name, img } = image;
-  // @ts-ignore
+  // @ts-expect-error filter props vary
   if (params) img[filter.toLowerCase()](...params);
-  // @ts-ignore
+  // @ts-expect-error filter props vary
   else img[filter.toLowerCase()]();
   const output = await img.getBufferAsync(Jimp.MIME_PNG);
   return await sendImg(int, output, `${filter} ${name}`);
@@ -77,14 +78,14 @@ const andywarhol: FilterFunction = async (int, image) => {
     c.blit(img, x, y);
   }).getBufferAsync(Jimp.MIME_PNG);
   return await sendImg(int, output, `Andywarhol ${name}`);
-}
+};
 
 const colorme: FilterFunction = async (int, image) => {
   const { name, img } = image;
   const color = u.rand([45, 90, 135, 180]);
   const output = await img.color([{ apply: ColorActionName.HUE, params: [color] }]).getBufferAsync(Jimp.MIME_PNG);
   return await sendImg(int, output, `Colorize ${name} (Hue: ${color})`);
-}
+};
 
 const deepfry: FilterFunction = async (int, image) => {
   const { name, img } = image;
@@ -93,7 +94,7 @@ const deepfry: FilterFunction = async (int, image) => {
     .contrast(1)
     .getBufferAsync(Jimp.MIME_PNG);
   return await sendImg(int, output, `Deepfry ${name}`);
-}
+};
 
 const flex: FilterFunction = async (int, image) => {
   const { name, img } = image;
@@ -108,7 +109,7 @@ const flex: FilterFunction = async (int, image) => {
     .blit(img, 120, 0)
     .getBufferAsync(Jimp.MIME_PNG);
   return await sendImg(int, output, `Flex ${name}`);
-}
+};
 
 const metal: FilterFunction = async (int, image) => {
   const { name, img } = image;
@@ -122,7 +123,7 @@ const metal: FilterFunction = async (int, image) => {
     .blit(img, 120, 0)
     .getBufferAsync(Jimp.MIME_PNG);
   return await sendImg(int, output, `Metal ${name}`);
-}
+};
 
 
 const personal: FilterFunction = async (int, image) => {
@@ -132,7 +133,7 @@ const personal: FilterFunction = async (int, image) => {
   if (!img.hasAlpha()) img.circle();
   const output = await canvas.blit(img, 1050, 75).getBufferAsync(Jimp.MIME_PNG);
   return await sendImg(int, output, `${name} took that personally`);
-}
+};
 
 async function petpet(int: Discord.ChatInputCommandInteraction) {
   const target = targetImg(int);
@@ -148,7 +149,7 @@ const popart: FilterFunction = async (int, image) => {
     c.blit(img, x, y);
   }).getBufferAsync(Jimp.MIME_PNG);
   return await sendImg(int, output, `Popart ${name}`);
-}
+};
 
 async function avatar(int: Discord.ChatInputCommandInteraction) {
   const targetImage = targetImg(int);
