@@ -1,5 +1,5 @@
 // @ts-check
-const u = require("./regUtils");
+import u from "./regUtils";
 
 
 const set = new u.sub()
@@ -46,7 +46,7 @@ const value = new u.sub()
   );
 
 
-module.exports = new u.cmd()
+export default new u.cmd()
   .setName("tag")
   .setDescription("Manage tags!")
   .addSubcommand(set)

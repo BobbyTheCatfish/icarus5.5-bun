@@ -1,9 +1,10 @@
-const Augur = require("augurbot-ts");
-const Discord = require("discord.js");
-const config = require("../config/config.json");
-const fs = require("fs");
-const path = require("path");
-const u = require("../utils/utils");
+import Augur from "augurbot-ts";
+import Discord from "discord.js";
+import config from "../config/config.json";
+import fs from "fs";
+import path from "path";
+import u from "../utils/utils";
+import { spawn } from "child_process";
 
 function fieldMismatches(obj1: Record<string, any>, obj2: Record<string, any>): [string[], string[]] {
   const keys1 = new Set(Object.keys(obj1));
@@ -73,7 +74,6 @@ async function slashBotPing(int: Augur.GuildInteraction<"CommandSlash">, msg: Di
 }
 
 async function slashBotPull(int: Augur.GuildInteraction<"CommandSlash">) {
-  const spawn = require("child_process").spawn;
   const cmd = spawn("git", ["pull"], { cwd: process.cwd() });
 
   const stdout: string[] = [];
@@ -148,7 +148,6 @@ async function slashBotGetId(int: Augur.GuildInteraction<"CommandSlash">) {
 }
 
 async function slashBotRegister(int: Augur.GuildInteraction<"CommandSlash">) {
-  const spawn = require("child_process").spawn;
   const cmd = spawn("node", ["register-commands"], { cwd: process.cwd() });
 
   const stderr: string[] = [];
@@ -294,8 +293,10 @@ const Module = new Augur.Module()
       ["../data/banned.json", "../data/banned-example.json"]
     ];
     for (const filename of testingDeploy) {
-      const prod = require(filename[1]);
-      const repo = require(filename[0]);
+      
+      const prod = (await import(filename[1])).default;
+      const repo = (await import(filename[0])).default;
+
       const [m1, m2] = fieldMismatches(prod, repo);
       if (m1.length > 0 && !config.silentMode) {
         u.errorLog.send({ embeds: [
@@ -316,4 +317,4 @@ const Module = new Augur.Module()
 })
 .setUnload(() => true);
 
-module.exports = Module;
+export default Module;

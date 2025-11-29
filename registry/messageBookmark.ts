@@ -1,7 +1,7 @@
 
-const u = require("./regUtils");
+import u from "./regUtils";
 
-module.exports = u.msgContext()
+export default u.msgContext()
   .setName("Bookmark")
   .setContexts(u.contexts.Guild, u.contexts.PrivateChannel, u.contexts.BotDM)
   .toJSON();

@@ -1,9 +1,9 @@
 // @ts-check
-const Augur = require("augurbot-ts");
-const Discord = require("discord.js");
-const Rank = require("../utils/rankInfo");
-const u = require("../utils/utils");
-const c = require("../utils/modCommon");
+import Augur from "augurbot-ts";
+import Discord from "discord.js";
+import Rank from "../utils/rankInfo";
+import u from "../utils/utils";
+import c from "../utils/modCommon";
 
 async function slashManagerUserTransfer(int: Augur.GuildInteraction<"CommandSlash">) {
   await int.deferReply({ flags: ["Ephemeral"] });
@@ -210,4 +210,4 @@ const Module = new Augur.Module()
   }
 });
 
-module.exports = Module;
+export default Module;

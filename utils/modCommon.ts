@@ -1,9 +1,9 @@
 // @ts-check
-const Discord, { ButtonStyle } = require("discord.js");
-
-const u = require("./utils");
-const config = require("../config/config.json");
-const Augur = require("augurbot-ts");
+import Discord, { ButtonStyle } from "discord.js";
+import nameParts from "../data/nameParts.json"
+import u from "./utils";
+import config from "../config/config.json";
+import Augur from "augurbot-ts";
 
 const embedColors = {
   action: 0xff0000,
@@ -69,7 +69,7 @@ function compareRoles(mod: Discord.GuildMember, target: Discord.GuildMember) {
 
 /** Generate a random name */
 function nameGen() {
-  const { names, colors, adjectives } = require("../data/nameParts.json");
+  const { names, colors, adjectives } = nameParts;
   let result = u.rand(adjectives) + " " + u.rand(colors) + " " + u.rand(names);
   while (result.length > 32) { result = u.rand(adjectives) + " " + u.rand(colors) + " " + u.rand(names); }
   return result;
@@ -778,4 +778,4 @@ const modCommon = {
   grownups: new u.Collection<string, NodeJS.Timeout>()
 };
 
-module.exports = modCommon;
+export default modCommon;

@@ -6,9 +6,10 @@
   "scripts": {
     "lint": "eslint . --max-warnings=0",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "register": "node register-commands.js",
+    "register": "bun run register-commands.ts",
     "tscheck": "tsc"
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/BobbyTheCatfish/icarus5.5.git"
@@ -25,8 +26,9 @@
     "@twurple/auth": "^7.2.1",
     "@twurple/easy-bot": "^7.2.1",
     "@twurple/eventsub-ws": "^7.2.1",
-    "augurbot-ts": "^3.3.5",
+    "augurbot-ts": "^3.3.6",
     "axios": "^1.6.7",
+    "canvas": "^3.2.0",
     "connect-mongo": "^5.1.0",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",

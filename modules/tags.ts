@@ -1,14 +1,14 @@
-const Augur = require("augurbot-ts");
-const Discord = require("discord.js");
-const fs = require("fs");
-const axios = require("axios");
-const config = require("../config/config.json");
-const u = require("../utils/utils");
-const { TagsShared } = require("../types/sharedModuleTypes");
+import Augur from "augurbot-ts";
+import Discord from "discord.js";
+import fs from "fs";
+import axios from "axios";
+import config from "../config/config.json";
+import u from "../utils/utils";
+import { type TagsShared } from "../types/sharedModuleTypes";
+import { type tag } from "../database/controllers/tag"
+import { type Types as MongoTypes } from "mongoose";
 
-type tag = import("../database/controllers/tag").tag;
-
-async function saveAttachment(attachment: Discord.Attachment, cmd: { _id: import("mongoose").Types.ObjectId; }) {
+async function saveAttachment(attachment: Discord.Attachment, cmd: { _id: MongoTypes.ObjectId; }) {
   // @ts-ignore axios hates correct types
   const response = await axios({
     method: "get",
@@ -250,4 +250,4 @@ const Module = new Augur.Module()
 })
 .setShared({ tags, encodeTag });
 
-module.exports = Module;
+export default Module;

@@ -1,11 +1,11 @@
-const Augur = require("augurbot-ts");
-const u = require("../utils/utils");
-const c = require("../utils/modCommon");
-const Discord = require("discord.js");
-const banned = require("../data/banned.json");
+import Augur from "augurbot-ts";
+import u from "../utils/utils";
+import c from "../utils/modCommon";
+import Discord from "discord.js";
+import banned from "../data/banned.json";
 
-const menuOptions = require("../data/modMenuOptions.json");
-const menuFlagOptions = require("../data/modMenuFlagOptions.json");
+import menuOptions from "../data/modMenuOptions.json";
+import menuFlagOptions from "../data/modMenuFlagOptions.json";
 
 const time = 5 * 60 * 1000;
 const noTime = "I fell asleep waiting for your input...";
@@ -465,4 +465,4 @@ const Module = new Augur.Module()
     process: sendModMenu
   });
 
-module.exports = Module;
+export default Module;

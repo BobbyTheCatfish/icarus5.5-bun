@@ -2,7 +2,7 @@ import profanityMatcher from "profanity-matcher";
 import type SheetTypes from "./sheetTypes";
 import { ChatInputCommandInteraction, Collection, EmbedBuilder, GuildMember, Message, type MessageReplyOptions } from "discord.js";
 
-export type FilterShared = () => typeof profanityMatcher
+export type FilterShared = () => profanityMatcher
 
 export type BankShared = {
     buyGame: (game: SheetTypes["AvailableGame"], user: GuildMember) => Promise<false | EmbedBuilder>,

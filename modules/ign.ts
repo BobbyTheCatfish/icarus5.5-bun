@@ -1,10 +1,10 @@
-const Augur = require("augurbot-ts");
-const Discord = require("discord.js");
-const u = require("../utils/utils");
-const fuzzy = require("fuzzysort");
+import Augur from "augurbot-ts";
+import Discord from "discord.js";
+import u from "../utils/utils";
+import fuzzy from "fuzzysort";
 
-type IGN = import("../types/sheetTypes").IGN;
-type StoredIGN = import("../database/controllers/ign").IGN;
+import { type IGN } from "../types/sheetTypes.ts"
+import { type IGN as StoredIGN } from "../database/controllers/ign.ts"
 
 function ignFieldMap(ign: IGN & { ign: string; }) {
   let value = ign.ign;
@@ -296,4 +296,4 @@ const Module = new Augur.Module()
 });
 
 
-module.exports = Module;
+export default Module;

@@ -1,5 +1,5 @@
 // @ts-check
-const u = require("./regUtils");
+import u from "./regUtils";
 
 
 const invite = new u.sub()
@@ -23,7 +23,7 @@ const uninvite = new u.sub()
   );
 
 
-module.exports = new u.cmd()
+export default new u.cmd()
   .setName("sponsor")
   .setDescription("Manage Pro Sponsor benefits")
   .addSubcommand(invite)

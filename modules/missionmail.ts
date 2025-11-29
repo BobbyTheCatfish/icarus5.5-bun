@@ -1,10 +1,10 @@
-const u = require("../utils/utils");
-const config = require("../config/config.json");
-const receive = require("imapflow");
-const interpret = require("mailparser-mit");
-const htmlparse = require("html-to-text");
-const Augur = require("augurbot-ts");
-const Discord = require("discord.js");
+import u from "../utils/utils";
+import config from "../config/config.json";
+import receive from "imapflow";
+import interpret from "mailparser-mit";
+import * as htmlparse from "html-to-text";
+import Augur from "augurbot-ts";
+import Discord from "discord.js";
 
 const [approveIdPrefix, rejectIdPrefix] = ["approveMissionMail", "rejectMissionMail"];
 
@@ -232,4 +232,4 @@ Module
   }
 });
 
-module.exports = Module;
+export default Module;

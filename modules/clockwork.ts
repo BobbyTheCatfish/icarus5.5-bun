@@ -1,8 +1,8 @@
 // @ts-check
-const Augur = require("augurbot-ts");
-const Discord = require("discord.js");
-const u = require("../utils/utils");
-const { Moment } = require("moment-timezone");
+import Augur from "augurbot-ts";
+import Discord from "discord.js";
+import u from "../utils/utils";
+import { type Moment } from "moment-timezone";
 
 const MONTH_THRESHOLD = 6;
 
@@ -182,4 +182,4 @@ Module.addInteraction({
   timerCheck(Module.client);
 });
 
-module.exports = Module;
+export default Module;

@@ -1,6 +1,6 @@
 // @ts-check
-const u = require("./regUtils");
-const Discord = require("discord.js");
+import u from "./regUtils";
+import Discord from "discord.js";
 
 const gotobed = new u.sub()
   .setName("gotobed")
@@ -99,7 +99,7 @@ const status = new u.sub()
       .setDescription("The URL for the activity")
       .setRequired(false)
   );
-module.exports = new u.cmd()
+export default new u.cmd()
   .setName("bot")
   .setDescription("Control the bot! Some actions are limited based on role.")
   .addSubcommand(gotobed)

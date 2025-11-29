@@ -1,15 +1,14 @@
-// @ts-check
-const Augur = require("augurbot-ts");
-const Discord = require("discord.js");
-const config = require("../config/config.json");
-const u = require("../utils/utils");
-const axios, { AxiosError } = require("axios");
-const Jimp = require("jimp");
-const buttermelonFacts = require("../data/buttermelonFacts.json");
+import Augur from "augurbot-ts";
+import Discord from "discord.js";
+import config from "../config/config.json";
+import u from "../utils/utils";
+import axios, { AxiosError } from "axios";
+import Jimp from "jimp";
+import buttermelonFacts from "../data/buttermelonFacts.json";
 
-const emojiKitchenSpecialCodes = require("../data/emojiKitchenSpecialCodes.json");
-const emojiSanitizeHelp = require("node-emoji");
-const { FilterShared } = require("../types/sharedModuleTypes");
+import emojiKitchenSpecialCodes from "../data/emojiKitchenSpecialCodes.json";
+import * as emojiSanitizeHelp from "node-emoji";
+import { type FilterShared } from "../types/sharedModuleTypes";
 
 const mineSweeperEmojis = ['0⃣', '1⃣', '2⃣', '3⃣', '4⃣', '5⃣', '6⃣', '7⃣', '8⃣', '💣'];
 
@@ -527,4 +526,4 @@ const Module = new Augur.Module()
 //     }
 });
 
-module.exports = Module;
+export default Module;

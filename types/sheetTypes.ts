@@ -1,7 +1,7 @@
 import * as Discord from "discord.js";
 
 
-type AvailableGame = {
+export type AvailableGame = {
     title: string;
     system: string;
     rating: string;
@@ -11,12 +11,12 @@ type AvailableGame = {
     steamId: string;
 }
 
-type BoughtGame = AvailableGame & {
+export type BoughtGame = AvailableGame & {
     recipient: string | null;
     date: Date | null;
 }
 
-type IGN = {
+export type IGN = {
     name: string;
     system: string;
     category: string;
@@ -24,14 +24,14 @@ type IGN = {
     link: string | null;
 }
 
-type OptRole = {
+export type OptRole = {
     name: string;
     role: Discord.Role;
     badge: string | null;
     badgeLore: string | null;
 }
 
-type Role = {
+export type Role = {
     type: "Equip" | "Comment" | "Team Assign" | "Rank" | "Year";
     base: Discord.Role;
     color: Discord.Role | null;
@@ -41,13 +41,13 @@ type Role = {
     badgeLore: string | null;
 }
 
-type ColorRole = Omit<Role, "color"> & { color: Discord.Role; };
-type LevelStrRole = Omit<Role, "level"> & { level: string; };
-type LevelNumRole = Omit<Role, "level"> & { level: number; };
+export type ColorRole = Omit<Role, "color"> & { color: Discord.Role; };
+export type LevelStrRole = Omit<Role, "level"> & { level: string; };
+export type LevelNumRole = Omit<Role, "level"> & { level: number; };
 
-type FullRole = Omit<Role, "level" | "color"> & { level: string; color: Discord.Role; };
+export type FullRole = Omit<Role, "level" | "color"> & { level: string; color: Discord.Role; };
 
-type Sponsor = {
+export type Sponsor = {
     userId: string;
     channel: Discord.TextChannel | null;
     emojiId: string | null;
@@ -55,7 +55,7 @@ type Sponsor = {
     archiveAt: Date | null;
 }
 
-type Starboard = {
+export type Starboard = {
     channel: Discord.GuildTextBasedChannel;
     priorityChannels: Set<string>;
     priorityEmoji: Set<string>;
@@ -63,21 +63,21 @@ type Starboard = {
     approval: boolean;
 }
 
-type TourneyChampion = {
+export type TourneyChampion = {
     tourneyName: string;
     userId: string;
     takeAt: Date | null;
     key: string;
 }
 
-type ChannelXPSetting = {
+export type ChannelXPSetting = {
     channelId: string;
     emoji: Set<string>;
     posts: number;
     preferMedia: boolean;
 }
 
-type PlayingDefault = {
+export type PlayingDefault = {
     channelId: string;
     name: string;
 }

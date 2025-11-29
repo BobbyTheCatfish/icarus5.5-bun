@@ -1,10 +1,10 @@
-const Augur = require("augurbot-ts");
-const Discord = require("discord.js");
-const u = require("../utils/utils");
-const banners = require("../data/banners.json");
-const fs = require("fs");
-const path = require("path");
-const { CakeShared } = require("../types/sharedModuleTypes");
+import Augur from "augurbot-ts";
+import Discord from "discord.js";
+import u from "../utils/utils";
+import banners from "../data/banners.json";
+import fs from "fs";
+import path from "path";
+import { type CakeShared } from "../types/sharedModuleTypes";
 
 const Module = new Augur.Module();
 
@@ -175,4 +175,4 @@ Module.addInteraction({
   setInterval(() => setBanner(), 24 * 60 * 60_000)
 );
 
-module.exports = Module;
+export default Module;

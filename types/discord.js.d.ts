@@ -1,5 +1,6 @@
 import type { AugurOptions, BotConfig, CommandExecution, InteractionExecution } from "augurbot-ts/dist/types/ClientTypes";
 import type { ErrorHandler, ParseFunction } from "augurbot-ts/dist/types/UtilTypes";
+import * as Discord from "discord.js"
 import type ModuleManager from "augurbot-ts/dist/managers/Modules";
 
 declare module 'discord.js' {

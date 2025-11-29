@@ -1,9 +1,9 @@
-const Augur = require("augurbot-ts");
-const u = require("../utils/utils");
-const Discord = require("discord.js");
-const petPetGif = require("pet-pet-gif");
-const Jimp = require("jimp");
-const { ColorActionName } = require("@jimp/plugin-color");
+import Augur from "augurbot-ts";
+import u from "../utils/utils";
+import Discord from "discord.js";
+import petPetGif from "pet-pet-gif";
+import Jimp from "jimp";
+import { ColorActionName } from "@jimp/plugin-color";
 
 type FilterFunction = (int: Discord.ChatInputCommandInteraction, img: { name: string, img: Jimp }) => void
 type BasicFilterProcess = (x: number, y: number, canvas: Jimp, index: number) => void
@@ -191,4 +191,4 @@ const Module = new Augur.Module()
   }
 });
 
-module.exports = Module;
+export default Module;

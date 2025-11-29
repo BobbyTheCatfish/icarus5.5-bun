@@ -5,7 +5,7 @@ import User from "../models/User.model";
 import ChannelXP from "../models/ChannelXP.model";
 import { type ActiveUser } from "../../types/sharedModuleTypes";
 
-type UserRecord = {
+export type UserRecord = {
   discordId: string
   roles: string[]
   badges: string[]
@@ -20,9 +20,9 @@ type UserRecord = {
   twitchFollow: boolean
 }
 
-type RankedUser = UserRecord & { rank: { season: number; lifetime: number} } 
+export type RankedUser = UserRecord & { rank: { season: number; lifetime: number} } 
 
-type leaderboardOptions = {
+export type leaderboardOptions = {
   memberIds: Collection<string, GuildMember> | string[]
   limit?: number
   member?: string
@@ -34,7 +34,7 @@ const outdated = "Expected a Discord ID but likely recieved an object instead. T
 /**
  * @enum {number}
  */
-const TrackXPEnum = {
+export const TrackXPEnum = {
   OFF: 0,
   SILENT: 1,
   FULL: 2

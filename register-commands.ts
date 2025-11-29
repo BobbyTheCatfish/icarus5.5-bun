@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
-const fs = require("fs");
-const path = require("path");
-const Discord = require("discord.js");
-const axios = require("axios");
-const config = require("./config/config.json");
-const sf = require("./utils/snowflakes.ts");
+import fs from "fs";
+import path from "path";
+import Discord from "discord.js";
+import axios, { AxiosError } from "axios";
+import config from "./config/config.json";
+import sf from "./utils/snowflakes.ts";
 
 /************************
  * BEGIN "CONFIG" BLOCK *
@@ -102,7 +102,7 @@ async function patch(filepaths: string[], global: boolean) {
   console.log(commandPath)
   const data: RegFile[] = [];
   for (const file of filepaths) {
-    const load: RegFile = (await const(path.resolve(commandPath, file))).default;
+    const load: RegFile = (await import(path.resolve(commandPath, file))).default;
     data.push(load);
   }
   const registered: { data: RegisteredCommand[] } | void = await axios({
@@ -147,7 +147,7 @@ async function register() {
 
   // write new example file commands only if there are new ones
   // this prevents weirdness with git
-  const oldExample = require("./config/snowflakes-commands-example.json");
+  const oldExample = (await import("./config/snowflakes-commands-example.json")).default;
   const oldKeys = Object.keys(oldExample.commands);
   const newKeys = Object.keys(commands);
   const diff = oldKeys.filter(c => !newKeys.includes(c)).concat(newKeys.filter(c => !oldKeys.includes(c)));
@@ -157,9 +157,11 @@ async function register() {
   console.log("\nCommand snowflake files updated\n");
   process.exit();
 }
+console.log(process.versions.bun)
+
 
 if (process.cwd() === __dirname) {
   register();
 }
 
-module.exports = register;
+export default register

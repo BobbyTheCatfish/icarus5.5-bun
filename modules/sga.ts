@@ -1,7 +1,7 @@
 // @ts-check
-const Augur = require("augurbot-ts");
-const u = require("../utils/utils");
-const Discord = require("discord.js");
+import Augur from "augurbot-ts";
+import u from "../utils/utils";
+import Discord from "discord.js";
 
 const dict = new u.Collection([
   ["ᔑ", "a"],
@@ -89,4 +89,4 @@ const Module = new Augur.Module()
     process: handleButton
   });
 
-module.exports = Module;
+export default Module;

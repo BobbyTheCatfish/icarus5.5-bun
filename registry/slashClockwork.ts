@@ -1,4 +1,4 @@
-const u = require("./regUtils");
+import u from "./regUtils";
 
 const timer = new u.sub()
   .setName("timer")
@@ -96,7 +96,7 @@ const cancel = new u.sub()
       .setRequired(false)
   );
 
-module.exports = new u.cmd()
+export default new u.cmd()
   .addSubcommand(timer)
   .addSubcommand(reminder)
   .addSubcommand(cancel)

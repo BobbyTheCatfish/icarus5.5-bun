@@ -1,10 +1,10 @@
 // @ts-check
-const Augur = require("augurbot-ts");
-const Discord = require("discord.js");
-const u = require("../utils/utils");
-const config = require("../config/config.json");
-const c = require("../utils/modCommon");
-const { FilterShared } = require("../types/sharedModuleTypes");
+import Augur from "augurbot-ts";
+import Discord from "discord.js";
+import u from "../utils/utils";
+import config from "../config/config.json";
+import c from "../utils/modCommon";
+import { type FilterShared } from "../types/sharedModuleTypes";
 
 const Module = new Augur.Module();
 
@@ -66,7 +66,9 @@ async function slashModBan(interaction: Augur.GuildInteraction<"CommandSlash">) 
 }
 
 async function slashModFilter(interaction: Augur.GuildInteraction<"CommandSlash">) {
+  
   const pf = (interaction.client.moduleManager.shared.get("01-filter.js") as FilterShared | undefined)?.();
+
   if (!pf) throw new Error("Couldn't access profanity filter");
 
   await interaction.deferReply({ flags: ["Ephemeral"] });
@@ -346,9 +348,9 @@ async function slashModGrownups(interaction: Augur.GuildInteraction<"CommandSlas
   if (interaction.channel.parent?.id !== u.sf.channels.team.category) return interaction.reply({ content: "This command can only be used in the LDSG-Staff Category!", flags: ["Ephemeral"] });
   interaction.reply(time === 0 ? `*Whistles and wanders back in*` : `*Whistles and wanders off for ${time} minutes...*`);
 
-  if (c.grownups.has(interaction.channel.id)) {
-    clearTimeout(c.grownups.get(interaction.channel.id));
-  }
+  const grownupTimer = c.grownups.get(interaction.channelId);
+  if (grownupTimer) clearTimeout(grownupTimer);
+  
   if (time === 0) {
     c.grownups.delete(interaction.channel.id);
   } else {
@@ -420,4 +422,4 @@ Module.addEvent("guildMemberAdd", async (member) => {
   }
 });
 
-module.exports = Module;
+export default Module;

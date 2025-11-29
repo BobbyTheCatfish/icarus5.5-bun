@@ -1,6 +1,6 @@
 import Ign from "../models/Ign.model";
 
-type IGN = {
+export type IGN = {
   discordId: string;
   system: string;
   ign: string;

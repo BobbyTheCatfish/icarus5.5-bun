@@ -1,5 +1,5 @@
 // @ts-check
-const u = require("./regUtils");
+import u from "./regUtils";
 
 /**
  * Who do you want to X?
@@ -219,7 +219,7 @@ const watch = new u.sub()
   .addUserOption(user("put on the watchlist"))
   .addStringOption(action("user from the watchlist"));
 
-module.exports = new u.cmd()
+export default new u.cmd()
   .setName("mod")
   .setDescription("Modding actions within LDSG")
   .addSubcommand(ban)

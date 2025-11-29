@@ -1,11 +1,11 @@
 // @ts-check
 
-const Augur = require("augurbot-ts");
-const u = require("../utils/utils");
-const config = require("../config/config.json");
-const { customAlphabet } = require("nanoid");
-const SnipCart = require("../utils/snipcart");
-const { BankShared } = require("../types/sharedModuleTypes");
+import Augur from "augurbot-ts";
+import u from "../utils/utils";
+import config from "../config/config.json";
+import { customAlphabet } from "nanoid";
+import SnipCart from "../utils/snipcart";
+import { type BankShared } from "../types/sharedModuleTypes";
 
 const SnipCartApi = new SnipCart(config.api.snipcart);
 
@@ -295,4 +295,4 @@ Module.addInteraction({
 })
 .setShared({ buyGame, limit, gb, ember });
 
-module.exports = Module;
+export default Module;

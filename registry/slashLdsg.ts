@@ -1,5 +1,5 @@
 // @ts-check
-const u = require("./regUtils");
+import u from "./regUtils";
 
 const members = new u.sub()
   .setName("members")
@@ -39,7 +39,7 @@ const invite = new u.sub()
   .setName("invite")
   .setDescription("Get the link to invite someone to our Discord server!");
 
-module.exports = new u.cmd()
+export default new u.cmd()
   .setName("ldsg")
   .setDescription("Information related to LDSG as a whole")
   .addSubcommand(members)

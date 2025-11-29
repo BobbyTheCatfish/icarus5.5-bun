@@ -1,6 +1,6 @@
 // @ts-check
-const Augur = require("augurbot-ts");
-const u = require("../utils/utils");
+import Augur from "augurbot-ts";
+import u from "../utils/utils";
 
 /**
  * TODO:
@@ -80,4 +80,4 @@ const Module = new Augur.Module()
 });
 
 
-module.exports = Module;
+export default Module;

@@ -1,10 +1,10 @@
 // @ts-check
-const Augur = require("augurbot-ts");
-const Discord = require("discord.js");
-const fs = require("fs");
-const config = require("../config/config.json");
-const u = require("../utils/utils");
-const { TagsShared } = require("../types/sharedModuleTypes");
+import Augur from "augurbot-ts";
+import Discord from "discord.js";
+import fs from "fs";
+import config from "../config/config.json";
+import u from "../utils/utils";
+import { type TagsShared } from "../types/sharedModuleTypes";
 
 const miscFeatures = [
   "### SGA Translation\nClick the button under a message with Standard Galactic Alphabet to translate it to English",
@@ -75,9 +75,9 @@ const Module = new Augur.Module()
 
     for (const [_, i] of ints) {
       const reg = i.options?.registry as string;
-      if (!reg || !fs.existsSync(`registry/${reg}.js`)) continue;
+      if (!reg || !fs.existsSync(`registry/${reg}.ts`)) continue;
   
-      const file: Discord.APIApplicationCommand = require(`../registry/${reg}`);
+      const file: Discord.APIApplicationCommand = (await import(`../registry/${reg}`)).default
   
       const { name } = file;
       const cmds = [cmd(file, "")];
@@ -119,4 +119,4 @@ function cmd(op: Discord.APIApplicationCommand | Discord.APIApplicationCommandSu
 }
 
 
-module.exports = Module;
+export default Module;

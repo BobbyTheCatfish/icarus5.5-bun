@@ -1,11 +1,11 @@
-const Discord = require("discord.js");
-const banned = require("../data/banned.json");
-const Augur = require("augurbot-ts");
-const u = require("../utils/utils");
-const mc = require("../utils/modCommon");
-const Rank = require("../utils/rankInfo");
-const config = require("../config/config.json");
-const { ActiveUser } = require("../types/sharedModuleTypes");
+import Discord from "discord.js";
+import banned from "../data/banned.json";
+import Augur from "augurbot-ts";
+import u from "../utils/utils";
+import mc from "../utils/modCommon";
+import Rank from "../utils/rankInfo";
+import config from "../config/config.json";
+import { type ActiveUser } from "../types/sharedModuleTypes";
 
 
 // There can be "channel of the week" style events, where that channel is worth more xp
@@ -164,7 +164,7 @@ async function reactionXp(reaction: Augur.NonPartialMessageReaction | Discord.Pa
 
 }
 
-async function rankClockwork(client: Augur.AugurClient) {
+async function rankClockwork(client: Discord.Client) {
   const ldsg = client.guilds.cache.get(u.sf.ldsg);
   if (!ldsg) throw new Error("Couldn't get LDSG - Rank Clockwork");
 
@@ -339,4 +339,4 @@ Module.setUnload(() => active)
   })
   .setUnload(() => active);
 
-module.exports = Module;
+export default Module;

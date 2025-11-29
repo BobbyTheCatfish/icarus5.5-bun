@@ -1,6 +1,6 @@
 // @ts-check
-const { GuildMember, Role } = require("discord.js");
-const u = require("./utils");
+import { GuildMember, Role } from "discord.js";
+import u from "./utils";
 
 type EquipRole = {
   baseId: string;
@@ -52,4 +52,4 @@ async function equip(member: GuildMember, baseName: string | null, baseId?: stri
   return true;
 }
 
-module.exports = { equip, getInventory }
+export default { equip, getInventory }

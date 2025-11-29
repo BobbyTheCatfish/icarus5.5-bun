@@ -6,9 +6,9 @@ import type types from "../types/sheetTypes";
 import sf from "../utils/snowflakes";
 import { setBadgeData } from "../utils/badges";
 import Schemas from "google-spreadsheet-schema";
-import { AugurClient } from "augurbot-ts";
+import type { Client } from "discord.js";
 
-let client: AugurClient;
+let client: Client;
 
 function makeDocument(sheetId?: string) {
   const keys = config.google.creds;
@@ -259,7 +259,7 @@ async function setData(sheet: keyof Omit<typeof data, "docs">, doc: GoogleSpread
   await data[sheet].load(worksheet);
 }
 
-export async function loadData(cli: AugurClient, loggedIn = true, justRows = false, sheet?: keyof Omit<typeof data, "docs">) {
+export async function loadData(cli: Client, loggedIn = true, justRows = false, sheet?: keyof Omit<typeof data, "docs">) {
   client = cli;
   loggedIn; // remove if the change worked
   if (!data.docs) throw new Error("Something has gone terribly wrong during sheets loadData");

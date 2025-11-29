@@ -1,0 +1,50 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "test part",
+      // "skipFiles": [
+      //   "<node_internals>/**"
+      // ],
+      "program": "${workspaceFolder}/tmp/test.ts"
+    },
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "Launch Program (Windows)",
+      // "skipFiles": [
+      //   "<node_internals>/**"
+      // ],
+      "program": "${workspaceFolder}\\icarus.ts"
+    },
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "Register Commands (Windows)",
+      // "skipFiles": [
+      //   "<node_internals>/**"
+      // ],
+      "program": "${workspaceFolder}\\register-commands.ts"
+    },
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "Launch Program (Linux)",
+      // "skipFiles": [
+      //   "<node_internals>/**"
+      // ],
+      "program": "${workspaceFolder}/icarus.ts"
+    },
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "Register Commands (Linux)",
+      // "skipFiles": [
+      //   "<node_internals>/**"
+      // ],
+      "program": "${workspaceFolder}/register-commands.ts"
+    }
+  ]
+}

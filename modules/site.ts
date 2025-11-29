@@ -1,41 +1,40 @@
 // @ts-check
-const Augur = require("augurbot-ts");
-const config = require("../config/config.json");
-const u = require("../utils/utils");
-const passport = require("passport");
-const express = require("express");
-const session = require("express-session");
-const mongoose = require("mongoose");
-const cors = require("cors");
-const Store = require("connect-mongo");
-const fs = require("fs");
-const path = require("path");
-const rateLimit = require("express-rate-limit");
-const expressWs = require("express-ws");
-const { createServer } = require("http");
-const { Server } = require("socket.io");
+import Augur from "augurbot-ts";
+import config from "../config/config.json";
+import u from "../utils/utils";
+import passport from "passport";
+import express, { type Express, type Handler } from "express";
+import session from "express-session";
+import mongoose from "mongoose";
+import cors from "cors";
+import Store from "connect-mongo";
+import fs from "fs";
+import path from "path";
+import rateLimit from "express-rate-limit";
+import expressWs from "express-ws";
+import { createServer } from "http";
+import { Server } from "socket.io";
 
-let app: typeof express.Express;
+let app: Express;
 
 let httpServer: ReturnType<typeof createServer>;
 
-let io: typeof Server
+let io: Server
 
-if (config.siteOn) {
-  // require modules!
+async function startSite() {
+   // require modules!
   // @ts-ignore
-  require("../site/backend/utils/strategy");
-  // @ts-ignore
-  const siteConfig = require("../config/siteConfig.json");
-
-
-  // @ts-ignore
-  const routes = require("../site/backend/routes");
+  import("../site/backend/utils/strategy");
+  //@ts-ignore
+  const siteConfig = await import("../config/siteConfig.json").default;
 
   // @ts-ignore
-  const tourneyWS = require('../site/backend/routes/tournament/WS');
+  const routes = await import("../site/backend/routes").default;
+
   // @ts-ignore
-  const streamingWS = require("../site/backend/routes/streaming/ws");
+  const tourneyWS = await import('../site/backend/routes/tournament/WS').default;
+  // @ts-ignore
+  const streamingWS = await import("../site/backend/routes/streaming/ws").default;
 
   app = express();
   const socket = expressWs(app);
@@ -134,7 +133,7 @@ if (config.siteOn) {
   io = new Server(httpServer, { path: "/ws/streams" });
 
 
-  const onlyForHandshake = (middleware: typeof express.Handler): typeof express.Handler => {
+  const onlyForHandshake = (middleware: Handler): Handler => {
     return (req, res, next) => {
       // @ts-ignore
       const isHandshake = req._query.sid === undefined;
@@ -164,7 +163,9 @@ if (config.siteOn) {
   httpServer.listen(siteConfig.port, () => console.log(`Site running on port ${siteConfig.port}`));
 }
 
-module.exports = new Augur.Module()
+if (config.siteOn) startSite();
+
+export default new Augur.Module()
 .setUnload(() => {
   if (!config.siteOn) return;
 
@@ -176,6 +177,7 @@ module.exports = new Augur.Module()
   delete require.cache[require.resolve("../data/site/daedalus-q.js")];
   delete require.cache[require.resolve("../data/site/lore-found.json")];
 
+  // @ts-ignore
   const routes = fs.readdirSync("./site/backend/routes", { recursive: true, encoding: "utf8" });
   const wu = fs.readdirSync("./site/backend/utils");
 

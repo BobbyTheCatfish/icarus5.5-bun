@@ -1,5 +1,5 @@
 // @ts-check
-const u = require("./regUtils");
+import u from "./regUtils";
 
 const pull = new u.sub()
   .setName("fetch")
@@ -35,7 +35,7 @@ const list = new u.sub()
   .setName("list")
   .setDescription("Get a list of users with registered missionary emails");
 
-module.exports = new u.cmd()
+export default new u.cmd()
   .setName("missionary")
   .setDescription("Manage missonary mail settings")
   .setContexts(u.contexts.Guild)

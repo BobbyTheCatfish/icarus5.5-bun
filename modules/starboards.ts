@@ -1,6 +1,6 @@
-const Augur = require("augurbot-ts");
-const Discord = require("discord.js");
-const u = require("../utils/utils");
+import Augur from "augurbot-ts";
+import Discord from "discord.js";
+import u from "../utils/utils";
 
 
 async function checkStarBoard(reaction: Augur.NonPartialMessageReaction, user: Discord.User) {
@@ -114,4 +114,4 @@ const Module = new Augur.Module()
     }, 24 * 60 * 60_000);
   });
 
-module.exports = Module;
+export default Module;

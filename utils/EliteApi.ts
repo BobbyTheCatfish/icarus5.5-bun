@@ -1,5 +1,5 @@
 // @ts-check
-const axios = require("axios");
+import axios from "axios";
 
 function request(path: string, params?: Record<any, any>) {
   // @ts-ignore
@@ -7,7 +7,7 @@ function request(path: string, params?: Record<any, any>) {
     .then((a: { data: any }) => a.data);
 }
 
-type EliteStation = {
+export type EliteStation = {
   name: string;
   id: number;
   type: string;
@@ -15,7 +15,7 @@ type EliteStation = {
   controllingFaction?: { name: string; };
 }
 
-type EliteFaction = {
+export type EliteFaction = {
   influence: number;
   name: string;
   state: string;
@@ -24,7 +24,7 @@ type EliteFaction = {
   id: number;
 }
 
-type EliteSystem = {
+export type EliteSystem = {
   name: string;
   id: number;
   requirePermit: boolean;
@@ -38,7 +38,7 @@ type EliteSystem = {
   factionsURL: string;
 }
 
-type EliteBody = {
+export type EliteBody = {
   id: number;
   type: string;
   isScoopable: boolean;
@@ -79,7 +79,7 @@ function getEliteStatus(): Promise<{ lastUpdate: string; type: string; message: 
   return request("www.edsm.net/api-status-v1/elite-server");
 }
 
-module.exports = {
+export default {
   getSystemInfo,
   getEliteStatus
 };

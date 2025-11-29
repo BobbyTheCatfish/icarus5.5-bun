@@ -1,7 +1,7 @@
-const Augur = require("augurbot-ts");
-const axios = require("axios");
-const u = require("../utils/utils");
-const config = require("../config/config.json");
+import Augur from "augurbot-ts";
+import axios from "axios";
+import u from "../utils/utils";
+import config from "../config/config.json";
 
 const Module = new Augur.Module();
 
@@ -48,4 +48,4 @@ Module.addInteraction({ name: "tournaments",
   }
 });
 
-module.exports = Module;
+export default Module;

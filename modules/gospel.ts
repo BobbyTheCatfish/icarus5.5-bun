@@ -1,11 +1,11 @@
 // @ts-check
-const Augur = require("augurbot-ts");
-const Discord = require("discord.js");
-const Parser = require("rss-parser");
-const u = require("../utils/utils");
-const jstRef = require("../data/gospel/jst-reference.json");
-const books = require("../data/gospel/books.json");
-const scriptureMasteries = require("../data/gospel/scripture-mastery-reference.json");
+import Augur from "augurbot-ts";
+import Discord from "discord.js";
+import Parser from "rss-parser";
+import u from "../utils/utils";
+import jstRef from "../data/gospel/jst-reference.json";
+import books from "../data/gospel/books.json";
+import scriptureMasteries from "../data/gospel/scripture-mastery-reference.json";
 
 interface Book {
   bookName: string;
@@ -106,8 +106,9 @@ async function slashGospelVerse(interaction: Discord.ChatInputCommandInteraction
     .setURL(`https://www.churchofjesuschrist.org/study/scriptures/${bookRef.work}/${bookRef.urlAbbrev}/${chapter}${(versesNums[0] ? ("." + text.replace(/ /g, "") + "?lang=eng#p" + versesNums[0]) : "?lang=eng")}`)
     .setColor(0x012b57);
 
-  // @ts-ignore
-  const bookJson = require("../data/gospel/" + works[bookRef.work] + "-reference.json");
+  
+  const bookJson = (await import("../data/gospel/" + works[bookRef.work as keyof typeof works] + "-reference.json")).default;
+
   if (!bookJson[bookRef.bookName][chapter]) {
     if (intCheck) interaction.reply({ content: `That chapter doesn't exist in ${bookRef.bookName}!`, flags: ["Ephemeral"] });
     return;
@@ -338,4 +339,4 @@ const Module = new Augur.Module()
 });
 
 
-module.exports = Module;
+export default Module;

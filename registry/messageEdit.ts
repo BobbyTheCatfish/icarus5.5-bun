@@ -1,6 +1,6 @@
-const u = require("./regUtils");
+import u from "./regUtils";
 
-module.exports = u.msgContext()
+export default u.msgContext()
   .setName("Edit Message")
   .setContexts(u.contexts.Guild)
   .setDefaultMemberPermissions(u.privateCommand)
